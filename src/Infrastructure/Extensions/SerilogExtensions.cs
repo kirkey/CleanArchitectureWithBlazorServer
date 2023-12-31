@@ -25,7 +25,7 @@ public static class SerilogExtensions
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
                 .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Error)
                 .MinimumLevel.Override("MudBlazor", LogEventLevel.Information)
-                .MinimumLevel.Override("Serilog", LogEventLevel.Error)
+                .MinimumLevel.Override("Serilog", LogEventLevel.Information)
                 .MinimumLevel.Override("Microsoft.EntityFrameworkCore.AddOrUpdate", LogEventLevel.Error)
                 .MinimumLevel.Override("Hangfire.BackgroundJobServer", LogEventLevel.Error)
                 .MinimumLevel.Override("Hangfire.Server.BackgroundServerProcess", LogEventLevel.Error)
@@ -65,7 +65,7 @@ public static class SerilogExtensions
                 WriteToNpgsql(serilogConfig, connectionString);
                 break;
             case DbProviderKeys.SqLite:
-                WriteToSqLite(serilogConfig, connectionString);
+                WriteToSqLite(serilogConfig, "BlazorDashboardDb.db");
                 break;
         }
     }
@@ -77,7 +77,6 @@ public static class SerilogExtensions
         if (privacySettings == null) return;
         if (privacySettings.LogClientIpAddresses) serilogConfig.Enrich.WithClientIp();
         if (privacySettings.LogClientAgents) serilogConfig.Enrich.WithRequestHeader("User-Agent");
-
     }
 
     private static void WriteToSqlServer(LoggerConfiguration serilogConfig, string? connectionString)
@@ -140,22 +139,22 @@ public static class SerilogExtensions
     {
         if (string.IsNullOrEmpty(connectionString)) return;
 
-        const string tableName = "Loggers";
+        const string tableName = "loggers";
         //Used columns (Key is a column name) 
         //Column type is writer's constructor parameter
         IDictionary<string, ColumnWriterBase> columnOptions = new Dictionary<string, ColumnWriterBase>
         {
-            { "Message", new RenderedMessageColumnWriter(NpgsqlDbType.Text) },
-            { "MessageTemplate", new MessageTemplateColumnWriter(NpgsqlDbType.Text) },
-            { "Level", new LevelColumnWriter(true, NpgsqlDbType.Varchar) },
-            { "TimeStamp", new TimestampColumnWriter(NpgsqlDbType.Timestamp) },
-            { "Exception", new ExceptionColumnWriter(NpgsqlDbType.Text) },
-            { "Properties", new PropertiesColumnWriter(NpgsqlDbType.Varchar) },
-            { "LogEvent", new LogEventSerializedColumnWriter(NpgsqlDbType.Varchar) },
-            { "UserName", new SinglePropertyColumnWriter("UserName", PropertyWriteMethod.Raw, NpgsqlDbType.Varchar) },
-            { "ClientIP", new SinglePropertyColumnWriter("ClientIp", PropertyWriteMethod.Raw, NpgsqlDbType.Varchar) },
+            { "message", new RenderedMessageColumnWriter(NpgsqlDbType.Text) },
+            { "message_template", new MessageTemplateColumnWriter(NpgsqlDbType.Text) },
+            { "level", new LevelColumnWriter(true, NpgsqlDbType.Varchar) },
+            { "time_stamp", new TimestampColumnWriter(NpgsqlDbType.Timestamp) },
+            { "exception", new ExceptionColumnWriter(NpgsqlDbType.Text) },
+            { "properties", new PropertiesColumnWriter(NpgsqlDbType.Varchar) },
+            { "log_event", new LogEventSerializedColumnWriter(NpgsqlDbType.Varchar) },
+            { "user_name", new SinglePropertyColumnWriter("UserName", PropertyWriteMethod.Raw, NpgsqlDbType.Varchar) },
+            { "client_ip", new SinglePropertyColumnWriter("ClientIp", PropertyWriteMethod.Raw, NpgsqlDbType.Varchar) },
             {
-                "ClientAgent",
+                "client_agent",
                 new SinglePropertyColumnWriter("ClientAgent", PropertyWriteMethod.ToString, NpgsqlDbType.Varchar)
             }
         };
@@ -166,20 +165,20 @@ public static class SerilogExtensions
             LogEventLevel.Information,
             needAutoCreateTable: false,
             schemaName: "public",
-            useCopy: false
+            useCopy: false,
+            failureCallback: e => Console.WriteLine($"Sink error: {e.Message}")
         ));
     }
 
-    private static void WriteToSqLite(LoggerConfiguration serilogConfig, string? connectionString)
+    private static void WriteToSqLite(LoggerConfiguration serilogConfig, string dbname)
     {
-        if (string.IsNullOrEmpty(connectionString)) return;
-
+        var sqlPath = Environment.CurrentDirectory + dbname;
         const string tableName = "Loggers";
         serilogConfig.WriteTo.Async(wt => wt.SQLite(
-            connectionString,
+            sqlPath,
             tableName,
             LogEventLevel.Information
-        ));
+        ).CreateLogger());
     }
 
 
