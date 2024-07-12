@@ -1,67 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
     <!-- 
-      Microsoft ResX Schema 
-      
-      Version 2.0
-      
-      The primary goals of this format is to allow a simple XML format 
-      that is mostly human readable. The generation and parsing of the 
-      various data types are done through the TypeConverter classes 
-      associated with the data types.
-      
-      Example:
-      
-      ... ado.net/XML headers & schema ...
-      <resheader name="resmimetype">text/microsoft-resx</resheader>
-      <resheader name="version">2.0</resheader>
-      <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-      <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-      <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-      <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-      <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-          <value>[base64 mime encoded serialized .NET Framework object]</value>
-      </data>
-      <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-          <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-          <comment>This is a comment</comment>
-      </data>
-                  
-      There are any number of "resheader" rows that contain simple 
-      name/value pairs.
-      
-      Each data row contains a name, and value. The row also contains a 
-      type or mimetype. Type corresponds to a .NET class that support 
-      text/value conversion through the TypeConverter architecture. 
-      Classes that don't support this are serialized and stored with the 
-      mimetype set.
-      
-      The mimetype is used for serialized objects, and tells the 
-      ResXResourceReader how to depersist the object. This is currently not 
-      extensible. For a given mimetype the value must be set accordingly:
-      
-      Note - application/x-microsoft.net.object.binary.base64 is the format 
-      that the ResXResourceWriter will generate, however the reader can 
-      read any of the formats listed below.
-      
-      mimetype: application/x-microsoft.net.object.binary.base64
-      value   : The object must be serialized with 
-              : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
-              : and then encoded with base64 encoding.
-      
-      mimetype: application/x-microsoft.net.object.soap.base64
-      value   : The object must be serialized with 
-              : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-              : and then encoded with base64 encoding.
-  
-      mimetype: application/x-microsoft.net.object.bytearray.base64
-      value   : The object must be serialized into a byte array 
-              : using a System.ComponentModel.TypeConverter
-              : and then encoded with base64 encoding.
-      -->
+        Microsoft ResX Schema 
+        
+        Version 2.0
+        
+        The primary goals of this format is to allow a simple XML format 
+        that is mostly human readable. The generation and parsing of the 
+        various data types are done through the TypeConverter classes 
+        associated with the data types.
+        
+        Example:
+        
+        ... ado.net/XML headers & schema ...
+        <resheader name="resmimetype">text/microsoft-resx</resheader>
+        <resheader name="version">2.0</resheader>
+        <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+        <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+        <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+        <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+        <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+            <value>[base64 mime encoded serialized .NET Framework object]</value>
+        </data>
+        <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+            <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+            <comment>This is a comment</comment>
+        </data>
+                    
+        There are any number of "resheader" rows that contain simple 
+        name/value pairs.
+        
+        Each data row contains a name, and value. The row also contains a 
+        type or mimetype. Type corresponds to a .NET class that support 
+        text/value conversion through the TypeConverter architecture. 
+        Classes that don't support this are serialized and stored with the 
+        mimetype set.
+        
+        The mimetype is used for serialized objects, and tells the 
+        ResXResourceReader how to depersist the object. This is currently not 
+        extensible. For a given mimetype the value must be set accordingly:
+        
+        Note - application/x-microsoft.net.object.binary.base64 is the format 
+        that the ResXResourceWriter will generate, however the reader can 
+        read any of the formats listed below.
+        
+        mimetype: application/x-microsoft.net.object.binary.base64
+        value   : The object must be serialized with 
+                : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+                : and then encoded with base64 encoding.
+        
+        mimetype: application/x-microsoft.net.object.soap.base64
+        value   : The object must be serialized with 
+                : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+                : and then encoded with base64 encoding.
+    
+        mimetype: application/x-microsoft.net.object.bytearray.base64
+        value   : The object must be serialized into a byte array 
+                : using a System.ComponentModel.TypeConverter
+                : and then encoded with base64 encoding.
+        -->
     <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata"
-                id="root"
-                xmlns="">
+                id="root" xmlns="">
         <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
         <xsd:element name="root" msdata:IsDataSet="true">
             <xsd:complexType>
@@ -124,25 +123,25 @@
         </value>
     </resheader>
     <data name="{0} session changed." xml:space="preserve">
-    <value>{0} sessión cambiada.</value>
+    <value>S'ha canviat {0} sessió.</value>
   </data>
     <data name="Assign Roles" xml:space="preserve">
-    <value>Assignar Rols</value>
+    <value>Assignar rols</value>
   </data>
     <data name="Click upload a photo." xml:space="preserve">
-    <value>Feu clic per carregar una foto.</value>
+    <value>Feu clic a carregar una foto.</value>
   </data>
     <data name="Confirm New Password" xml:space="preserve">
     <value>Confirmar nova contrasenya</value>
   </data>
     <data name="confirm password is required!" xml:space="preserve">
-    <value>és nescessari confirmar la contrasenya</value>
+    <value>cal confirmar la contrasenya!</value>
   </data>
     <data name="Create a new user" xml:space="preserve">
     <value>Crea un usuari nou</value>
   </data>
     <data name="Edit the user" xml:space="preserve">
-    <value>Editar l'usuari</value>
+    <value>Editeu l'usuari</value>
   </data>
     <data name="Email" xml:space="preserve">
     <value>Correu electrònic</value>
@@ -154,7 +153,7 @@
     <value>Estat de bloqueig</value>
   </data>
     <data name="New Password" xml:space="preserve">
-    <value>Nova contrasenya</value>
+    <value>nova contrasenya</value>
   </data>
     <data name="password is required!" xml:space="preserve">
     <value>Es requereix contrasenya!</value>
@@ -163,10 +162,10 @@
     <value>Número de telèfon</value>
   </data>
     <data name="Reset password successfully" xml:space="preserve">
-    <value>Restablerta la contrasenya correctament</value>
+    <value>Restableix la contrasenya correctament</value>
   </data>
     <data name="Search for user name" xml:space="preserve">
-    <value>Buscar per nom de l'usuari</value>
+    <value>Cerca el nom d'usuari</value>
   </data>
     <data name="Set Active" xml:space="preserve">
     <value>Estableix actiu</value>
@@ -175,22 +174,22 @@
     <value>Estableix inactiu</value>
   </data>
     <data name="Set Password" xml:space="preserve">
-    <value>Estableix contrasenya</value>
+    <value>Estableix la contrasenya</value>
   </data>
     <data name="Site" xml:space="preserve">
     <value>Lloc</value>
   </data>
     <data name="User Name" xml:space="preserve">
-    <value>Nom de l'usuari</value>
+    <value>Nom d'usuari</value>
   </data>
     <data name="Users" xml:space="preserve">
     <value>Usuaris</value>
   </data>
     <data name="Select Tenant" xml:space="preserve">
-    <value>Seleccioneu arrendatari</value>
+    <value>Seleccioneu llogater</value>
   </data>
     <data name="Tenant Name" xml:space="preserve">
-    <value>Nom del arrendatari</value>
+    <value>Nom del llogater</value>
   </data>
     <data name="E-mail" xml:space="preserve">
     <value>Correu electrònic</value>
@@ -205,16 +204,13 @@
     <value>Estat</value>
   </data>
     <data name="Confirm Password" xml:space="preserve">
-    <value>Confirmar contrasenya</value>
+    <value>Confirma la contrassenya</value>
   </data>
     <data name="Display Name" xml:space="preserve">
-    <value>Nom per visualitzar</value>
+    <value>Nom de visualització</value>
   </data>
-    <data name="Permission removed successfully!" xml:space="preserve">
-    <value>S'ha eliminat el permís correctament!</value>
-  </data>
-    <data name="Permission added successfully!" xml:space="preserve">
-    <value>S'ha afegit el permís correctament!</value>
+    <data name="Permission removed successfully" xml:space="preserve">
+    <value>El permís s'ha eliminat correctament</value>
   </data>
     <data name="Set Permissions" xml:space="preserve">
     <value>Establir permisos</value>
@@ -232,6 +228,27 @@
     <value>Rols assignats</value>
   </data>
     <data name="Reset Password" xml:space="preserve">
-    <value>Reset Password</value>
+    <value>Restablir la contrasenya</value>
+  </data>
+    <data name="Display Name / PhoneNumber" xml:space="preserve">
+    <value>Nom visualitzat/Número de telèfon</value>
+  </data>
+    <data name="Permission assigned successfully" xml:space="preserve">
+    <value>Permís assignat correctament</value>
+  </data>
+    <data name="The user updated successfully." xml:space="preserve">
+    <value>L'usuari s'ha actualitzat correctament.</value>
+  </data>
+    <data name="The user has been inactivated." xml:space="preserve">
+    <value>L'usuari ha estat desactivat.</value>
+  </data>
+    <data name="The user has been activated." xml:space="preserve">
+    <value>L'usuari ha estat activat.</value>
+  </data>
+    <data name="Recovery email sent. Please check your inbox to set a new password." xml:space="preserve">
+    <value>Correu electrònic de recuperació enviat. Si us plau, comproveu la vostra safata d'entrada per establir una nova contrasenya.</value>
+  </data>
+    <data name="New user created successfully." xml:space="preserve">
+    <value>Usuari nou creat correctament.</value>
   </data>
 </root>

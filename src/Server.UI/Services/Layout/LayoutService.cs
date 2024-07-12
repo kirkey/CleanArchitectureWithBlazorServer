@@ -6,88 +6,145 @@ namespace CleanArchitecture.Blazor.Server.UI.Services.Layout;
 
 public class LayoutService
 {
-    private readonly IUserPreferencesService _userPreferencesService;
+    private readonly IUserPreferencesService UserPreferencesService;
     private bool _systemPreferences;
-    private UserPreferences.UserPreferences _userPreferences = new();
     public DarkLightMode DarkModeToggle = DarkLightMode.System;
 
-
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LayoutService"/> class.
+    /// </summary>
+    /// <param name="userPreferencesService">The user preferences service.</param>
     public LayoutService(IUserPreferencesService userPreferencesService)
     {
-        _userPreferencesService = userPreferencesService;
+        UserPreferencesService = userPreferencesService;
     }
 
+    /// <summary>
+    /// Gets or sets the user preferences.
+    /// </summary>
+    public UserPreferences.UserPreferences UserPreferences { get; private set; } = new();
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the layout is right-to-left.
+    /// </summary>
     public bool IsRTL { get; private set; }
+
+    /// <summary>
+    /// Gets or sets a value indicating whether the layout is in dark mode.
+    /// </summary>
     public bool IsDarkMode { get; private set; }
+
+    /// <summary>
+    /// Gets or sets the primary color.
+    /// </summary>
     public string PrimaryColor { get; set; } = "#2d4275";
+
+    /// <summary>
+    /// Gets or sets the dark primary color.
+    /// </summary>
+    public string DarkPrimaryColor { get; set; } = "#8b9ac6";
+
+    /// <summary>
+    /// Gets or sets the secondary color.
+    /// </summary>
     public string SecondaryColor { get; set; } = "#ff4081ff";
+
+    /// <summary>
+    /// Gets or sets the border radius.
+    /// </summary>
     public double BorderRadius { get; set; } = 4;
+
+    /// <summary>
+    /// Gets or sets the default font size.
+    /// </summary>
     public double DefaultFontSize { get; set; } = 0.8125;
+
+    /// <summary>
+    /// Gets or sets the current theme.
+    /// </summary>
     public MudTheme CurrentTheme { get; private set; } = new();
 
+    /// <summary>
+    /// Sets the dark mode.
+    /// </summary>
+    /// <param name="value">The value indicating whether dark mode is enabled.</param>
     public void SetDarkMode(bool value)
     {
-        IsDarkMode = value;
+        UserPreferences.IsDarkMode = value;
     }
 
-    public async Task<UserPreferences.UserPreferences> ApplyUserPreferences(bool isDarkModeDefaultTheme)
+    /// <summary>
+    /// Applies the user preferences.
+    /// </summary>
+    /// <param name="isDarkModeDefaultTheme">The value indicating whether dark mode is the default theme.</param>
+    public async Task ApplyUserPreferences(bool isDarkModeDefaultTheme)
     {
-        _userPreferences = await _userPreferencesService.LoadUserPreferences();
-        if (_userPreferences != null)
-        {
-            IsDarkMode = _userPreferences.DarkLightTheme switch
-            {
-                DarkLightMode.Dark => true,
-                DarkLightMode.Light => false,
-                DarkLightMode.System => isDarkModeDefaultTheme,
-                _ => IsDarkMode
-            };
-            IsRTL = _userPreferences.RightToLeft;
-            PrimaryColor = _userPreferences.PrimaryColor;
-            BorderRadius = _userPreferences.BorderRadius;
-            DefaultFontSize = _userPreferences.DefaultFontSize;
-            CurrentTheme.Palette.Primary = PrimaryColor;
-            CurrentTheme.PaletteDark.Primary = PrimaryColor;
-            CurrentTheme.Palette.PrimaryDarken = _userPreferences.PrimaryDarken;
-            CurrentTheme.Palette.PrimaryLighten = _userPreferences.PrimaryLighten;
-            CurrentTheme.PaletteDark.PrimaryDarken = _userPreferences.PrimaryDarken;
-            CurrentTheme.PaletteDark.PrimaryLighten = _userPreferences.PrimaryLighten;
-            CurrentTheme.LayoutProperties.DefaultBorderRadius = BorderRadius + "px";
-            CurrentTheme.Typography.Default.FontSize =
-                DefaultFontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
-            CurrentTheme.Typography.Button.FontSize =
-                _userPreferences.ButtonFontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
-            CurrentTheme.Typography.Body1.FontSize =
-                _userPreferences.Body1FontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
-            CurrentTheme.Typography.Body2.FontSize =
-                _userPreferences.Body2FontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
-            CurrentTheme.Typography.Caption.FontSize =
-                _userPreferences.CaptionFontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
-            CurrentTheme.Typography.Overline.FontSize =
-                _userPreferences.OverlineFontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
-            CurrentTheme.Typography.Subtitle1.FontSize =
-                _userPreferences.Subtitle1FontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
-            CurrentTheme.Typography.Subtitle2.FontSize =
-                _userPreferences.Subtitle1FontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
-        }
-        else
-        {
-            IsDarkMode = isDarkModeDefaultTheme;
-            _userPreferences = new UserPreferences.UserPreferences { IsDarkMode = IsDarkMode };
-            await _userPreferencesService.SaveUserPreferences(_userPreferences);
-        }
+        UserPreferences = await UserPreferencesService.LoadUserPreferences();
 
-        return _userPreferences;
+        IsDarkMode = UserPreferences.DarkLightTheme switch
+        {
+            DarkLightMode.Dark => true,
+            DarkLightMode.Light => false,
+            DarkLightMode.System => isDarkModeDefaultTheme,
+            _ => IsDarkMode
+        };
+        IsRTL = UserPreferences.RightToLeft;
+        PrimaryColor = UserPreferences.PrimaryColor;
+        DarkPrimaryColor = UserPreferences.DarkPrimaryColor;
+        BorderRadius = UserPreferences.BorderRadius;
+        DefaultFontSize = UserPreferences.DefaultFontSize;
+        CurrentTheme.PaletteLight.Primary = PrimaryColor;
+        CurrentTheme.PaletteDark.Primary = DarkPrimaryColor;
+        CurrentTheme.PaletteLight.PrimaryDarken = UserPreferences.PrimaryDarken;
+        CurrentTheme.PaletteLight.PrimaryLighten = UserPreferences.PrimaryLighten;
+        CurrentTheme.PaletteDark.PrimaryDarken = UserPreferences.PrimaryDarken;
+        CurrentTheme.PaletteDark.PrimaryLighten = UserPreferences.PrimaryLighten;
+        CurrentTheme.LayoutProperties.DefaultBorderRadius = BorderRadius + "px";
+        CurrentTheme.Typography.Default.FontSize =
+            DefaultFontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+        CurrentTheme.Typography.Button.FontSize =
+            UserPreferences.ButtonFontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+        CurrentTheme.Typography.Button.LineHeight = UserPreferences.ButtonLineHeight;
+        CurrentTheme.Typography.Body1.FontSize =
+            UserPreferences.Body1FontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+
+        CurrentTheme.Typography.Body1.LineHeight = UserPreferences.Body1LineHeight;
+        CurrentTheme.Typography.Body1.LetterSpacing = UserPreferences.Body1LetterSpacing.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+        CurrentTheme.Typography.Body2.FontSize =
+            UserPreferences.Body2FontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+        CurrentTheme.Typography.Body2.LineHeight = UserPreferences.Body1LineHeight;
+        CurrentTheme.Typography.Body2.LetterSpacing = UserPreferences.Body1LetterSpacing.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+
+        CurrentTheme.Typography.Caption.FontSize =
+            UserPreferences.CaptionFontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+        CurrentTheme.Typography.Caption.LineHeight = UserPreferences.CaptionLineHeight;
+        CurrentTheme.Typography.Overline.FontSize =
+            UserPreferences.OverlineFontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+        CurrentTheme.Typography.Subtitle1.FontSize =
+            UserPreferences.Subtitle1FontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+        CurrentTheme.Typography.Subtitle2.FontSize =
+            UserPreferences.Subtitle1FontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
     }
 
+    /// <summary>
+    /// Event that is raised when a major update occurs.
+    /// </summary>
     public event EventHandler? MajorUpdateOccured;
 
+    /// <summary>
+    /// Raises the MajorUpdateOccured event.
+    /// </summary>
     private void OnMajorUpdateOccured()
     {
         MajorUpdateOccured?.Invoke(this, EventArgs.Empty);
     }
 
-    public Task OnSystemPreferenceChanged(bool newValue)
+    /// <summary>
+    /// Handles the system preference changed event.
+    /// </summary>
+    /// <param name="newValue">The new value of the system preference.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public async Task OnSystemPreferenceChanged(bool newValue)
     {
         _systemPreferences = newValue;
         if (DarkModeToggle == DarkLightMode.System)
@@ -96,9 +153,13 @@ public class LayoutService
             OnMajorUpdateOccured();
         }
 
-        return Task.CompletedTask;
+        await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Toggles the dark mode.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public async Task ToggleDarkMode()
     {
         switch (DarkModeToggle)
@@ -117,38 +178,54 @@ public class LayoutService
                 break;
         }
 
-        _userPreferences.DarkLightTheme = DarkModeToggle;
-        await _userPreferencesService.SaveUserPreferences(_userPreferences);
+        UserPreferences.DarkLightTheme = DarkModeToggle;
+        await UserPreferencesService.SaveUserPreferences(UserPreferences);
         OnMajorUpdateOccured();
     }
 
+    /// <summary>
+    /// Toggles the right-to-left layout.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public async Task ToggleRightToLeft()
     {
         IsRTL = !IsRTL;
-        _userPreferences.RightToLeft = IsRTL;
-        await _userPreferencesService.SaveUserPreferences(_userPreferences);
+        UserPreferences.RightToLeft = IsRTL;
+        await UserPreferencesService.SaveUserPreferences(UserPreferences);
         OnMajorUpdateOccured();
     }
 
+    /// <summary>
+    /// Sets the layout to right-to-left.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public async Task SetRightToLeft()
     {
         if (!IsRTL)
             await ToggleRightToLeft();
     }
 
+    /// <summary>
+    /// Sets the layout to left-to-right.
+    /// </summary>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public async Task SetLeftToRight()
     {
         if (IsRTL)
             await ToggleRightToLeft();
     }
 
+    /// <summary>
+    /// Sets the base theme.
+    /// </summary>
+    /// <param name="theme">The theme to set.</param>
     public void SetBaseTheme(MudTheme theme)
     {
         CurrentTheme = theme;
 
         if (!PrimaryColor.IsNullOrEmpty())
         {
-            CurrentTheme.Palette.Primary = PrimaryColor;
+            CurrentTheme.PaletteLight.Primary = PrimaryColor;
             CurrentTheme.PaletteDark.Primary = PrimaryColor;
         }
 
@@ -158,75 +235,89 @@ public class LayoutService
         OnMajorUpdateOccured();
     }
 
-    public async Task SetPrimaryColor(string color)
-    {
-        PrimaryColor = color;
-        CurrentTheme.Palette.Primary = PrimaryColor;
-        CurrentTheme.PaletteDark.Primary = PrimaryColor;
-        _userPreferences.PrimaryColor = PrimaryColor;
-        await _userPreferencesService.SaveUserPreferences(_userPreferences);
-        OnMajorUpdateOccured();
-    }
-
+    /// <summary>
+    /// Sets the secondary color.
+    /// </summary>
+    /// <param name="color">The secondary color to set.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public async Task SetSecondaryColor(string color)
     {
         SecondaryColor = color;
-        CurrentTheme.Palette.Secondary = SecondaryColor;
+        CurrentTheme.PaletteLight.Secondary = SecondaryColor;
         CurrentTheme.PaletteDark.Secondary = SecondaryColor;
-        _userPreferences.SecondaryColor = SecondaryColor;
-        await _userPreferencesService.SaveUserPreferences(_userPreferences);
+        UserPreferences.SecondaryColor = SecondaryColor;
+        await UserPreferencesService.SaveUserPreferences(UserPreferences);
         OnMajorUpdateOccured();
     }
 
+    /// <summary>
+    /// Sets the border radius.
+    /// </summary>
+    /// <param name="size">The size of the border radius.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public async Task SetBorderRadius(double size)
     {
         BorderRadius = size;
         CurrentTheme.LayoutProperties.DefaultBorderRadius = BorderRadius + "px";
-        _userPreferences.BorderRadius = BorderRadius;
-        await _userPreferencesService.SaveUserPreferences(_userPreferences);
+        UserPreferences.BorderRadius = BorderRadius;
+        await UserPreferencesService.SaveUserPreferences(UserPreferences);
         OnMajorUpdateOccured();
     }
 
+    /// <summary>
+    /// Updates the user preferences.
+    /// </summary>
+    /// <param name="preferences">The updated user preferences.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public async Task UpdateUserPreferences(UserPreferences.UserPreferences preferences)
     {
-        _userPreferences = preferences;
-        IsDarkMode = _userPreferences.DarkLightTheme switch
+        UserPreferences = preferences;
+        IsDarkMode = UserPreferences.DarkLightTheme switch
         {
             DarkLightMode.Dark => true,
             DarkLightMode.Light => false,
             DarkLightMode.System => _systemPreferences = true,
             _ => IsDarkMode
         };
-        IsRTL = _userPreferences.RightToLeft;
-        PrimaryColor = _userPreferences.PrimaryColor;
-        BorderRadius = _userPreferences.BorderRadius;
-        DefaultFontSize = _userPreferences.DefaultFontSize;
-        CurrentTheme.Palette.Primary = PrimaryColor;
-        CurrentTheme.PaletteDark.Primary = PrimaryColor;
-        CurrentTheme.Palette.PrimaryDarken = _userPreferences.PrimaryDarken;
-        CurrentTheme.Palette.PrimaryLighten = _userPreferences.PrimaryLighten;
-        CurrentTheme.PaletteDark.PrimaryDarken = _userPreferences.PrimaryDarken;
-        CurrentTheme.PaletteDark.PrimaryLighten = _userPreferences.PrimaryLighten;
+        IsRTL = UserPreferences.RightToLeft;
+        PrimaryColor = UserPreferences.PrimaryColor;
+        DarkPrimaryColor = UserPreferences.DarkPrimaryColor;
+        BorderRadius = UserPreferences.BorderRadius;
+        DefaultFontSize = UserPreferences.DefaultFontSize;
+        CurrentTheme.PaletteLight.Primary = PrimaryColor;
+        CurrentTheme.PaletteDark.Primary = DarkPrimaryColor;
+        CurrentTheme.PaletteLight.PrimaryDarken = UserPreferences.PrimaryDarken;
+        CurrentTheme.PaletteLight.PrimaryLighten = UserPreferences.PrimaryLighten;
+        CurrentTheme.PaletteDark.PrimaryDarken = UserPreferences.PrimaryDarken;
+        CurrentTheme.PaletteDark.PrimaryLighten = UserPreferences.PrimaryLighten;
         CurrentTheme.LayoutProperties.DefaultBorderRadius = BorderRadius + "px";
         CurrentTheme.Typography.Default.FontSize =
             DefaultFontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
         CurrentTheme.Typography.Button.FontSize =
-            _userPreferences.ButtonFontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+            UserPreferences.ButtonFontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+        CurrentTheme.Typography.Button.LineHeight = UserPreferences.ButtonLineHeight;
         CurrentTheme.Typography.Body1.FontSize =
-            _userPreferences.Body1FontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+            UserPreferences.Body1FontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+
+        CurrentTheme.Typography.Body1.LineHeight = UserPreferences.Body1LineHeight;
+        CurrentTheme.Typography.Body1.LetterSpacing = UserPreferences.Body1LetterSpacing.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
         CurrentTheme.Typography.Body2.FontSize =
-            _userPreferences.Body2FontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+            UserPreferences.Body2FontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+        CurrentTheme.Typography.Body2.LineHeight = UserPreferences.Body1LineHeight;
+        CurrentTheme.Typography.Body2.LetterSpacing = UserPreferences.Body1LetterSpacing.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+
         CurrentTheme.Typography.Caption.FontSize =
-            _userPreferences.CaptionFontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+            UserPreferences.CaptionFontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+        CurrentTheme.Typography.Caption.LineHeight = UserPreferences.CaptionLineHeight;
         CurrentTheme.Typography.Overline.FontSize =
-            _userPreferences.OverlineFontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+            UserPreferences.OverlineFontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
         CurrentTheme.Typography.Subtitle1.FontSize =
-            _userPreferences.Subtitle1FontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+            UserPreferences.Subtitle1FontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
         CurrentTheme.Typography.Subtitle2.FontSize =
-            _userPreferences.Subtitle1FontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+            UserPreferences.Subtitle1FontSize.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
 
 
-        await _userPreferencesService.SaveUserPreferences(_userPreferences);
+        await UserPreferencesService.SaveUserPreferences(UserPreferences);
         OnMajorUpdateOccured();
     }
 }

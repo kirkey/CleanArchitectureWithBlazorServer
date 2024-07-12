@@ -1,5 +1,4 @@
-@page "/system/picklist"
-@using Severity = Severity
+﻿@page "/system/picklist"
 @using CleanArchitecture.Blazor.Application.Features.KeyValues.DTOs
 @using CleanArchitecture.Blazor.Application.Features.KeyValues.Queries.Export
 @using CleanArchitecture.Blazor.Application.Features.KeyValues.Queries.PaginationQuery
@@ -11,12 +10,8 @@
 @using CleanArchitecture.Blazor.Server.UI.Pages.SystemManagement.Components
 
 @attribute [Authorize(Policy = Permissions.Dictionaries.View)]
-
 @inject IStringLocalizer<Dictionaries> L
-@inject IJSRuntime JS
-@inject IMediator Mediator
 @inject IBlazorDownloadFileService BlazorDownloadFileService
-@inject IMapper Mapper
 
 <PageTitle>@Title</PageTitle>
 
@@ -45,67 +40,66 @@
             <div class="flex-grow-1"/>
 
             <div class="d-flex flex-column justify-end">
-                <div class="d-flex">
+                <div class="d-flex gap-1">
                     <MudHidden Breakpoint="Breakpoint.SmAndDown">
-                        <MudButton DisableElevation Variant="Variant.Outlined"
+                        <MudButton  Variant="Variant.Outlined"
                                    Size="Size.Small"
                                    OnClick="OnRefresh"
                                    Disabled="@_loading"
                                    StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
-                                   Style="margin-right: 4px; margin-bottom:4px">
+                                   >
                             @ConstantString.Refresh
                         </MudButton>
                         @if (_canCreate)
                         {
-                            <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Primary"
+                            <MudButton  Variant="Variant.Outlined" Color="Color.Primary"
                                        StartIcon="@Icons.Material.Filled.Add"
                                        Size="Size.Small"
                                        OnClick="OnCreate"
-                                       Style="margin-right: 4px; margin-bottom:4px"
                                        IconColor="Color.Surface">
                                 @ConstantString.New
                             </MudButton>
                         }
                         @if (_canDelete)
                         {
-                            <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Secondary"
+                            <MudButton  Variant="Variant.Outlined" Color="Color.Secondary"
                                        StartIcon="@Icons.Material.Filled.Delete"
                                        Disabled="@(!(_selectedItems.Count > 0))"
                                        OnClick="OnDeleteChecked"
                                        Size="Size.Small"
-                                       Style="margin-right: 4px; margin-bottom:4px"
                                        IconColor="Color.Surface">
                                 @ConstantString.Delete
                             </MudButton>
                         }
                         @if (_canImport)
                         {
-                            <MudButton Disabled="@_uploading" DisableElevation Variant="Variant.Outlined" Color="Color.Primary"
-                                       StartIcon="@Icons.Material.Filled.Upload"
-                                       Size="Size.Small"
-                                       Style="margin-right:4px; margin-bottom:4px"
-                                       for="importdataInput"
-                                       HtmlTag="label"
-                                       IconColor="Color.Surface">
-                                @if (_uploading)
-                                {
-                                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
-                                    <MudText Class="ms-2"> @ConstantString.Uploading</MudText>
-                                }
-                                else
-                                {
-                                    <MudText>@ConstantString.Import</MudText>
-                                }
+                            <MudFileUpload T="IBrowserFile" FilesChanged="OnImportData" Accept=".xlsx" >
+                                <ActivatorContent>
+                                    <MudButton Size="Size.Small"
+                                               Variant="Variant.Outlined"
+                                               Color="Color.Primary"
+                                               Disabled="@_loading"
+                                               StartIcon="@Icons.Material.Filled.Upload">
+                                        @if (_uploading)
+                                        {
+                                            <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                                            @ConstantString.Uploading
+                                        }
+                                        else
+                                        {
+                                            @ConstantString.Import
+                                        }
+                                    </MudButton>
+                                </ActivatorContent>
+                            </MudFileUpload>
 
-                            </MudButton>
-                            <InputFile id="importdataInput" OnChange="OnImportData" hidden accept=".xlsx"/>
+                            
                         }
                         @if (_canExport)
                         {
-                            <MudButton Disabled="@_downloading" DisableElevation Variant="Variant.Outlined" Color="Color.Primary"
+                            <MudButton Disabled="@_downloading"  Variant="Variant.Outlined" Color="Color.Primary"
                                        StartIcon="@Icons.Material.Filled.Download"
                                        Size="Size.Small"
-                                       Style="margin-right: 4px; margin-bottom:4px"
                                        OnClick="OnExport"
                                        IconColor="Color.Surface">
                                 @if (_downloading)
@@ -123,23 +117,21 @@
                     <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert="true">
                         @if (_canCreate)
                         {
-                            <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Primary"
+                            <MudButton  Variant="Variant.Outlined" Color="Color.Primary"
                                        StartIcon="@Icons.Material.Filled.Add"
                                        Size="Size.Small"
                                        OnClick="OnCreate"
-                                       Style="margin-right: 4px; margin-bottom:4px"
                                        IconColor="Color.Surface">
                                 @ConstantString.New
                             </MudButton>
                         }
                         @if (_canDelete)
                         {
-                            <MudButton DisableElevation Variant="Variant.Outlined" Color="Color.Secondary"
+                            <MudButton  Variant="Variant.Outlined" Color="Color.Secondary"
                                        StartIcon="@Icons.Material.Filled.Delete"
                                        Disabled="@(!(_selectedItems.Count > 0))"
                                        OnClick="OnDeleteChecked"
                                        Size="Size.Small"
-                                       Style="margin-right: 4px; margin-bottom:4px"
                                        IconColor="Color.Surface">
                                 @ConstantString.Delete
                             </MudButton>
@@ -149,10 +141,12 @@
                 @if (_canSearch)
                 {
                     <MudStack Row="true" AlignItems="AlignItems.Stretch">
-                        <MudEnumSelect TEnum="Picklist?" Placeholder="Search for picklist" Value="@_searchPicklist" Clearable="true" ValueChanged="@(s => OnSearch(s))" Style="width:160px" FullWidth="true"> </MudEnumSelect>
-                        <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Value="@_searchString" Placeholder="Search" Adornment="Adornment.End" Style="min-width:260px" FullWidth="true"
-                                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
-                        </MudTextField>
+                        <MudEnumSelect TEnum="Picklist?" Placeholder="@L["Search for picklist"]" Value="@_searchPicklist" Clearable="true" ValueChanged="@(s => OnSearch(s))" Style="width:160px" FullWidth="true"> </MudEnumSelect>
+                        <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                            <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Value="@_searchString" Placeholder="Search" Adornment="Adornment.End" Style="min-width:260px" FullWidth="true"
+                                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                            </MudTextField>
+                        </MudHidden>
                     </MudStack>
                 }
 
@@ -286,60 +280,46 @@
 
     private async Task DeleteItem(KeyValueDto item)
     {
-        var deleteContent = ConstantString.DeleteConfirmation;
         var command = new DeleteKeyValueCommand(new[] { item.Id });
-        var parameters = new DialogParameters<DeleteConfirmation>
-        {
-            { x => x.Command, command },
-            { x => x.ContentText, string.Format(deleteContent, item.Name) }
-        };
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true, DisableBackdropClick = true };
-        var dialog = DialogService.Show<DeleteConfirmation>(ConstantString.DeleteConfirmationTitle, parameters, options);
-        var state = await dialog.Result;
-        if (!state.Canceled)
+        var contentText = string.Format(ConstantString.DeleteConfirmation, item.Name);
+        await DialogServiceHelper.ShowDeleteConfirmationDialog(command, ConstantString.DeleteConfirmationTitle, contentText, async () =>
         {
             await _table.ReloadServerData();
-        }
+        });
     }
 
     private async Task OnDeleteChecked()
     {
-        var deleteContent = ConstantString.DeleteConfirmation;
-        var parameters = new DialogParameters<DeleteConfirmation>
+        var command = new DeleteKeyValueCommand(_selectedItems.Select(x => x.Id).ToArray());
+        var contentText = string.Format(ConstantString.DeleteConfirmation, _selectedItems.Count);
+        await DialogServiceHelper.ShowDeleteConfirmationDialog(command, ConstantString.DeleteConfirmationTitle, contentText, async () =>
         {
-            { x => x.ContentText, string.Format(deleteContent, _selectedItems.Count) }
-        };
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true, DisableBackdropClick = true };
-        var dialog = DialogService.Show<DeleteConfirmation>(ConstantString.DeleteConfirmationTitle, parameters, options);
-        var state = await dialog.Result;
-        if (!state.Canceled)
-        {
-            var command = new DeleteKeyValueCommand(_selectedItems.Select(x => x.Id).ToArray());
-            var result = await Mediator.Send(command);
             await _table.ReloadServerData();
-            Snackbar.Add($"{ConstantString.DeleteSuccess}", Severity.Info);
+            _selectedItems.Clear();
+        });
+    }
+    private async Task ShowCreateDialog(AddEditKeyValueCommand command, string title)
+    {
+        var parameters = new DialogParameters
+        {
+            { nameof(CreatePicklistDialog.Model), command }
+        };
+        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
+        var dialog = DialogService.Show<CreatePicklistDialog>(title, parameters, options);
+        var state = await dialog.Result;
+        if (state is not null && !state.Canceled)
+        {
+            await _table.ReloadServerData();
         }
     }
-
     private async Task OnCreate()
     {
         var command = new AddEditKeyValueCommand
-        {
-            Name = SelectedItem.Name,
-            Description = SelectedItem?.Description
-        };
-        var parameters = new DialogParameters<CreatePicklistDialog>
-        {
-            { x => x.Model, command }
-        };
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = DialogService.Show<CreatePicklistDialog>
-            (L["Create a new picklist"], parameters, options);
-        var state = await dialog.Result;
-        if (!state.Canceled)
-        {
-            await _table.ReloadServerData();
-        }
+            {
+                Name = SelectedItem.Name,
+                Description = SelectedItem?.Description
+            };
+        await ShowCreateDialog(command, L["Create a picklist"]);
     }
 
     private async Task OnExport()
@@ -355,12 +335,12 @@
         _downloading = false;
     }
 
-    private async Task OnImportData(InputFileChangeEventArgs e)
+    private async Task OnImportData(IBrowserFile file)
     {
         _uploading = true;
         var stream = new MemoryStream();
-        await e.File.OpenReadStream(GlobalVariable.MaxAllowedSize).CopyToAsync(stream);
-        var command = new ImportKeyValuesCommand(e.File.Name, stream.ToArray());
+        await file.OpenReadStream(GlobalVariable.MaxAllowedSize).CopyToAsync(stream);
+        var command = new ImportKeyValuesCommand(file.Name, stream.ToArray());
         var result = await Mediator.Send(command);
         if (result.Succeeded)
         {

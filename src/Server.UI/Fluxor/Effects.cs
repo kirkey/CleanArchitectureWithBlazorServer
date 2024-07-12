@@ -14,8 +14,14 @@ public class Effects
     [EffectMethod]
     public async Task HandleFetchDataAction(FetchUserDtoAction action, IDispatcher dispatcher)
     {
-        var result = await _identityService.GetApplicationUserDto(action.UserId);
-        if (result is not null)
-            dispatcher.Dispatch(new FetchUserDtoResultAction(result));
+        var result = await _identityService.GetApplicationUserDto(action.UserName);
+        dispatcher.Dispatch(new FetchUserDtoResultAction(result));
+    }
+
+    [EffectMethod]
+    public Task HandleUserProfileChangedAction(UserProfileUpdateAction action, IDispatcher dispatcher)
+    {
+        _identityService.RemoveApplicationUserCache(action.UserProfile.UserName);
+        return Task.CompletedTask;
     }
 }

@@ -1,15 +1,15 @@
-@page "/system/logs"
-@using Severity = Severity
+﻿@page "/system/logs"
 @using CleanArchitecture.Blazor.Application.Features.Loggers.DTOs
 @using CleanArchitecture.Blazor.Application.Features.Loggers.Queries.PaginationQuery
 @using CleanArchitecture.Blazor.Application.Features.Loggers.Specifications
+@using CleanArchitecture.Blazor.Server.UI.Services.JsInterop
 @using CleanArchitecture.Blazor.Server.UI.Pages.SystemManagement.Components
 @using CleanArchitecture.Blazor.Application.Features.Loggers.Commands.Clear
 
 @attribute [Authorize(Policy = Permissions.Logs.View)]
 @inject IStringLocalizer<Logs> L
-
-<PageTitle>@L[Title]</PageTitle>
+@inject LocalTimezoneOffset LocalTimezoneOffset
+<PageTitle>@Title</PageTitle>
 
 <LogsLineCharts></LogsLineCharts>
 <MudDataGrid T="LogDto"
@@ -21,41 +21,42 @@
              Height="calc(100vh - 360px)"
              Style="min-height:700px"
              Loading="@_loading"
+             ColumnResizeMode="ResizeMode.Column"
              Hover="true" @ref="_table">
     <ToolBarContent>
         <div class="d-flex align-start flex-grow-1">
             <div class="d-flex gap-4">
                 <MudIcon Icon="@Icons.Material.Filled.BarChart" Size="Size.Large"/>
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.caption">@L["Logs"]</MudText>
-                    <MudEnumSelect Style="min-width:220px" TEnum="LogListView" ValueChanged="OnChangedListView" Value="Query.ListView" Dense="true" Label="List View">
+                    <MudText Typo="Typo.caption" Class="mb-2">@Title</MudText>
+                    <MudEnumSelect Style="min-width:120px" TEnum="LogListView" ValueChanged="OnChangedListView" Value="Query.ListView" Dense="true" Label="List View">
                     </MudEnumSelect>
                 </div>
             </div>
             <div class="flex-grow-1"/>
 
             <div class="d-flex flex-column justify-end">
-                <div class="d-flex">
-                    <MudButton DisableElevation Variant="Variant.Outlined"
+                <div class="d-flex gap-1">
+                    <MudButton  Variant="Variant.Outlined"
                                Size="Size.Small"
                                Disabled="@_loading"
                                OnClick="@(OnRefresh)"
                                StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
-                               Style="margin-right: 5px;">
+                               >
                         @ConstantString.Refresh
                     </MudButton>
                     @if (_canPurge)
                     {
-                        <MudButton DisableElevation Variant="Variant.Outlined"
+                        <MudButton  Variant="Variant.Outlined"
                                    Size="Size.Small"
                                    Disabled="@(_loading || _clearing)"
                                    OnClick="@(OnPurge)"
                                    StartIcon="@Icons.Material.Filled.ClearAll" IconColor="Color.Surface" Color="Color.Secondary"
-                                   Style="margin-right: 5px;">
+                                   >
                             @if (_clearing)
                             {
                                 <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
-                                <MudText Class="ms-2">waiting</MudText>
+                                <MudText Class="ms-2">@ConstantString.Waiting</MudText>
                             }
                             else
                             {
@@ -66,10 +67,12 @@
                     }
                 </div>
                 <MudStack Row="true" AlignItems="AlignItems.Stretch">
-                    <MudEnumSelect TEnum="LogLevel?" Placeholder="Search for level" Value="@Query.Level" Clearable="true" ValueChanged="OnChangedLevel" Style="width:160px" FullWidth="true"> </MudEnumSelect>
-                    <MudTextField T="string" Style="min-width:300px" ValueChanged="@(OnSearch)" Value="@Query.Keyword" Placeholder="Search" Adornment="Adornment.End"
-                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium">
-                    </MudTextField>
+                    <MudEnumSelect TEnum="LogLevel?" Placeholder="@L["Search for level"]" Value="@Query.Level" Clearable="true" ValueChanged="OnChangedLevel" Style="min-width:120px" FullWidth="true"> </MudEnumSelect>
+                    <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                        <MudTextField T="string" Style="min-width:120px" ValueChanged="@(OnSearch)" Value="@Query.Keyword" Placeholder="Search" Adornment="Adornment.End"
+                                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium">
+                        </MudTextField>
+                    </MudHidden>
                 </MudStack>
 
             </div>
@@ -154,14 +157,12 @@
 @code
 {
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
-
-    [Inject] private IMediator Mediator { get; set; } = default!;
     private string Title { get; set; } = "Logs";
     private string _searchString = string.Empty;
     private MudDataGrid<LogDto> _table = default!;
     private readonly LogDto _currentDto = new();
     private readonly int _defaultPageSize = 15;
-
+    private int _timezoneOffset;
 
     private bool _loading;
     private bool _clearing;
@@ -174,6 +175,8 @@
         Title = L["Logs"];
         var state = await AuthState;
         _canPurge = (await AuthService.AuthorizeAsync(state.User, Permissions.Logs.Purge)).Succeeded;
+
+        _timezoneOffset = await LocalTimezoneOffset.Hours();
     }
 
 
@@ -186,6 +189,7 @@
             Query.SortDirection = state.SortDefinitions.FirstOrDefault()?.Descending ?? true ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString();
             Query.PageNumber = state.Page + 1;
             Query.PageSize = state.PageSize;
+            Query.TimeZoneOffset = _timezoneOffset;
             var result = await Mediator.Send(Query).ConfigureAwait(false);
 
             return new GridData<LogDto> { TotalItems = result.TotalItems, Items = result.Items };
@@ -222,15 +226,9 @@
 
     private async Task OnPurge()
     {
-        var parameters = new DialogParameters<ConfirmationDialog>
-        {
-            { x => x.ContentText, $"{L["Are you sure you want to erase all the logs?"]}" }
-        };
-        var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true, DisableBackdropClick = true };
-        var dialog = DialogService.Show<ConfirmationDialog>
-            ($"{L["Erase logs"]}", parameters, options);
-        var state = await dialog.Result;
-        if (!state.Canceled)
+        var contentText = $"{L["Are you sure you want to erase all the logs?"]}";
+        var title = $"{L["Erase logs"]}";
+        await DialogServiceHelper.ShowConfirmationDialog(title, contentText, async () =>
         {
             _clearing = true;
             try
@@ -244,6 +242,6 @@
             {
                 _clearing = false;
             }
-        }
+        });
     }
 }

@@ -1,16 +1,14 @@
-@page "/system/audittrails"
+﻿@page "/system/audittrails"
 @using CleanArchitecture.Blazor.Application.Features.AuditTrails.DTOs
 @using CleanArchitecture.Blazor.Application.Features.AuditTrails.Queries.PaginationQuery
 @using CleanArchitecture.Blazor.Application.Features.AuditTrails.Specifications
 @using CleanArchitecture.Blazor.Application.Features.AuditTrails.Caching
-@inherits FluxorComponent
-@attribute [Authorize(Policy = Permissions.AuditTrails.View)]
 
+@attribute [Authorize(Policy = Permissions.AuditTrails.View)]
 @inject IStringLocalizer<AuditTrails> L
 @inject IState<UserProfileState> UserProfileState
-@inject IMediator Mediator
 
-<PageTitle>@L[Title]</PageTitle>
+<PageTitle>@Title</PageTitle>
 
 <MudDataGrid ServerData="@(ServerReload)"
              T="AuditTrailDto"
@@ -26,8 +24,8 @@
             <div class="d-flex gap-4">
                 <MudIcon Icon="@Icons.Material.Filled.ReceiptLong" Size="Size.Large"/>
                 <div class="d-flex flex-column">
-                    <MudText Typo="Typo.caption">@L[Title]</MudText>
-                    <MudEnumSelect Style="min-width:220px" TEnum="AuditTrailListView" ValueChanged="OnChangedListView" Value="Query.ListView" Dense="true" Label="List View">
+                    <MudText Typo="Typo.caption" Class="mb-2">@Title</MudText>
+                    <MudEnumSelect Style="min-width:120px" TEnum="AuditTrailListView" ValueChanged="OnChangedListView" Value="Query.ListView" Dense="true" Label="List View">
                     </MudEnumSelect>
                 </div>
             </div>
@@ -35,20 +33,22 @@
 
             <div class="d-flex flex-column justify-end">
                 <div class="d-flex">
-                    <MudButton DisableElevation Variant="Variant.Outlined"
+                    <MudButton  Variant="Variant.Outlined"
                                Size="Size.Small"
                                OnClick="@(() => OnRefresh())"
                                StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Surface" Color="Color.Primary"
-                               Style="margin-right: 5px;">
+                               >
                         @ConstantString.Refresh
                     </MudButton>
                 </div>
 
                 <MudStack Row="true" AlignItems="AlignItems.Stretch">
-                    <MudEnumSelect TEnum="AuditType?" Placeholder="Search for audit type" Value="@Query.AuditType" Clearable="true" ValueChanged="@(s => OnSearch(s))" Style="width:160px" FullWidth="true"> </MudEnumSelect>
-                    <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Value="@Query.Keyword" Placeholder="Search" Adornment="Adornment.End" Style="width:260px" FullWidth="true"
-                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
-                    </MudTextField>
+                    <MudEnumSelect TEnum="AuditType?" Placeholder="@L["Search for audit type"]" Value="@Query.AuditType" Clearable="true" ValueChanged="@(s => OnSearch(s))" Style="min-width:120px" FullWidth="true"> </MudEnumSelect>
+                    <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                        <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Value="@Query.Keyword" Placeholder="Search" Adornment="Adornment.End" Style="min-width:120px" FullWidth="true"
+                                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                        </MudTextField>
+                    </MudHidden>
                 </MudStack>
 
 
@@ -79,7 +79,7 @@
             <MudCardHeader>
                 <CardHeaderContent>
                     <MudText Typo="Typo.body1">
-                        <strong>@context.Item.TableName</strong>
+                        <strong>@L[context.Item.TableName!]</strong>
                     </MudText>
                 </CardHeaderContent>
             </MudCardHeader>
@@ -135,7 +135,7 @@
     private readonly AuditTrailDto _currentDto = new();
 
     private AuditTrailsWithPaginationQuery Query { get; } = new();
-    private UserProfile UserProfile => UserProfileState.Value.UserProfile;
+    [CascadingParameter] private UserProfile? UserProfile { get; set; }
 
     protected override async Task OnInitializedAsync()
     {

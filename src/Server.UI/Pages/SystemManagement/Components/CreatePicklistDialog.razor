@@ -1,15 +1,11 @@
-@using Severity = Severity
-@using CleanArchitecture.Blazor.Application.Features.KeyValues.Commands.AddEdit
+﻿@using CleanArchitecture.Blazor.Application.Features.KeyValues.Commands.AddEdit
 @inherits MudComponentBase
-
-@inject IValidationService Validator
-@inject IMediator Mediator
 @inject IStringLocalizer<Dictionaries> L
 
 <MudDialog>
     <DialogContent>
         <MudForm Model="Model" @ref="_form" Validation="@(Validator.ValidateValue(Model))">
-            <MudGrid>
+            <MudGrid Spacing="2">
                 <MudItem xs="12" md="6">
                     <MudEnumSelect Label="@L[Model.GetMemberDescription(x => x.Name)]" @bind-Value="Model.Name"
                                    For="@(() => Model.Name)"
@@ -51,7 +47,7 @@
 {
     [CascadingParameter] private MudDialogInstance MudDialog { get; set; } = default!;
 
-    [EditorRequired] [Parameter] public AddEditKeyValueCommand Model { get; set; } = default!;
+    [EditorRequired][Parameter] public AddEditKeyValueCommand Model { get; set; } = default!;
 
     private MudForm? _form;
     private bool _saving;

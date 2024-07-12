@@ -1,4 +1,6 @@
-﻿namespace CleanArchitecture.Blazor.Application.Features.Documents.Specifications;
+﻿using CleanArchitecture.Blazor.Application.Common.Security;
+
+namespace CleanArchitecture.Blazor.Application.Features.Documents.Specifications;
 
 public enum DocumentListView
 {
@@ -13,5 +15,5 @@ public enum DocumentListView
 public class AdvancedDocumentsFilter : PaginationFilter
 {
     public DocumentListView ListView { get; set; } = DocumentListView.All;
-    public required UserProfile CurrentUser { get; set; }
+    public UserProfile? CurrentUser { get; set; }
 }

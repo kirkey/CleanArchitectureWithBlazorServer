@@ -1,17 +1,11 @@
-﻿@using Severity = Severity
-@using Toolbelt.Blazor.HotKeys2
-@using CleanArchitecture.Blazor.Server.UI.Services.UserPreferences
-@using CleanArchitecture.Blazor.Server.UI.Constants
-@layout MainLayout
+﻿@layout MainLayout
 @inherits LayoutComponentBase
 
 @inject LayoutService LayoutService
-@inject HotKeys HotKeys
-@inject IStringLocalizer<SharedResource> L
 <MudLayout>
     <AuthorizeView>
         <NotAuthorized>
-            <RedirectToLogin />
+            <RedirectToLogin/>
         </NotAuthorized>
         <Authorized>
             <HeaderMenu NavigationMenuDrawerOpen="_navigationMenuDrawerOpen"
@@ -20,19 +14,21 @@
                         ToggleNavigationMenuDrawer="ToggleNavigationMenuDrawer"
                         RightToLeft="@LayoutService.IsRTL"
                         RightToLeftToggle="LayoutService.ToggleRightToLeft"
-                        OnSettingClick="@(() => _themingDrawerOpen = true)" />
-            <NavigationMenu DrawerOpen="_navigationMenuDrawerOpen"
-                            DrawerOpenChanged="NavigationMenuDrawerOpenChangedHandler" />
+                        OnSettingClick="@(() => _themingDrawerOpen = true)"/>
+            <NavigationMenu DrawerOpen="_navigationMenuDrawerOpen" Roles="@_userProfile?.AssignedRoles"
+                            DrawerOpenChanged="NavigationMenuDrawerOpenChangedHandler"/>
             <ThemesMenu ThemingDrawerOpen="_themingDrawerOpen"
                         ThemingDrawerOpenChanged="ThemingDrawerOpenChangedHandler"
-                        UserPreferences="_userPreferences"
-                        UserPreferencesChanged="LayoutService.UpdateUserPreferences" />
-            <ThemesButton OnClick="@(() => _themingDrawerOpen = true)" />
+                        UserPreferences="@LayoutService.UserPreferences"
+                        UserPreferencesChanged="LayoutService.UpdateUserPreferences"/>
+            <ThemesButton OnClick="@(() => _themingDrawerOpen = true)"/>
             <MudMainContent>
                 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mb-4 mt-4">
-                    <ErrorBoundary @ref="_errorBoundary">
+                    <ErrorBoundary @ref="ErrorBoundary">
                         <ChildContent>
-                            @Body
+                            <CascadingValue Value="@_userProfile">
+                                @Body
+                            </CascadingValue>
                         </ChildContent>
                         <ErrorContent Context="exception">
                             <CustomError Exception="exception"></CustomError>
@@ -40,7 +36,8 @@
                     </ErrorBoundary>
                 </MudContainer>
             </MudMainContent>
-            <UserLoginState />
+          
+            <UserLoginState UserProfileStateChanged="OnUserProfileStateChanged" />
         </Authorized>
     </AuthorizeView>
 </MudLayout>
@@ -49,24 +46,34 @@
 @code
 {
     private bool _commandPaletteOpen;
-    private HotKeysContext? _hotKeysContext;
     private bool _navigationMenuDrawerOpen = true;
-    private UserPreferences _userPreferences = new();
-    private MudThemeProvider _mudThemeProvider = null!;
     private bool _themingDrawerOpen;
-    private bool _defaultDarkMode;
+    private UserProfile? _userProfile;
+    private ErrorBoundary? ErrorBoundary { set; get; }
+    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
 
-     private ErrorBoundary? _errorBoundary { set; get; }
+    protected override async Task OnInitializedAsync()
+    {
+        var state = await AuthState;
+        _userProfile = state.User.GetUserProfileFromClaim();
+    }
 
     protected override void OnParametersSet()
     {
         ResetBoundary();
     }
-
+    private void OnUserProfileStateChanged(UserProfileState state)
+    {
+        if (state.UserProfile is not null)
+        {
+            _userProfile = state.UserProfile;
+        }
+        
+    }
     private void ResetBoundary()
     {
         // On each page navigation, reset any error state
-        _errorBoundary?.Recover();
+        ErrorBoundary?.Recover();
     }
 
     protected void NavigationMenuDrawerOpenChangedHandler(bool state)
@@ -89,11 +96,11 @@
         if (!_commandPaletteOpen)
         {
             var options = new DialogOptions
-                {
-                    NoHeader = true,
-                    MaxWidth = MaxWidth.Medium,
-                    FullWidth = true
-                };
+            {
+                NoHeader = true,
+                MaxWidth = MaxWidth.Medium,
+                FullWidth = true
+            };
 
             var commandPalette = DialogService.Show<SearchDialog>("", options);
             _commandPaletteOpen = true;

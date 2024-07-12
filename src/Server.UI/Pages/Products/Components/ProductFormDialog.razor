@@ -1,7 +1,6 @@
+﻿@using CleanArchitecture.Blazor.Server.UI.Components.Fusion
 @using ResizeMode = SixLabors.ImageSharp.Processing.ResizeMode
-@using Severity = Severity
 @using Size = SixLabors.ImageSharp.Size
-@using Color = Color
 @using Image = SixLabors.ImageSharp.Image
 @using SixLabors.ImageSharp.Processing
 @using SixLabors.ImageSharp
@@ -9,19 +8,16 @@
 @using CleanArchitecture.Blazor.Application.Features.Products.Commands.AddEdit
 @using CleanArchitecture.Blazor.Domain.Common.Enums
 @using CleanArchitecture.Blazor.Server.UI.Services.JsInterop
+@using System.Collections.Immutable
 
-@inherits MudComponentBase
-
-@inject IJSRuntime JS
 @inject IStringLocalizer<Products> L
-@inject IValidationService Validator
 @inject IUploadService UploadService
-@inject IMediator Mediator
 
 <MudDialog>
     <DialogContent>
+        <ActiveUserSession PageComponent="@($"{nameof(ProductFormDialog)}/{ Model.Id}")" />
         <MudForm Model="@Model" @ref="@_form" Validation="@(Validator.ValidateValue(Model))">
-            <MudGrid>
+            <MudGrid Spacing="2">
                 <MudItem xs="12">
                     <MudTextField Label="@L["Product Name"]" @bind-Value="Model.Name"
                                   For="@(() => Model.Name)"
@@ -71,17 +67,17 @@
                 </MudItem>
                 <MudItem>
                     <div class="d-flex flex-row gap-4 mb-2">
-                        <MudFileUpload T="IReadOnlyList<IBrowserFile>" Multiple
+                        <MudFileUpload T="IReadOnlyList<IBrowserFile>"
                                        SuppressOnChangeWhenInvalid="true"
                                        @bind-Files="Model.UploadPictures" OnFilesChanged="UploadFiles" For="@(() => Model.UploadPictures)">
-                            <ButtonTemplate>
-                                <MudLoadingButton Loading="@_uploading" HtmlTag="label" Disabled="_uploading"
+                            <ActivatorContent>
+                                <MudLoadingButton Loading="@_uploading"   Disabled="_uploading"
                                                   Variant="Variant.Filled"
                                                   Color="Color.Primary"
-                                                  for="@context">
+                                                  >
                                     @(L["Upload picture"])
                                 </MudLoadingButton>
-                            </ButtonTemplate>
+                            </ActivatorContent>
                         </MudFileUpload>
                     </div>
                     <MudText Typo="Typo.body2">@L["The recommended size for uploading images is 640X320"]</MudText>
@@ -107,6 +103,7 @@
                 </MudItem>
             </MudGrid>
         </MudForm>
+ 
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
@@ -126,7 +123,7 @@
     private bool _saving;
     private bool _saveingnew;
     private bool _uploading;
-
+    
     private const long MaxAllowedSize = 3145728;
 
     private async Task DeleteImage(ProductImage picture)
@@ -137,11 +134,11 @@
             {
                 { x => x.ContentText, $"{L["Are you sure you want to erase this image?"]}" }
             };
-            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true, DisableBackdropClick = true };
+            var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall, FullWidth = true};
             var dialog = DialogService.Show<ConfirmationDialog>($"{L["Erase imatge"]}", parameters, options);
             var state = await dialog.Result;
 
-            if (!state.Canceled)
+            if (state is not null && !state.Canceled)
             {
                 Model.Pictures.Remove(picture);
             }
@@ -259,5 +256,5 @@
     {
         MudDialog.Cancel();
     }
-
+    
 }

@@ -1,6 +1,4 @@
-using CleanArchitecture.Blazor.Server.UI.Pages._Models.Identity
-@using CleanArchitecture.Blazor.Server.UI.Models.Identity
-@inherits MudComponentBase
+﻿@inherits MudComponentBase
 
 @inject IStringLocalizer<Roles> L
 
@@ -27,12 +25,12 @@ using CleanArchitecture.Blazor.Server.UI.Pages._Models.Identity
             <MudCard class="ma-4">
                 <MudCardHeader>
                     <CardHeaderContent>
-                        <MudStack Spacing="1">
+                        <MudStack Spacing="2">
                             <MudText Typo="Typo.body1">
-                                @group
+                                @L[group]
                             </MudText>
                             <MudText Typo="Typo.body2">
-                                @(Permissions.FirstOrDefault(x => x.Group == group)?.Description)
+                                @(L[Permissions.First(x => x.Group == group).Description])
                             </MudText>
                         </MudStack>
                     </CardHeaderContent>
@@ -51,9 +49,9 @@ using CleanArchitecture.Blazor.Server.UI.Pages._Models.Identity
                             <MudCheckBox Dense="true"
                                          T="bool"
                                          Size="Size.Small"
-                                         Checked="@Permissions[x].Assigned"
-                                         Label="@Permissions[x].ClaimValue"
-                                         CheckedChanged="@(s => OnAssignChanged.InvokeAsync(Permissions[x]))"
+                                         Value="@Permissions[x].Assigned"
+                                         Label="@L[Permissions[x].ClaimValue]"
+                                         ValueChanged="@(s => OnAssignChanged.InvokeAsync(Permissions[x]))"
                                          Color="Color.Primary">
                             </MudCheckBox>
                         }

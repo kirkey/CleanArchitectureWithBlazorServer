@@ -1,58 +1,60 @@
-using CleanArchitecture.Blazor.Application.Common.Interfaces.Identity;
+﻿using CleanArchitecture.Blazor.Application.Common.Interfaces.Identity;
 using CleanArchitecture.Blazor.Application.Features.Identity.DTOs;
 
 namespace CleanArchitecture.Blazor.Server.UI.Components.Autocompletes;
 
 public class PickUserAutocomplete : MudAutocomplete<string>
 {
-    private List<ApplicationUserDto>? _userList;
-
-    [Parameter] public string TenantId { get; set; } = string.Empty;
-
-    [Inject] private IUserDataProvider DataProvider { get; set; } = default!;
-
-    public override Task SetParametersAsync(ParameterView parameters)
+ 
+    public PickUserAutocomplete()
     {
-        SearchFuncWithCancel = SearchKeyValues;
+        SearchFunc = SearchKeyValues;
         Clearable = true;
         Dense = true;
         ResetValueOnEmptyText = true;
         ShowProgressIndicator = true;
         MaxItems = 50;
-        return base.SetParametersAsync(parameters);
+    }
+    [Parameter] public string? TenantId { get; set; }
+
+    [Inject] private IUserService UserService { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        UserService.OnChange += TenantsService_OnChange;
     }
 
-    private Task<IEnumerable<string>> SearchKeyValues(string value, CancellationToken cancellation)
+    private void TenantsService_OnChange()
     {
-        // if text is null or empty, show complete list
-        _userList = DataProvider.DataSource.Where(x => x.TenantId == TenantId).ToList();
-        var result = new List<string>();
+        InvokeAsync(StateHasChanged);
+    }
 
-        if (_userList is not null && string.IsNullOrEmpty(value))
-            result = _userList.Select(x => x.UserName).ToList();
-        else if (_userList is not null)
-            result = _userList
-                .Where(x => x.UserName.Contains(value, StringComparison.OrdinalIgnoreCase) ||
-                            x.Email.Contains(value, StringComparison.OrdinalIgnoreCase)).Select(x => x.UserName)
-                .ToList();
+    protected override void Dispose(bool disposing)
+    {
+        UserService.OnChange -= TenantsService_OnChange;
+        base.Dispose(disposing);
+    }
+    
+   
 
-        return Task.FromResult(result.AsEnumerable());
+    private Task<IEnumerable<string>> SearchKeyValues(string value,CancellationToken cancellation)
+    {
+        var result = string.IsNullOrEmpty(value)
+            ? UserService.DataSource.Where(x=>!string.IsNullOrEmpty(TenantId) && x.TenantId==TenantId || string.IsNullOrEmpty(TenantId)).Select(x => x.UserName)
+            : UserService.DataSource.Where(x => (!string.IsNullOrEmpty(TenantId) && x.TenantId == TenantId || string.IsNullOrEmpty(TenantId)) && 
+                        (x.UserName.Contains(value, StringComparison.OrdinalIgnoreCase) ||
+                                    x.Email.Contains(value, StringComparison.OrdinalIgnoreCase)))
+                .Select(x => x.UserName);
+
+        return Task.FromResult(result?.AsEnumerable() ?? new string[] { });
     }
 
     private string ToString(string str)
     {
-        if (!string.IsNullOrEmpty(str) && _userList != null && _userList.Any(x =>
-                (x.DisplayName != null && x.DisplayName.Contains(str, StringComparison.OrdinalIgnoreCase)) ||
-                x.UserName.Contains(str, StringComparison.OrdinalIgnoreCase)))
-        {
-            var userDto = _userList.Find(x =>
-                (x.DisplayName != null && x.DisplayName.Contains(str, StringComparison.OrdinalIgnoreCase)) ||
-                x.UserName.Contains(str, StringComparison.OrdinalIgnoreCase));
-            return _userList.Find(x =>
-                (x.DisplayName != null && x.DisplayName.Contains(str, StringComparison.OrdinalIgnoreCase)) ||
-                x.UserName.Contains(str, StringComparison.OrdinalIgnoreCase))?.DisplayName ?? str;
-        }
+        var user = UserService.DataSource.FirstOrDefault(x =>
+            (x.DisplayName != null && x.DisplayName.Contains(str, StringComparison.OrdinalIgnoreCase)) ||
+            x.UserName.Contains(str, StringComparison.OrdinalIgnoreCase));
 
-        return str;
+        return user?.DisplayName ?? str;
     }
 }

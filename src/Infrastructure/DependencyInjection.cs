@@ -1,27 +1,23 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
-using System.Text;
 using CleanArchitecture.Blazor.Application.Common.Interfaces.MultiTenant;
 using CleanArchitecture.Blazor.Application.Common.Interfaces.Serialization;
 using CleanArchitecture.Blazor.Domain.Identity;
 using CleanArchitecture.Blazor.Infrastructure.Configurations;
 using CleanArchitecture.Blazor.Infrastructure.Constants.ClaimTypes;
 using CleanArchitecture.Blazor.Infrastructure.Constants.Database;
-using CleanArchitecture.Blazor.Infrastructure.Constants.Permission;
 using CleanArchitecture.Blazor.Infrastructure.Constants.User;
+using CleanArchitecture.Blazor.Infrastructure.PermissionSet;
 using CleanArchitecture.Blazor.Infrastructure.Persistence.Interceptors;
-using CleanArchitecture.Blazor.Infrastructure.Services.JWT;
 using CleanArchitecture.Blazor.Infrastructure.Services.MultiTenant;
 using CleanArchitecture.Blazor.Infrastructure.Services.PaddleOCR;
 using CleanArchitecture.Blazor.Infrastructure.Services.Serialization;
 using FluentEmail.MailKitSmtp;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace CleanArchitecture.Blazor.Infrastructure;
@@ -38,45 +34,7 @@ public static class DependencyInjection
 
         services
             .AddAuthenticationService(configuration)
-            .AddFusionCacheService()
-            .AddSimpleJwtService(options =>
-            {
-                options.UseCookie = false;
-
-                options.AccessSigningOptions = new JwtSigningOptions
-                {
-                    SigningKey =
-                        new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes("yn4$#cr=+i@eljzlhhr2xlgf98aud&(3&!po3r60wlm^3*huh#")),
-                    Algorithm = SecurityAlgorithms.HmacSha256,
-                    ExpirationMinutes = 120
-                };
-
-                options.RefreshSigningOptions = new JwtSigningOptions
-                {
-                    SigningKey =
-                        new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes("e_qmg*)=vr9yxpp^g^#((wkwk7fh#+3qy!zzq+r-hifw2(_u+=")),
-                    Algorithm = SecurityAlgorithms.HmacSha256,
-                    ExpirationMinutes = 2880
-                };
-                options.AccessValidationParameters = new TokenValidationParameters
-                {
-                    IssuerSigningKey = options.AccessSigningOptions.SigningKey,
-                    ValidIssuer = options.Issuer,
-                    ValidAudience = options.Audience,
-                    ValidateIssuerSigningKey = true,
-                    ClockSkew = TimeSpan.Zero
-                };
-                options.RefreshValidationParameters = new TokenValidationParameters
-                {
-                    IssuerSigningKey = options.RefreshSigningOptions.SigningKey,
-                    ValidIssuer = options.Issuer,
-                    ValidAudience = options.Audience,
-                    ValidateIssuerSigningKey = true,
-                    ClockSkew = TimeSpan.Zero
-                };
-            });
+            .AddFusionCacheService();
 
 
         services.AddSingleton<IUsersStateContainer, UsersStateContainer>();
@@ -91,15 +49,12 @@ public static class DependencyInjection
             .AddSingleton(s => s.GetRequiredService<IOptions<IdentitySettings>>().Value)
             .AddSingleton<IIdentitySettings>(s => s.GetRequiredService<IOptions<IdentitySettings>>().Value);
 
-        services.Configure<DashboardSettings>(configuration.GetSection(DashboardSettings.Key))
-            .AddSingleton(s => s.GetRequiredService<IOptions<DashboardSettings>>().Value)
-            .AddSingleton<IApplicationSettings>(s => s.GetRequiredService<IOptions<DashboardSettings>>().Value);
+        services.Configure<AppConfigurationSettings>(configuration.GetSection(AppConfigurationSettings.Key))
+            .AddSingleton(s => s.GetRequiredService<IOptions<AppConfigurationSettings>>().Value)
+            .AddSingleton<IApplicationSettings>(s => s.GetRequiredService<IOptions<AppConfigurationSettings>>().Value);
 
         services.Configure<DatabaseSettings>(configuration.GetSection(DatabaseSettings.Key))
             .AddSingleton(s => s.GetRequiredService<IOptions<DatabaseSettings>>().Value);
-
-        services.Configure<AppConfigurationSettings>(configuration.GetSection(AppConfigurationSettings.Key))
-            .AddSingleton(s => s.GetRequiredService<IOptions<AppConfigurationSettings>>().Value);
 
         services.Configure<PrivacySettings>(configuration.GetSection(PrivacySettings.Key))
             .AddSingleton(s => s.GetRequiredService<IOptions<PrivacySettings>>().Value);
@@ -179,7 +134,6 @@ public static class DependencyInjection
 
         return services.AddSingleton<ISerializer, SystemTextJsonSerializer>()
             .AddScoped<ICurrentUserService, CurrentUserService>()
-            .AddScoped<ITenantProvider, TenantProvider>()
             .AddScoped<IValidationService, ValidationService>()
             .AddScoped<IDateTime, DateTimeService>()
             .AddScoped<IExcelService, ExcelService>()
@@ -199,7 +153,8 @@ public static class DependencyInjection
         services.AddScoped<IMailService, MailService>();
 
         // configure your sender and template choices with dependency injection.
-        services.AddFluentEmail("support@blazorserver.com")
+        var defaultFromEmail = configuration.GetValue<string>("SmtpClientOptions:DefaultFromEmail");
+        services.AddFluentEmail(defaultFromEmail??"noreply@blazorserver.com")
             .AddRazorRenderer(Path.Combine(Directory.GetCurrentDirectory(), "Resources", "EmailTemplates"))
             .AddMailKitSender(smtpClientOptions);
 
@@ -209,16 +164,15 @@ public static class DependencyInjection
     private static IServiceCollection AddAuthenticationService(this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddIdentity<ApplicationUser, ApplicationRole>()
+        services.AddIdentityCore<ApplicationUser>()
+            .AddRoles<ApplicationRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddSignInManager()
             .AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
             .AddDefaultTokenProviders();
-
         services.Configure<IdentityOptions>(options =>
         {
             var identitySettings = configuration.GetRequiredSection(IdentitySettings.Key).Get<IdentitySettings>();
-
-
             // Password settings
             options.Password.RequireDigit = identitySettings!.RequireDigit;
             options.Password.RequiredLength = identitySettings.RequiredLength;
@@ -232,11 +186,13 @@ public static class DependencyInjection
             options.Lockout.AllowedForNewUsers = true;
 
             // Default SignIn settings.
-            options.SignIn.RequireConfirmedEmail = false;
+            options.SignIn.RequireConfirmedEmail = true;
             options.SignIn.RequireConfirmedPhoneNumber = false;
+            options.SignIn.RequireConfirmedAccount = true;
 
             // User settings
             options.User.RequireUniqueEmail = true;
+            //options.Tokens.EmailConfirmationTokenProvider = "Email";
         });
 
         services.AddScoped<IIdentityService, IdentityService>()
@@ -253,41 +209,37 @@ public static class DependencyInjection
                             policy => policy.RequireClaim(ApplicationClaimTypes.Permission, (string)propertyValue));
                 }
             })
-            .AddAuthentication()
-            .AddJwtBearer(options =>
+            .AddAuthentication(options =>
             {
-                options.SaveToken = true;
-                options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = new TokenValidationParameters
+                options.DefaultScheme = IdentityConstants.ApplicationScheme;
+                options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+            })
+            .AddMicrosoftAccount(microsoftOptions =>
+            {
+                microsoftOptions.ClientId = configuration.GetValue<string>("Authentication:Microsoft:ClientId")??string.Empty;
+                microsoftOptions.ClientSecret = configuration.GetValue<string>("Authentication:Microsoft:ClientSecret") ?? string.Empty;
+                //microsoftOptions.CallbackPath = new PathString("/pages/authentication/ExternalLogin"); # dotn't set this parameter!!
+            })
+            .AddGoogle(googleOptions =>
                 {
-                    ValidateIssuerSigningKey = false,
-                    IssuerSigningKey =
-                        new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes("yn4$#cr=+i@eljzlhhr2xlgf98aud&(3&!po3r60wlm^3*huh#")),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    RoleClaimType = ClaimTypes.Role,
-                    ClockSkew = TimeSpan.Zero,
-                    ValidateLifetime = false
-                };
-                options.Events = new JwtBearerEvents
-                {
-                    OnMessageReceived = context =>
-                    {
-                        var accessToken = context.Request.Headers.Authorization;
-                        var path = context.HttpContext.Request.Path;
-                        if (!string.IsNullOrEmpty(accessToken) &&
-                            path.StartsWithSegments("/signalRHub")) // TODO: move in server?
-                            context.Token = accessToken.ToString().Substring(7);
-                        return Task.CompletedTask;
-                    }
-                };
-            });
+                    googleOptions.ClientId = configuration.GetValue<string>("Authentication:Google:ClientId") ?? string.Empty;
+                    googleOptions.ClientSecret = configuration.GetValue<string>("Authentication:Google:ClientSecret") ?? string.Empty; ;
+                }
+            )
+            .AddFacebook(facebookOptions =>
+            {
+                facebookOptions.AppId = configuration.GetValue<string>("Authentication:Facebook:AppId") ?? string.Empty;
+                facebookOptions.AppSecret = configuration.GetValue<string>("Authentication:Facebook:AppSecret") ?? string.Empty;
+            })
+            .AddIdentityCookies(options => { });
+
+        services.AddDataProtection().PersistKeysToDbContext<ApplicationDbContext>();
+
         services.ConfigureApplicationCookie(options => { options.LoginPath = "/pages/authentication/login"; });
-        services.AddSingleton<UserDataProvider>()
-            .AddSingleton<IUserDataProvider>(sp =>
+        services.AddSingleton<UserService>()
+            .AddSingleton<IUserService>(sp =>
             {
-                var service = sp.GetRequiredService<UserDataProvider>();
+                var service = sp.GetRequiredService<UserService>();
                 service.Initialize();
                 return service;
             });
@@ -301,35 +253,15 @@ public static class DependencyInjection
         services.AddFusionCache().WithDefaultEntryOptions(new FusionCacheEntryOptions
         {
             // CACHE DURATION
-            Duration = TimeSpan.FromMinutes(30),
+            Duration = TimeSpan.FromMinutes(120),
             // FAIL-SAFE OPTIONS
             IsFailSafeEnabled = true,
-            FailSafeMaxDuration = TimeSpan.FromHours(2),
+            FailSafeMaxDuration = TimeSpan.FromHours(8),
             FailSafeThrottleDuration = TimeSpan.FromSeconds(30),
             // FACTORY TIMEOUTS
             FactorySoftTimeout = TimeSpan.FromMilliseconds(100),
             FactoryHardTimeout = TimeSpan.FromMilliseconds(1500)
         });
-        return services;
-    }
-
-    private static IServiceCollection AddSimpleJwtService(this IServiceCollection services,
-        Action<SimpleJwtOptions> options)
-    {
-        var sjOptions = new SimpleJwtOptions();
-
-        options?.Invoke(sjOptions);
-
-        services.AddSingleton(typeof(IOptions<SimpleJwtOptions>), Options.Create(sjOptions))
-            .AddScoped<IAccessTokenProvider, AccessTokenProvider>()
-            .AddScoped<IAccessTokenGenerator, AccessTokenGenerator>()
-            .AddScoped<IRefreshTokenGenerator, RefreshTokenGenerator>()
-            .AddScoped<ITokenGeneratorService, TokenGeneratorService>()
-            .AddScoped<IAccessTokenValidator, AccessTokenValidator>()
-            .AddScoped<IRefreshTokenValidator, RefreshTokenValidator>()
-            .AddScoped<ILoginService, JwtLoginService>()
-            .AddScoped<JwtSecurityTokenHandler>();
-
         return services;
     }
 }

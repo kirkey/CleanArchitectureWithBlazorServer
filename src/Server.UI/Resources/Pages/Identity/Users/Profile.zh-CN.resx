@@ -59,8 +59,7 @@
               : using a System.ComponentModel.TypeConverter
               : and then encoded with base64 encoding.
       -->
-    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata"
-                id="root"
+    <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" id="root"
                 xmlns="">
         <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
         <xsd:element name="root" msdata:IsDataSet="true">
@@ -124,13 +123,13 @@
         </value>
     </resheader>
     <data name="Change Password" xml:space="preserve">
-    <value>修改密码</value>
+    <value>更改密码</value>
   </data>
-    <data name="Changed password successfully." xml:space="preserve">
+    <data name="Password changed successfully" xml:space="preserve">
     <value>密码修改成功</value>
   </data>
     <data name="Click upload a photo." xml:space="preserve">
-    <value>单击上传照片.</value>
+    <value>单击上传照片。</value>
   </data>
     <data name="Confirm New Password" xml:space="preserve">
     <value>确认新密码</value>
@@ -139,7 +138,7 @@
     <value>当前密码</value>
   </data>
     <data name="current password is required!" xml:space="preserve">
-    <value>当前密码必填!</value>
+    <value>需要当前密码！</value>
   </data>
     <data name="Display Name" xml:space="preserve">
     <value>显示名称</value>
@@ -151,16 +150,16 @@
     <value>新密码</value>
   </data>
     <data name="password is required!" xml:space="preserve">
-    <value>密码必填</value>
+    <value>密码是必需的！</value>
   </data>
     <data name="Phone Number" xml:space="preserve">
     <value>电话号码</value>
   </data>
     <data name="Profile" xml:space="preserve">
-    <value>简档</value>
+    <value>用户资料</value>
   </data>
     <data name="Save Changes" xml:space="preserve">
-    <value>保存</value>
+    <value>保存更改</value>
   </data>
     <data name="Update successfully" xml:space="preserve">
     <value>更新成功</value>
@@ -172,9 +171,18 @@
     <value>租户名称</value>
   </data>
     <data name="Status" xml:space="preserve">
-    <value>状态</value>
+    <value>地位</value>
   </data>
     <data name="Superior Name" xml:space="preserve">
-    <value>上级</value>
+    <value>高级名称</value>
+  </data>
+    <data name="Click upload a image" xml:space="preserve">
+    <value>点击上传图片</value>
+  </data>
+    <data name="Org Chart" xml:space="preserve">
+    <value>组织结构图</value>
+  </data>
+    <data name="The avatar has been updated" xml:space="preserve">
+    <value>头像已更新</value>
   </data>
 </root>

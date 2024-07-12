@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
 namespace CleanArchitecture.Blazor.Infrastructure.Constants.Localization;
@@ -21,7 +21,7 @@ public static class LocalizationConstants
         },
         new()
         {
-            Code = "ru",
+            Code = "ru-RU",
             DisplayName = "Russian"
         },
         new()
@@ -57,7 +57,12 @@ public static class LocalizationConstants
         new()
         {
             Code = "ar-iq",
-            DisplayName = "Arabic Iraq"
+            DisplayName = "Arabic"
+        },
+        new()
+        {
+            Code = "ko-kr",
+            DisplayName = "Korean"
         }
     };
 }
