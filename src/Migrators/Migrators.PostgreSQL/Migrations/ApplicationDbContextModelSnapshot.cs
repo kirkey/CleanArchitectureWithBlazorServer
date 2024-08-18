@@ -17,7 +17,7 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.4")
+                .HasAnnotation("ProductVersion", "8.0.7")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -76,7 +76,7 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                     b.ToTable("audit_trails", (string)null);
                 });
 
-            modelBuilder.Entity("CleanArchitecture.Blazor.Domain.Entities.Customer", b =>
+            modelBuilder.Entity("CleanArchitecture.Blazor.Domain.Entities.Contact", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -84,6 +84,11 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Country")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)")
+                        .HasColumnName("country");
 
                     b.Property<DateTime?>("Created")
                         .HasColumnType("timestamp without time zone")
@@ -98,6 +103,11 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasMaxLength(450)
                         .HasColumnType("character varying(450)")
                         .HasColumnName("description");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)")
+                        .HasColumnName("email");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("timestamp without time zone")
@@ -114,10 +124,15 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnType("character varying(50)")
                         .HasColumnName("name");
 
-                    b.HasKey("Id")
-                        .HasName("pk_customers");
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)")
+                        .HasColumnName("phone_number");
 
-                    b.ToTable("customers", (string)null);
+                    b.HasKey("Id")
+                        .HasName("pk_contacts");
+
+                    b.ToTable("contacts", (string)null);
                 });
 
             modelBuilder.Entity("CleanArchitecture.Blazor.Domain.Entities.Document", b =>

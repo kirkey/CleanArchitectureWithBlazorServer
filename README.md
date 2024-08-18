@@ -22,7 +22,7 @@ Experience the application in action in Blazor Server mode by visiting
 ## Visual Insights
 
 Dive into the application's aesthetics and functionality through screenshots and a video walkthrough.
-[![Everything Is AWESOME](doc/page.png)](https://www.youtube.com/embed/GyZJl_dG-Pg "Everything Is AWESOME")
+[![Everything Is AWESOME](doc/logo.png)](https://www.youtube.com/embed/GyZJl_dG-Pg "Everything Is AWESOME")
 
 ## Development Setup
 
@@ -208,6 +208,15 @@ Facebook.
       <img width="1329" alt="image" src="https://github.com/neozhu/CleanArchitectureWithBlazorServer/assets/1549611/7c56dec5-5935-4fc5-ad81-8bcb65e9d0dc">
     - create a new project from Clean Architecture for Blazor Server Solution
       <img width="769" alt="image" src="https://github.com/neozhu/CleanArchitectureWithBlazorServer/assets/1549611/ed7eb20f-aec2-4f69-95b7-d47c2eb20428">
+
+
+## Tutorial: Removing an cutomer Object from a Project
+[![Everything Is AWESOME](doc/remove.png)](https://www.youtube.com/watch?v=i3p-3I95YqM "Everything Is AWESOME")
+
+
+## Tutorial: add an contact Entity in the project
+[![Everything Is AWESOME](doc/create.png)](https://www.youtube.com/watch?v=X1b4hFLs4vo "Everything Is AWESOME")
+
 
 ## Why I chose Blazor Server
 
