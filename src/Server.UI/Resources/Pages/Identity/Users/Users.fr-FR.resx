@@ -163,7 +163,7 @@
   <data name="Reset password successfully." xml:space="preserve">
     <value>Réinitialiser le mot de passe avec succès</value>
   </data>
-  <data name="Search for user name" xml:space="preserve">
+  <data name="Search by user name" xml:space="preserve">
     <value>Rechercher un nom d'utilisateur</value>
   </data>
   <data name="Set Active" xml:space="preserve">
@@ -291,5 +291,29 @@
   </data>
   <data name="Search by role name" xml:space="preserve">
     <value>Recherche par nom de rôle</value>
+  </data>
+  <data name="Superior" xml:space="preserve">
+    <value>Supérieur</value>
+  </data>
+  <data name="Tenant" xml:space="preserve">
+    <value>Locataire</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Langue</value>
+  </data>
+  <data name="Last Modified By" xml:space="preserve">
+    <value>Dernière modification par</value>
+  </data>
+  <data name="Last Modified" xml:space="preserve">
+    <value>Dernière modification</value>
+  </data>
+  <data name="Created By" xml:space="preserve">
+    <value>Créé par</value>
+  </data>
+  <data name="Created" xml:space="preserve">
+    <value>Créé</value>
+  </data>
+  <data name="Time Zone" xml:space="preserve">
+    <value>Fuseau horaire</value>
   </data>
 </root>

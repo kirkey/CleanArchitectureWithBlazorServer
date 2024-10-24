@@ -1,7 +1,5 @@
 ﻿using System.Net.Http.Headers;
-using System.Reflection;
 using BlazorDownloadFile;
-using CleanArchitecture.Blazor.Domain.Identity;
 using CleanArchitecture.Blazor.Infrastructure.Constants.Localization;
 using CleanArchitecture.Blazor.Server.UI.Hubs;
 using CleanArchitecture.Blazor.Server.UI.Services;
@@ -15,13 +13,13 @@ using Hangfire;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.FileProviders;
 using MudBlazor.Services;
-using Polly;
 using QuestPDF;
 using QuestPDF.Infrastructure;
 using ActualLab.Fusion;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
 using ActualLab.Fusion.Extensions;
 using CleanArchitecture.Blazor.Server.UI.Middlewares;
+using Polly;
 
 
 namespace CleanArchitecture.Blazor.Server.UI;
@@ -107,7 +105,7 @@ public static class DependencyInjection
             c.BaseAddress = new Uri("http://10.33.1.150:8000/ocr/predict-by-file");
             c.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }).AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(3, _ => TimeSpan.FromSeconds(30)));
-        services.AddScoped<LocalTimezoneOffset>();
+        services.AddScoped<LocalTimeOffset>();
         services.AddHttpContextAccessor();
         services.AddScoped<HubClient>();
         services

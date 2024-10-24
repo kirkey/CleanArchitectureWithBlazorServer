@@ -1,55 +1,62 @@
-﻿.mud-input {
-    font-size: inherit !important;
-    font-weight: inherit !important;
-    line-height: inherit !important;
-    letter-spacing: inherit !important;
+﻿.mud-main-content {
+    height: 100%;
+    min-height: 100vh;
+    display: flex;
+}
+ 
+.mud-chip {
+    font-size: var(--mud-typography-default-size);
+}
+.mud-chip.mud-chip-size-small {
+    font-size: var(--mud-typography-body1-size);
+}
+.mud-tabs {
+    background-color: var(--mud-palette-surface);
 }
 
 .mud-input-control > .mud-input-control-input-container > .mud-input-label-inputcontrol {
-    font-size: inherit !important;
-    font-weight: inherit !important;
-    line-height: inherit !important;
-    letter-spacing: inherit !important;
+    font-size: var(--mud-typography-subtitle1-size);
 }
 
 .mud-simple-table table * tr > td, .mud-simple-table table * tr th {
-    font-size: inherit !important;
-    font-weight: inherit !important;
-    line-height: inherit !important;
-    letter-spacing: inherit !important;
+    font-size: var(--mud-typography-default-size) !important;
+    
 }
 
 .mud-expand-panel .mud-expand-panel-header {
-    font-size: inherit !important;
-    font-weight: inherit !important;
-    line-height: inherit !important;
-    letter-spacing: inherit !important;
+    font-size: var(--mud-typography-default-size) !important;
+    
 }
 
 .mud-button-year {
-    font-size: inherit !important;
-    font-weight: inherit !important;
-    line-height: inherit !important;
-    letter-spacing: inherit !important;
+    font-size: var(--mud-typography-default-size) !important;
 }
 
 .mud-table-cell {
-    font-size: inherit !important;
-    font-weight: inherit !important;
-    line-height: inherit !important;
-    letter-spacing: inherit !important;
+    font-size: var(--mud-typography-default-size) !important;
 }
 
+
+.mud-typography-subtitle2 {
+    font-size: var(--mud-typography-subtitle2-size);
+    color: var(--mud-palette-text-secondary);
+}
 .mud-typography-body1 {
     font-size: var(--mud-typography-body1-size);
 }
 
 .mud-typography-body2 {
     font-size: var(--mud-typography-body2-size);
+    color: var(--mud-palette-text-secondary);
 }
 
 .mud-button-outlined-size-small {
     font-size: var(--mud-typography-body2-size);
+}
+
+.mud-grid.readonly-grid > .mud-grid-item {
+    border-bottom: 1px solid var(--mud-palette-table-lines);
+    padding-bottom:2px;
 }
 
 #blazor-error-ui {

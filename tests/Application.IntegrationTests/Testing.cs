@@ -1,8 +1,9 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CleanArchitecture.Blazor.Application.Common.Interfaces;
+using CleanArchitecture.Blazor.Application.Common.Interfaces.MediatorWrapper;
 using CleanArchitecture.Blazor.Application.Common.Interfaces.MultiTenant;
 using CleanArchitecture.Blazor.Domain.Identity;
 using CleanArchitecture.Blazor.Infrastructure;
@@ -66,8 +67,7 @@ public class Testing
         // Register testing version
         services.AddScoped(provider =>
             Mock.Of<ICurrentUserService>(s => s.UserId == _currentUserId));
-        services.AddScoped(provider =>
-            Mock.Of<ITenantProvider>(s => s.TenantId == _currentTenantId));
+
 
         _scopeFactory = services.BuildServiceProvider().GetService<IServiceScopeFactory>();
 
@@ -93,7 +93,7 @@ public class Testing
     {
         using var scope = _scopeFactory.CreateScope();
 
-        var mediator = scope.ServiceProvider.GetService<IMediator>();
+        var mediator = scope.ServiceProvider.GetService<IScopedMediator>();
 
         return await mediator.Send(request);
     }

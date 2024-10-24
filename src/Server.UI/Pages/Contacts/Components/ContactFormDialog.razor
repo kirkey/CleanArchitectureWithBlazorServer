@@ -8,11 +8,12 @@
     <DialogContent>
         <MudForm Model="@model" @ref="@_form" Validation="@(Validator.ValidateValue(model))">
             <MudGrid>
+                @*TODO: define mudform that should be edit fields, for example:*@
                 <MudItem xs="12" md="6">
                     <MudTextField Label="@L[model.GetMemberDescription(x=>x.Name)]" @bind-Value="model.Name" For="@(() => model.Name)" Required="true" RequiredError="@L["name is required!"]"></MudTextField>
                 </MudItem>
                 <MudItem xs="12" md="6">
-                    <MudTextField Label="@L[model.GetMemberDescription(x=>x.Description)]" For="@(() => model.Description)" @bind-Value="model.Description"></MudTextField>
+                    <MudTextField Label="@L[model.GetMemberDescription(x=>x.Description)]" Lines="3" For="@(() => model.Description)" @bind-Value="model.Description"></MudTextField>
                 </MudItem>
                 <MudItem xs="12" md="6">
                     <MudTextField Label="@L[model.GetMemberDescription(x=>x.Email)]" @bind-Value="model.Email" For="@(() => model.Email)" Required="false" RequiredError="@L["email is required!"]"></MudTextField>
@@ -40,8 +41,8 @@
     private bool _savingnew = false;
     [CascadingParameter]
     MudDialogInstance MudDialog { get; set; } = default!;
+    AddEditContactCommandValidator _modelValidator = new();
     [EditorRequired][Parameter] public AddEditContactCommand model { get; set; } = null!;
-    [Inject] private IMediator _mediator { get; set; } = default!;
     async Task Submit()
     {
         try
@@ -50,16 +51,21 @@
             await _form!.Validate().ConfigureAwait(false);
             if (!_form!.IsValid)
                 return;
-            var result = await _mediator.Send(model);
-            if (result.Succeeded)
-            {
-                MudDialog.Close(DialogResult.Ok(true));
-                Snackbar.Add(ConstantString.SaveSuccess, MudBlazor.Severity.Info);
-            }
-            else
-            {
-                Snackbar.Add(result.ErrorMessage, MudBlazor.Severity.Error);
-            }
+            var result = await Mediator.Send(model);
+            result.Match(
+                data =>
+                {
+                    MudDialog.Close(DialogResult.Ok(true));
+                    Snackbar.Add(ConstantString.SaveSuccess, MudBlazor.Severity.Info);
+                    return data;
+                },
+                errors =>
+                {
+                    Snackbar.Add(errors, MudBlazor.Severity.Error);
+                    return 0;
+                }
+            );
+
         }
         finally
         {
@@ -74,17 +80,21 @@
             await _form!.Validate().ConfigureAwait(false);
             if (!_form!.IsValid)
                 return;
-            var result = await _mediator.Send(model);
-            if (result.Succeeded)
-            {
-                Snackbar.Add(ConstantString.SaveSuccess, MudBlazor.Severity.Info);
-                await Task.Delay(300);
-                model = new AddEditContactCommand() { };
-            }
-            else
-            {
-                Snackbar.Add(result.ErrorMessage, MudBlazor.Severity.Error);
-            }
+            var result = await Mediator.Send(model);
+            await result.MatchAsync(
+               async data =>
+               {
+                    Snackbar.Add(ConstantString.SaveSuccess, MudBlazor.Severity.Info);
+                    await Task.Delay(300);
+                    model = new AddEditContactCommand() { };
+                    return data;
+                },
+                errors =>
+                {
+                    Snackbar.Add(errors, MudBlazor.Severity.Error);
+                    return Task.FromResult(0);
+                });
+
         }
         finally
         {

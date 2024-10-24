@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Reflection;
+using CleanArchitecture.Blazor.Application.Common.Interfaces.MediatorWrapper;
 using CleanArchitecture.Blazor.Application.Common.Interfaces.MultiTenant;
 using CleanArchitecture.Blazor.Application.Common.Interfaces.Serialization;
 using CleanArchitecture.Blazor.Domain.Identity;
@@ -11,6 +12,7 @@ using CleanArchitecture.Blazor.Infrastructure.Constants.Database;
 using CleanArchitecture.Blazor.Infrastructure.Constants.User;
 using CleanArchitecture.Blazor.Infrastructure.PermissionSet;
 using CleanArchitecture.Blazor.Infrastructure.Persistence.Interceptors;
+using CleanArchitecture.Blazor.Infrastructure.Services.MediatorWrapper;
 using CleanArchitecture.Blazor.Infrastructure.Services.MultiTenant;
 using CleanArchitecture.Blazor.Infrastructure.Services.PaddleOCR;
 using CleanArchitecture.Blazor.Infrastructure.Services.Serialization;
@@ -53,7 +55,7 @@ public static class DependencyInjection
             .AddFusionCacheService();
 
         services.AddSingleton<IUsersStateContainer, UsersStateContainer>();
-
+        services.AddScoped<IScopedMediator, ScopedMediator>();
         return services;
     }
 
@@ -90,11 +92,12 @@ public static class DependencyInjection
             {
                 var databaseSettings = p.GetRequiredService<IOptions<DatabaseSettings>>().Value;
                 m.AddInterceptors(p.GetServices<ISaveChangesInterceptor>());
+                m.UseExceptionProcessor(databaseSettings.DBProvider);
                 m.UseDatabase(databaseSettings.DBProvider, databaseSettings.ConnectionString);
             });
 
         services.AddScoped<IDbContextFactory<ApplicationDbContext>, BlazorContextFactory<ApplicationDbContext>>();
-        services.AddTransient<IApplicationDbContext>(provider =>
+        services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<IDbContextFactory<ApplicationDbContext>>().CreateDbContext());
         services.AddScoped<ApplicationDbContextInitializer>();
 
@@ -111,7 +114,7 @@ public static class DependencyInjection
                 return builder.UseNpgsql(connectionString,
                         e => e.MigrationsAssembly(POSTGRESQL_MIGRATIONS_ASSEMBLY))
                     .UseSnakeCaseNamingConvention();
-
+                  
             case DbProviderKeys.SqlServer:
                 return builder.UseSqlServer(connectionString,
                     e => e.MigrationsAssembly(MSSQL_MIGRATIONS_ASSEMBLY));
@@ -119,6 +122,29 @@ public static class DependencyInjection
             case DbProviderKeys.SqLite:
                 return builder.UseSqlite(connectionString,
                     e => e.MigrationsAssembly(SQLITE_MIGRATIONS_ASSEMBLY));
+
+            default:
+                throw new InvalidOperationException($"DB Provider {dbProvider} is not supported.");
+        }
+    }
+
+    private static DbContextOptionsBuilder UseExceptionProcessor(this DbContextOptionsBuilder builder, string dbProvider)
+    {
+     
+        switch (dbProvider.ToLowerInvariant())
+        {
+            case DbProviderKeys.Npgsql:
+                EntityFramework.Exceptions.PostgreSQL.ExceptionProcessorExtensions.UseExceptionProcessor(builder);
+                return builder;
+
+            case DbProviderKeys.SqlServer:
+                EntityFramework.Exceptions.SqlServer.ExceptionProcessorExtensions.UseExceptionProcessor(builder);
+                return builder;
+
+
+            case DbProviderKeys.SqLite:
+                EntityFramework.Exceptions.Sqlite.ExceptionProcessorExtensions.UseExceptionProcessor(builder);
+                return builder;
 
             default:
                 throw new InvalidOperationException($"DB Provider {dbProvider} is not supported.");
@@ -175,12 +201,28 @@ public static class DependencyInjection
     private static IServiceCollection AddAuthenticationService(this IServiceCollection services,
         IConfiguration configuration)
     {
+
+        services.AddScoped<IUserStore<ApplicationUser>, MultiTenantUserStore>();
+        services.AddScoped<UserManager<ApplicationUser>, MultiTenantUserManager>();
         services.AddIdentityCore<ApplicationUser>()
             .AddRoles<ApplicationRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddSignInManager()
-            .AddClaimsPrincipalFactory<ApplicationUserClaimsPrincipalFactory>()
+            .AddClaimsPrincipalFactory<MultiTenantUserClaimsPrincipalFactory>()
             .AddDefaultTokenProviders();
+
+        // Add the custom role validator MultiTenantRoleValidator to override the default validation logic.
+        // Ensures role names are unique within each tenant.
+        services.AddScoped<IRoleValidator<ApplicationRole>, MultiTenantRoleValidator>();
+
+        // Find the default RoleValidator<ApplicationRole> registration in the service collection.
+        var defaultRoleValidator = services.FirstOrDefault(descriptor => descriptor.ImplementationType == typeof(RoleValidator<ApplicationRole>));
+
+        // If the default role validator is found, remove it to ensure only MultiTenantRoleValidator is used.
+        if (defaultRoleValidator != null)
+        {
+            services.Remove(defaultRoleValidator);
+        }
         services.Configure<IdentityOptions>(options =>
         {
             var identitySettings = configuration.GetRequiredSection(IDENTITY_SETTINGS_KEY).Get<IdentitySettings>();
@@ -205,6 +247,7 @@ public static class DependencyInjection
             // User settings
             options.User.RequireUniqueEmail = true;
             //options.Tokens.EmailConfirmationTokenProvider = "Email";
+            
         });
 
         services.AddScoped<IIdentityService, IdentityService>()
@@ -245,6 +288,13 @@ public static class DependencyInjection
             //})
             .AddIdentityCookies(options => { });
 
+        services.ConfigureApplicationCookie(options =>
+        {
+            options.ExpireTimeSpan = TimeSpan.FromDays(15);
+            options.SlidingExpiration = true;
+            options.SessionStore = new MemoryCacheTicketStore();
+            options.LoginPath = LOGIN_PATH;
+        });
         services.AddDataProtection().PersistKeysToDbContext<ApplicationDbContext>();
 
         services.AddSingleton<UserService>()
@@ -270,8 +320,9 @@ public static class DependencyInjection
             FailSafeMaxDuration = TimeSpan.FromHours(8),
             FailSafeThrottleDuration = TimeSpan.FromSeconds(30),
             // FACTORY TIMEOUTS
-            FactorySoftTimeout = TimeSpan.FromMilliseconds(100),
-            FactoryHardTimeout = TimeSpan.FromMilliseconds(1500)
+            FactorySoftTimeout = TimeSpan.FromSeconds(10),
+            FactoryHardTimeout = TimeSpan.FromSeconds(30),
+            AllowTimedOutFactoryBackgroundCompletion = true,    
         });
         return services;
     }

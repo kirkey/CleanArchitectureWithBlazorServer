@@ -1,4 +1,5 @@
 ﻿using CleanArchitecture.Blazor.Application.Common.Security;
+using CleanArchitecture.Blazor.Application.Features.Tenants.DTOs;
 using CleanArchitecture.Blazor.Domain.Identity;
 
 namespace CleanArchitecture.Blazor.Application.Features.Identity.DTOs;
@@ -16,7 +17,7 @@ public class ApplicationUserDto
 
     [Description("Tenant Id")] public string? TenantId { get; set; }
 
-    [Description("Tenant Name")] public string? TenantName { get; set; }
+    [Description("Tenant")] public TenantDto? Tenant { get; set; }
 
     [Description("Profile Photo")] public string? ProfilePictureDataUrl { get; set; }
 
@@ -26,7 +27,7 @@ public class ApplicationUserDto
 
     [Description("Superior Id")] public string? SuperiorId { get; set; }
 
-    [Description("Superior Name")] public string? SuperiorName { get; set; }
+    [Description("Superior")] public ApplicationUserDto? Superior { get; set; }
 
     [Description("Assigned Roles")] public string[]? AssignedRoles { get; set; }
 
@@ -42,7 +43,26 @@ public class ApplicationUserDto
     [Description("Email Confirmed")] public bool EmailConfirmed { get; set; }
 
     [Description("Status")] public DateTimeOffset? LockoutEnd { get; set; }
-
+    [Description("Time Zone")]
+    public string? TimeZoneId { get; set; }
+    [Description("Local Time Offset")]
+    public TimeSpan LocalTimeOffset => string.IsNullOrEmpty(TimeZoneId)
+    ? TimeZoneInfo.Local.BaseUtcOffset
+    : TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId).BaseUtcOffset;
+    [Description("Language")]
+    public string? LanguageCode { get; set; }
+    [Description("Last Modified")]
+    public DateTime? LastModified { get; set; }
+    [Description("Last Modified By")]
+    public string? LastModifiedBy { get; set; }
+    [Description("Created")]
+    public DateTime? Created { get; set; }
+    [Description("Created By")]
+    public string? CreatedBy { get; set; }
+    [Description("Created By User")]
+    public ApplicationUserDto? CreatedByUser { get; set; }
+    [Description("Last Modified By User")]
+    public ApplicationUserDto? LastModifiedByUser { get; set; }
     public UserProfile ToUserProfile()
     {
         return new UserProfile
@@ -55,11 +75,13 @@ public class ApplicationUserDto
             Provider = Provider,
             UserName = UserName,
             TenantId = TenantId,
-            TenantName = TenantName,
+            TenantName = Tenant?.Name,
             SuperiorId = SuperiorId,
-            SuperiorName = SuperiorName,
+            SuperiorName = Superior?.UserName,
             AssignedRoles = AssignedRoles,
-            DefaultRole = DefaultRole
+            DefaultRole = DefaultRole,
+            TimeZoneId = TimeZoneId,
+            LanguageCode = LanguageCode
         };
     }
 
@@ -68,15 +90,58 @@ public class ApplicationUserDto
         return AssignedRoles?.Contains(role) ?? false;
     }
 
+#pragma warning disable CS8619
+#pragma warning disable CS8601
     private class Mapping : Profile
     {
         public Mapping()
         {
             CreateMap<ApplicationUser, ApplicationUserDto>(MemberList.None)
+                .ForMember(x => x.LocalTimeOffset, s => s.Ignore())
                 .ForMember(x => x.EmailConfirmed, s => s.MapFrom(y => y.EmailConfirmed))
-                .ForMember(x => x.SuperiorName, s => s.MapFrom(y => y.Superior!.UserName))
-                .ForMember(x => x.TenantName, s => s.MapFrom(y => y.Tenant!.Name))
-                .ForMember(x => x.AssignedRoles, s => s.MapFrom(y => y.UserRoles.Select(r => r.Role.Name)));
+                .ForMember(x => x.AssignedRoles, s => s.MapFrom(y => y.UserRoles.Select(r => r.Role.Name)))
+                .ForMember(x => x.Superior, s => s.MapFrom(y =>y.Superior!=null? new ApplicationUserDto() {
+                    Id=y.Superior.Id,
+                    UserName= y.Superior.UserName,
+                    DisplayName = y.Superior.DisplayName,
+                    Email = y.Superior.Email,
+                    PhoneNumber = y.Superior.PhoneNumber,
+                    ProfilePictureDataUrl = y.Superior.ProfilePictureDataUrl,
+                    IsActive = y.Superior.IsActive,
+                    TenantId = y.Superior.TenantId,
+                    AssignedRoles = y.Superior.UserRoles.Select(r => r.Role.Name).ToArray(),
+                    TimeZoneId = y.Superior.TimeZoneId,
+                    LanguageCode = y.Superior.LanguageCode
+                } : null))
+                .ForMember(x => x.CreatedByUser, s => s.MapFrom(y => y.CreatedByUser != null ? new ApplicationUserDto()
+                {
+                    Id = y.CreatedByUser.Id,
+                    UserName = y.CreatedByUser.UserName,
+                    DisplayName = y.CreatedByUser.DisplayName,
+                    Email = y.CreatedByUser.Email,
+                    PhoneNumber = y.CreatedByUser.PhoneNumber,
+                    ProfilePictureDataUrl = y.CreatedByUser.ProfilePictureDataUrl,
+                    IsActive = y.CreatedByUser.IsActive,
+                    TenantId = y.CreatedByUser.TenantId,
+                    AssignedRoles = y.CreatedByUser.UserRoles.Select(r => r.Role.Name).ToArray(),
+                    TimeZoneId = y.CreatedByUser.TimeZoneId,
+                    LanguageCode = y.CreatedByUser.LanguageCode
+                } : null))
+                .ForMember(x => x.LastModifiedByUser, s => s.MapFrom(y => y.LastModifiedByUser != null ? new ApplicationUserDto()
+                {
+                    Id = y.LastModifiedByUser.Id,
+                    UserName = y.LastModifiedByUser.UserName,
+                    DisplayName = y.LastModifiedByUser.DisplayName,
+                    Email = y.LastModifiedByUser.Email,
+                    PhoneNumber = y.LastModifiedByUser.PhoneNumber,
+                    ProfilePictureDataUrl = y.LastModifiedByUser.ProfilePictureDataUrl,
+                    IsActive= y.LastModifiedByUser.IsActive,
+                    TenantId = y.LastModifiedByUser.TenantId,
+                    AssignedRoles = y.LastModifiedByUser.UserRoles.Select(r => r.Role.Name).ToArray(),
+                    TimeZoneId = y.LastModifiedByUser.TimeZoneId,
+                    LanguageCode = y.LastModifiedByUser.LanguageCode
+                } : null));
+     
         }
     }
 }

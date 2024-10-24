@@ -1,4 +1,7 @@
-﻿namespace CleanArchitecture.Blazor.Application.Features.Contacts.Specifications;
+﻿using CleanArchitecture.Blazor.Application.Features.Documents.Specifications;
+using CleanArchitecture.Blazor.Application.Features.Products.Specifications;
+
+namespace CleanArchitecture.Blazor.Application.Features.Contacts.Specifications;
 #nullable disable warnings
 /// <summary>
 /// Specification class for advanced filtering of Contacts.
@@ -7,20 +10,16 @@ public class ContactAdvancedSpecification : Specification<Contact>
 {
     public ContactAdvancedSpecification(ContactAdvancedFilter filter)
     {
-        var today = DateTime.Now.ToUniversalTime().Date;
-        var start = Convert.ToDateTime(today.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture) + " 00:00:00",
-            CultureInfo.CurrentCulture);
-        var end = Convert.ToDateTime(today.ToString("yyyy-MM-dd", CultureInfo.CurrentCulture) + " 23:59:59",
-            CultureInfo.CurrentCulture);
-        var last30day = Convert.ToDateTime(
-            today.AddDays(-30).ToString("yyyy-MM-dd", CultureInfo.CurrentCulture) + " 00:00:00",
-            CultureInfo.CurrentCulture);
 
-       Query.Where(q => q.Name != null)
-             .Where(q => q.Name!.Contains(filter.Keyword) || q.Description!.Contains(filter.Keyword), !string.IsNullOrEmpty(filter.Keyword))
+        DateTime today = DateTime.UtcNow;
+        var todayrange = today.GetDateRange(ContactListView.TODAY.ToString(), filter.CurrentUser.LocalTimeOffset);
+        var last30daysrange = today.GetDateRange(ContactListView.LAST_30_DAYS.ToString(),filter.CurrentUser.LocalTimeOffset);
+
+        Query.Where(q => q.Name != null)
+             .Where(filter.Keyword,!string.IsNullOrEmpty(filter.Keyword))
              .Where(q => q.CreatedBy == filter.CurrentUser.UserId, filter.ListView == ContactListView.My && filter.CurrentUser is not null)
-             .Where(q => q.Created >= start && q.Created <= end, filter.ListView == ContactListView.CreatedToday)
-             .Where(q => q.Created >= last30day, filter.ListView == ContactListView.Created30Days);
-       
+             .Where(x => x.Created >= todayrange.Start && x.Created < todayrange.End.AddDays(1), filter.ListView == ContactListView.TODAY)
+             .Where(x => x.Created >= last30daysrange.Start, filter.ListView == ContactListView.LAST_30_DAYS);
+
     }
 }
