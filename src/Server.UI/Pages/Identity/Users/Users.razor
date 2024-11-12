@@ -1,9 +1,11 @@
 ﻿@page "/identity/users"
 @using ActualLab.Fusion
+@using CleanArchitecture.Blazor.Application.Features.Identity.Mappers
+@using CleanArchitecture.Blazor.Application.Features.Fusion
 @using CleanArchitecture.Blazor.Application.Features.Identity.Notifications.UserActivation
+@using CleanArchitecture.Blazor.Infrastructure.Persistence
 @using CleanArchitecture.Blazor.Infrastructure.Services.MultiTenant
 @using CleanArchitecture.Blazor.Server.UI.Components.UtcToLocalTime
-@using CleanArchitecture.Blazor.Server.UI.Services.Fusion
 @using Microsoft.AspNetCore.WebUtilities
 @using CleanArchitecture.Blazor.Domain.Identity
 @using CleanArchitecture.Blazor.Application.Features.Identity.DTOs
@@ -22,7 +24,7 @@
 @using ZiggyCreatures.Caching.Fusion
 
 @attribute [Authorize(Policy = Permissions.Users.View)]
-@inherits OwningComponentBase
+@inherits OwningComponentBase<ApplicationDbContext>
 @implements IDisposable
 
 @inject IOnlineUserTracker OnlineUserTracker
@@ -65,7 +67,7 @@
             </MudStack>
             <MudStack Spacing="0" AlignItems="AlignItems.End">
                 <MudToolBar Dense WrapContent="true" Class="py-1 px-0">
-                    <MudButton Variant="Variant.Outlined"
+                    <MudButton 
                                Disabled="@_loading"
                                OnClick="@(() => OnRefresh())"
                                StartIcon="@Icons.Material.Outlined.Refresh">
@@ -73,13 +75,13 @@
                     </MudButton>
                     @if (_canCreate)
                     {
-                        <MudButton Variant="Variant.Outlined"
+                        <MudButton 
                                    StartIcon="@Icons.Material.Outlined.Add"
                                    OnClick="OnCreate">
                             @ConstantString.New
                         </MudButton>
                     }
-                    <MudMenu Variant="Variant.Outlined" TransformOrigin="Origin.BottomRight" AnchorOrigin="Origin.BottomRight" EndIcon="@Icons.Material.Filled.MoreVert" Label="@ConstantString.More">
+                    <MudMenu  TransformOrigin="Origin.BottomRight" AnchorOrigin="Origin.BottomRight" EndIcon="@Icons.Material.Filled.MoreVert" Label="@ConstantString.More">
                         @if (_canDelete)
                         {
                             <MudMenuItem Disabled="@(!(_selectedItems.Count > 0))"
@@ -338,18 +340,17 @@
         try
         {
             _loading = true;
-            var total = await UserManager.Users.CountAsync(CreateSearchPredicate());
-            var query = UserManager.Users.Where(CreateSearchPredicate());
-
-            var items = await query
-                .Include(x => x.UserRoles).ThenInclude(ur => ur.Role)
-                .Include(x => x.CreatedByUser)
-                .Include(x => x.LastModifiedByUser)
-                .Include(x => x.Superior)
-                .EfOrderBySortDefinitions(state)
-                .Skip(state.Page * state.PageSize).Take(state.PageSize).ProjectTo<ApplicationUserDto>(Mapper.ConfigurationProvider).ToListAsync();
-
-            return new GridData<ApplicationUserDto> { TotalItems = total, Items = items };
+            var searchPredicate = CreateSearchPredicate();
+            var count =await  UserManager.Users.CountAsync(searchPredicate);
+            var data = await UserManager.Users.Where(searchPredicate)
+                    .Include(x => x.UserRoles).ThenInclude(ur => ur.Role)
+                    .Include(x => x.CreatedByUser)
+                    .Include(x => x.LastModifiedByUser)
+                    .Include(x => x.Superior)
+                    .EfOrderBySortDefinitions(state)
+                    .Skip(state.Page * state.PageSize).Take(state.PageSize).ProjectTo().ToListAsync();
+    
+            return new GridData<ApplicationUserDto> { TotalItems = count, Items = data };
         }
         finally
         {
@@ -389,7 +390,7 @@
             { x => x.UserProfile, UserProfile }
         };
         var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = DialogService.Show<UserFormDialog>(title, parameters, options);
+        var dialog = await DialogService.ShowAsync<UserFormDialog>(title, parameters, options);
         var result = await dialog.Result;
         if (result is not null && !result.Canceled)
         {
@@ -405,7 +406,7 @@
             { x => x.UserProfile, UserProfile }
         };
         var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = DialogService.Show<UserFormDialog>(title, parameters, options);
+        var dialog = await DialogService.ShowAsync<UserFormDialog>(title, parameters, options);
         var result = await dialog.Result;
         if (result is not null && !result.Canceled)
         {
@@ -673,7 +674,7 @@
             { x => x.Model, model }
         };
         var options = new DialogOptions { CloseOnEscapeKey = true, CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
-        var dialog = DialogService.Show<ResetPasswordDialog>(L["Set Password"], parameters, options);
+        var dialog = await DialogService.ShowAsync<ResetPasswordDialog>(L["Set Password"], parameters, options);
         var result = await dialog.Result;
         if (result is not null && !result.Canceled)
         {

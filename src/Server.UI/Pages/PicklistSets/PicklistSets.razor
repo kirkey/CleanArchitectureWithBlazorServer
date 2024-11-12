@@ -1,5 +1,6 @@
 ﻿@page "/system/picklistset"
 @using CleanArchitecture.Blazor.Application.Features.PicklistSets.DTOs
+@using CleanArchitecture.Blazor.Application.Features.PicklistSets.Mappers
 @using CleanArchitecture.Blazor.Application.Features.PicklistSets.Queries.Export
 @using CleanArchitecture.Blazor.Application.Features.PicklistSets.Queries.PaginationQuery
 @using BlazorDownloadFile
@@ -41,7 +42,7 @@
             </MudStack>
             <MudStack Spacing="0" AlignItems="AlignItems.End">
                 <MudToolBar Dense WrapContent="true" Class="py-1 px-0">
-                    <MudButton Variant="Variant.Outlined"
+                    <MudButton 
                                Disabled="@_loading"
                                OnClick="@(() => OnRefresh())"
                                StartIcon="@Icons.Material.Outlined.Refresh">
@@ -49,13 +50,13 @@
                     </MudButton>
                     @if (_canCreate)
                     {
-                        <MudButton Variant="Variant.Outlined"
+                        <MudButton 
                         StartIcon="@Icons.Material.Outlined.Add"
                         OnClick="OnCreate">
                             @ConstantString.New
                         </MudButton>
                     }
-                    <MudMenu Variant="Variant.Outlined" TransformOrigin="Origin.BottomRight" AnchorOrigin="Origin.BottomRight" EndIcon="@Icons.Material.Filled.MoreVert" Label="@ConstantString.More">
+                    <MudMenu  TransformOrigin="Origin.BottomRight" AnchorOrigin="Origin.BottomRight" EndIcon="@Icons.Material.Filled.MoreVert" Label="@ConstantString.More">
                         @if (_canDelete)
                         {
                             <MudMenuItem Disabled="@(!(_selectedItems.Count > 0))"
@@ -218,7 +219,7 @@
     {
         InvokeAsync(async () =>
         {
-            var command = Mapper.Map<AddEditPicklistSetCommand>(item);
+            var command = PicklistMapper.ToEditCommand(item);
             var result = await Mediator.Send(command);
             if (!result.Succeeded)
             {
@@ -263,7 +264,7 @@
             { nameof(CreatePicklistDialog.Model), command }
         };
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = DialogService.Show<CreatePicklistDialog>(title, parameters, options);
+        var dialog = await DialogService.ShowAsync<CreatePicklistDialog>(title, parameters, options);
         var state = await dialog.Result;
         if (state is not null && !state.Canceled)
         {

@@ -3,7 +3,6 @@ using BlazorDownloadFile;
 using CleanArchitecture.Blazor.Infrastructure.Constants.Localization;
 using CleanArchitecture.Blazor.Server.UI.Hubs;
 using CleanArchitecture.Blazor.Server.UI.Services;
-using CleanArchitecture.Blazor.Server.UI.Services.Fusion;
 using CleanArchitecture.Blazor.Server.UI.Services.JsInterop;
 using CleanArchitecture.Blazor.Server.UI.Services.Layout;
 using CleanArchitecture.Blazor.Server.UI.Services.Navigation;
@@ -15,9 +14,7 @@ using Microsoft.Extensions.FileProviders;
 using MudBlazor.Services;
 using QuestPDF;
 using QuestPDF.Infrastructure;
-using ActualLab.Fusion;
 using Toolbelt.Blazor.Extensions.DependencyInjection;
-using ActualLab.Fusion.Extensions;
 using CleanArchitecture.Blazor.Server.UI.Middlewares;
 using Polly;
 
@@ -44,6 +41,8 @@ public static class DependencyInjection
         services.AddMudServices(config =>
         {
             MudGlobal.InputDefaults.ShrinkLabel = true;
+            //MudGlobal.InputDefaults.Variant = Variant.Outlined;
+            //MudGlobal.ButtonDefaults.Variant = Variant.Outlined;
             config.SnackbarConfiguration.PositionClass = Defaults.Classes.Position.BottomCenter;
             config.SnackbarConfiguration.NewestOnTop = false;
             config.SnackbarConfiguration.ShowCloseIcon = true;
@@ -64,15 +63,6 @@ public static class DependencyInjection
         services.AddMudBlazorSnackbar();
         services.AddMudBlazorDialog();
         services.AddHotKeys2();
-
-        // Fusion services
-        services.AddFusion(fusion =>
-        {
-            fusion.AddInMemoryKeyValueStore();
-            fusion.AddService<IUserSessionTracker, UserSessionTracker>();
-            fusion.AddService<IOnlineUserTracker, OnlineUserTracker>();
-        });
-
 
         services.AddScoped<LocalizationCookiesMiddleware>()
             .Configure<RequestLocalizationOptions>(options =>
@@ -150,7 +140,6 @@ public static class DependencyInjection
 
         app.UseStatusCodePagesWithRedirects("/404");
         app.MapHealthChecks("/health");
-
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseAntiforgery();

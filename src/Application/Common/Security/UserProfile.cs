@@ -1,6 +1,4 @@
-﻿using CleanArchitecture.Blazor.Application.Features.Identity.DTOs;
-
-namespace CleanArchitecture.Blazor.Application.Common.Security;
+﻿namespace CleanArchitecture.Blazor.Application.Common.Security;
 
 public class UserProfile
 {
@@ -24,4 +22,10 @@ public class UserProfile
     public TimeSpan LocalTimeOffset => string.IsNullOrEmpty(TimeZoneId)
     ? TimeZoneInfo.Local.BaseUtcOffset
     : TimeZoneInfo.FindSystemTimeZoneById(TimeZoneId).BaseUtcOffset;
+}
+
+[Mapper]
+public static partial class UserProfileMapper
+{
+    public static partial ChangeUserProfileModel ToChangeUserProfileModel(UserProfile entity);
 }

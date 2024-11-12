@@ -33,6 +33,14 @@ namespace CleanArchitecture.Blazor.Migrators.SqLite.Migrations
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("DebugView")
+                        .HasMaxLength(2147483647)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasMaxLength(2147483647)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("NewValues")
                         .HasColumnType("TEXT");
 

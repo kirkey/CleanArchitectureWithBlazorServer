@@ -1,6 +1,7 @@
 ﻿@page "/pages/documents"
 @attribute [Authorize(Policy = Permissions.Documents.View)]
 @using CleanArchitecture.Blazor.Application.Features.Documents.DTOs
+@using CleanArchitecture.Blazor.Application.Features.Documents.Mappers
 @using CleanArchitecture.Blazor.Application.Features.Documents.Queries.GetFileStream
 @using CleanArchitecture.Blazor.Application.Features.Documents.Queries.PaginationQuery
 @using CleanArchitecture.Blazor.Application.Features.Documents.Specifications
@@ -41,7 +42,7 @@
             </MudStack>
             <MudStack Spacing="0" AlignItems="AlignItems.End">
                 <MudToolBar Dense WrapContent="true" Class="py-1 px-0">
-                    <MudButton Variant="Variant.Outlined"
+                    <MudButton 
                                Disabled="@_loading"
                                OnClick="@(() => OnRefresh())"
                                StartIcon="@Icons.Material.Outlined.Refresh" >
@@ -49,7 +50,7 @@
                     </MudButton>
                     @if (_canCreate)
                     {
-                        <MudButton Variant="Variant.Outlined"
+                        <MudButton 
                                    StartIcon="@Icons.Material.Outlined.Camera"
                                    OnClick="OnCreate">
                             @L["Upload Pictures"]
@@ -57,7 +58,7 @@
                     }
                     @if (_canDelete)
                     {
-                        <MudButton Variant="Variant.Outlined"
+                        <MudButton 
                                    StartIcon="@Icons.Material.Outlined.Delete"
                                    Disabled="@(!(_selectedItems.Count > 0))"
                                    OnClick="OnDeleteChecked">
@@ -323,7 +324,7 @@
             { x => x.Model, command }
         };
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = DialogService.Show<UploadFilesFormDialog>
+        var dialog = await DialogService.ShowAsync<UploadFilesFormDialog>
             (L["Upload Pictures"], parameters, options);
         var state = await dialog.Result;
         if (state is not null && !state.Canceled)
@@ -335,13 +336,13 @@
 
     private async Task OnEdit(DocumentDto dto)
     {
-        var command = Mapper.Map<AddEditDocumentCommand>(dto);
+        var command = DocumentMapper.ToEditCommand(dto);
         var parameters = new DialogParameters<DocumentFormDialog>
         {
             { nameof(DocumentFormDialog.Model), command }
         };
         var options = new DialogOptions { CloseButton = true, MaxWidth = MaxWidth.Medium, FullWidth = true };
-        var dialog = DialogService.Show<DocumentFormDialog>(string.Format(ConstantString.EditTheItem, L["Document"]), parameters, options);
+        var dialog = await DialogService.ShowAsync<DocumentFormDialog>(string.Format(ConstantString.EditTheItem, L["Document"]), parameters, options);
 
 
         var state = await dialog.Result;

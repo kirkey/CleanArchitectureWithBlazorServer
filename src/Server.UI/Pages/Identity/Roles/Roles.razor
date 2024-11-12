@@ -1,14 +1,17 @@
 ﻿@page "/identity/roles"
 @using CleanArchitecture.Blazor.Application.Common.Interfaces.MultiTenant
+@using CleanArchitecture.Blazor.Application.Features.Identity.Mappers
 @using CleanArchitecture.Blazor.Domain.Identity
 @using CleanArchitecture.Blazor.Application.Features.Identity.DTOs
 @using System.Security.Claims
+@using CleanArchitecture.Blazor.Infrastructure.Persistence
 @using CleanArchitecture.Blazor.Server.UI.Pages.Identity.Roles.Components
 @using CleanArchitecture.Blazor.Infrastructure.Constants.ClaimTypes
+@using System.Linq.Expressions
 @using ZiggyCreatures.Caching.Fusion
 
 @attribute [Authorize(Policy = Permissions.Roles.View)]
-@inherits OwningComponentBase
+@inherits OwningComponentBase<ApplicationDbContext>
 @inject ITenantService TenantsService
 @inject IFusionCache FusionCache
 @inject IStringLocalizer<Roles> L
@@ -42,7 +45,7 @@
             </MudStack>
             <MudStack Spacing="0" AlignItems="AlignItems.End">
                 <MudToolBar Dense WrapContent="true" Class="py-1 px-0">
-                    <MudButton Variant="Variant.Outlined"
+                    <MudButton 
                                Disabled="@_loading"
                                OnClick="@(() => OnRefresh())"
                                StartIcon="@Icons.Material.Outlined.Refresh">
@@ -50,13 +53,13 @@
                     </MudButton>
                     @if (_canCreate)
                     {
-                        <MudButton Variant="Variant.Outlined"
+                        <MudButton 
                                    StartIcon="@Icons.Material.Outlined.Add"
                                    OnClick="OnCreate">
                             @ConstantString.New
                         </MudButton>
                     }
-                    <MudMenu Variant="Variant.Outlined" TransformOrigin="Origin.BottomRight" AnchorOrigin="Origin.BottomRight" EndIcon="@Icons.Material.Filled.MoreVert" Label="@ConstantString.More">
+                    <MudMenu  TransformOrigin="Origin.BottomRight" AnchorOrigin="Origin.BottomRight" EndIcon="@Icons.Material.Filled.MoreVert" Label="@ConstantString.More">
                         @if (_canDelete)
                         {
                             <MudMenuItem Disabled="@(!(_selectedItems.Count > 0))"
@@ -206,19 +209,29 @@
         RoleManager = ScopedServices.GetRequiredService<RoleManager<ApplicationRole>>();
         PermissionHelper = ScopedServices.GetRequiredService<PermissionHelper>();
     }
+    private Expression<Func<ApplicationRole, bool>> CreateSearchPredicate()
+    {
+        return x =>
+           (x.Name!.ToLower().Contains(_searchString) || x.Description!.ToLower().Contains(_searchString)) &&
+           (_selectedTenantId == " " || (_selectedTenantId != " " && x.TenantId == _selectedTenantId));
+    }
+
     private async Task<GridData<ApplicationRoleDto>> ServerReload(GridState<ApplicationRoleDto> state)
     {
         try
         {
             _loading = true;
-            var items = await RoleManager.Roles
-                .Where(x => (x.Name!.ToLower().Contains(_searchString) || x.Description!.ToLower().Contains(_searchString)) && (_selectedTenantId == " " || (_selectedTenantId != " " && x.TenantId == _selectedTenantId)))
+           
+            var searchPredicate = CreateSearchPredicate();
+            var count = await RoleManager.Roles.CountAsync(searchPredicate);
+            var data = await RoleManager.Roles
+                .Where(searchPredicate)
                 .EfOrderBySortDefinitions(state)
                 .Skip(state.Page * state.PageSize).Take(state.PageSize)
-                .ProjectTo<ApplicationRoleDto>(Mapper.ConfigurationProvider)
+                .ProjectTo()
                 .ToListAsync();
-            var total = await RoleManager.Roles.CountAsync(x => (x.Name!.ToLower().Contains(_searchString) || x.Description!.ToLower().Contains(_searchString)) && (_selectedTenantId == " " || (_selectedTenantId != " " && x.TenantId == _selectedTenantId)));
-            return new GridData<ApplicationRoleDto> { TotalItems = total, Items = items };
+
+            return new GridData<ApplicationRoleDto> { TotalItems = count, Items = data };
         }
         finally
         {
@@ -274,7 +287,7 @@
     {
         var parameters = new DialogParameters<RoleFormDialog> { { x => x.Model, model } };
         var options = new DialogOptions { CloseButton = true, CloseOnEscapeKey = true, MaxWidth = MaxWidth.Small, FullWidth = true };
-        var dialog = DialogService.Show<RoleFormDialog>(title, parameters, options);
+        var dialog = await DialogService.ShowAsync<RoleFormDialog>(title, parameters, options);
         var result = await dialog.Result;
 
         if (result is not null && !result.Canceled)
