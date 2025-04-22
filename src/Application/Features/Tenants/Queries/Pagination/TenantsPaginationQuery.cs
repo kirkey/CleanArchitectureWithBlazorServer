@@ -18,27 +18,17 @@ public class TenantsWithPaginationQuery : PaginationFilter, ICacheableRequest<Pa
     }
 }
 
-public class TenantsWithPaginationQueryHandler :
+public class TenantsWithPaginationQueryHandler(
+    IMapper mapper,
+    IApplicationDbContext context) :
     IRequestHandler<TenantsWithPaginationQuery, PaginatedData<TenantDto>>
 {
-    private readonly IMapper _mapper;
-    private readonly IApplicationDbContext _context;
-
-    public TenantsWithPaginationQueryHandler(
-        IMapper mapper,
-        IApplicationDbContext context
-    )
-    {
-        _mapper = mapper;
-        _context = context;
-    }
-
     public async Task<PaginatedData<TenantDto>> Handle(TenantsWithPaginationQuery request,
         CancellationToken cancellationToken)
     {
-        var data = await _context.Tenants.OrderBy($"{request.OrderBy} {request.SortDirection}")
+        var data = await context.Tenants.OrderBy($"{request.OrderBy} {request.SortDirection}")
             .ProjectToPaginatedDataAsync<Tenant, TenantDto>(request.Specification, request.PageNumber, request.PageSize,
-                _mapper.ConfigurationProvider, cancellationToken);
+                mapper.ConfigurationProvider, cancellationToken);
         return data;
     }
 }

@@ -9,20 +9,12 @@ namespace CleanArchitecture.Blazor.Application.Pipeline;
 /// </summary>
 /// <typeparam name="TRequest">Type of the Request</typeparam>
 /// <typeparam name="TResponse">Type of the Response</typeparam>
-public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public class PerformanceBehaviour<TRequest, TResponse>(
+    ILogger<PerformanceBehaviour<TRequest, TResponse>> logger,
+    ICurrentUserAccessor currentUserAccessor)
+    : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
-    private readonly ICurrentUserAccessor _currentUserAccessor;
-    private readonly ILogger<PerformanceBehaviour<TRequest, TResponse>> _logger;
-
-    public PerformanceBehaviour(
-        ILogger<PerformanceBehaviour<TRequest, TResponse>> logger,
-        ICurrentUserAccessor currentUserAccessor)
-    {
-        _logger = logger;
-        _currentUserAccessor = currentUserAccessor;
-    }
-
     /// <summary>
     ///     Logs warnings if a request takes longer to execute than a specified threshold.
     /// </summary>
@@ -44,15 +36,14 @@ public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequ
         timer?.Stop();
         var elapsedMilliseconds = timer?.ElapsedMilliseconds;
 
-        if (elapsedMilliseconds > 500)
-        {
-            var requestName = typeof(TRequest).Name;
-            var userName = _currentUserAccessor.SessionInfo?.UserName;
+        if (!(elapsedMilliseconds > 500)) return response;
 
-            _logger.LogWarning(
-    "Long-running request detected: {RequestName} ({ElapsedMilliseconds}ms) {@Request} by {UserName}",
-    requestName, elapsedMilliseconds, request, userName);
-        }
+        var requestName = typeof(TRequest).Name;
+        var userName = currentUserAccessor.SessionInfo?.UserName;
+
+        logger.LogWarning(
+            "Long-running request detected: {RequestName} ({ElapsedMilliseconds}ms) {@Request} by {UserName}",
+            requestName, elapsedMilliseconds, request, userName);
 
         return response;
     }

@@ -7,13 +7,8 @@ namespace CleanArchitecture.Blazor.Infrastructure.Services.MediatorWrapper;
 /// <summary>
 /// Represents a scoped mediator that provides methods for sending requests, publishing notifications, and creating streams.
 /// </summary>
-public class ScopedMediator : IScopedMediator
+public class ScopedMediator(IServiceScopeFactory scopeFactory) : IScopedMediator
 {
-    private readonly IServiceScopeFactory _scopeFactory;
-
-    public ScopedMediator(IServiceScopeFactory scopeFactory) =>
-        _scopeFactory = scopeFactory;
-
     public Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default) =>
         ExecuteWithinScope(mediator => mediator.Send(request, cancellationToken));
 
@@ -31,7 +26,7 @@ public class ScopedMediator : IScopedMediator
 
     public async IAsyncEnumerable<TResponse> CreateStream<TResponse>(IStreamRequest<TResponse> request, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        using var scope = _scopeFactory.CreateAsyncScope();
+        using var scope = scopeFactory.CreateAsyncScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
         await foreach (var item in mediator.CreateStream(request, cancellationToken))
             yield return item;
@@ -39,7 +34,7 @@ public class ScopedMediator : IScopedMediator
 
     public async IAsyncEnumerable<object?> CreateStream(object request, [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        using var scope = _scopeFactory.CreateAsyncScope();
+        using var scope = scopeFactory.CreateAsyncScope();
         var mediator = scope.ServiceProvider.GetRequiredService<IMediator>();
         await foreach (var item in mediator.CreateStream(request, cancellationToken))
             yield return item;
@@ -47,13 +42,13 @@ public class ScopedMediator : IScopedMediator
 
     private async Task<T> ExecuteWithinScope<T>(Func<IMediator, Task<T>> operation)
     {
-        using var scope = _scopeFactory.CreateAsyncScope();
+        using var scope = scopeFactory.CreateAsyncScope();
         return await operation(scope.ServiceProvider.GetRequiredService<IMediator>());
     }
 
     private Task ExecuteWithinScope(Func<IMediator, Task> operation)
     {
-        using var scope = _scopeFactory.CreateAsyncScope();
+        using var scope = scopeFactory.CreateAsyncScope();
         return operation(scope.ServiceProvider.GetRequiredService<IMediator>());
     }
 }

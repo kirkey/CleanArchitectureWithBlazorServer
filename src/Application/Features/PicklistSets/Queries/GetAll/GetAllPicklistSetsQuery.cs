@@ -14,24 +14,15 @@ public class GetAllPicklistSetsQuery : ICacheableRequest<IEnumerable<PicklistSet
     public IEnumerable<string>? Tags => PicklistSetCacheKey.Tags;
 }
 
-public class GetAllPicklistSetsQueryHandler : IRequestHandler<GetAllPicklistSetsQuery, IEnumerable<PicklistSetDto>>
+public class GetAllPicklistSetsQueryHandler(
+    IMapper mapper,
+    IApplicationDbContext context) : IRequestHandler<GetAllPicklistSetsQuery, IEnumerable<PicklistSetDto>>
 {
-    private readonly IMapper _mapper;
-    private readonly IApplicationDbContext _context;
-
-    public GetAllPicklistSetsQueryHandler(
-        IMapper mapper,
-        IApplicationDbContext context)
-    {
-        _mapper = mapper;
-        _context = context;
-    }
-
     public async Task<IEnumerable<PicklistSetDto>> Handle(GetAllPicklistSetsQuery request,
         CancellationToken cancellationToken)
     {
-        var data = await _context.PicklistSets.OrderBy(x => x.Name).ThenBy(x => x.Value)
-            .ProjectTo<PicklistSetDto>(_mapper.ConfigurationProvider)
+        var data = await context.PicklistSets.OrderBy(x => x.Name).ThenBy(x => x.Value)
+            .ProjectTo<PicklistSetDto>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
         return data;
     }

@@ -12,16 +12,9 @@ namespace CleanArchitecture.Blazor.Application.UnitTests.Common.Behaviours;
 
 public class RequestLoggerTests
 {
-    private readonly Mock<ICurrentUserAccessor> _currentUserAccessor;
-    private readonly Mock<IIdentityService> _identityService;
-    private readonly Mock<ILogger<AddEditProductCommand>> _logger;
-
-    public RequestLoggerTests()
-    {
-        _currentUserAccessor = new Mock<ICurrentUserAccessor>();
-        _identityService = new Mock<IIdentityService>();
-        _logger = new Mock<ILogger<AddEditProductCommand>>();
-    }
+    private readonly Mock<ICurrentUserAccessor> _currentUserAccessor = new();
+    private readonly Mock<IIdentityService> _identityService = new();
+    private readonly Mock<ILogger<AddEditProductCommand>> _logger = new();
 
     [Test]
     public async Task ShouldCallGetUserNameAsyncOnceIfAuthenticated()

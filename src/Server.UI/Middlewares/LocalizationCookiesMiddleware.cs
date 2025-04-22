@@ -17,7 +17,7 @@ public class LocalizationCookiesMiddleware : IMiddleware
                 .FirstOrDefault();
     }
 
-    public CookieRequestCultureProvider Provider { get; }
+    private CookieRequestCultureProvider Provider { get; }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {

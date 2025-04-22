@@ -19,5 +19,4 @@ public static class ProductCacheKey
     {
         FusionCacheFactory.RemoveByTags(Tags);
     }
-
 }

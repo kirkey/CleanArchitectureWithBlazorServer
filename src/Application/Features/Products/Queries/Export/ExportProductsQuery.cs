@@ -14,35 +14,21 @@ public class ExportProductsQuery : ProductAdvancedFilter, IRequest<Result<byte[]
     public ProductAdvancedSpecification Specification => new(this);
 }
 
-public class ExportProductsQueryHandler :
-    IRequestHandler<ExportProductsQuery, Result<byte[]>>
+public class ExportProductsQueryHandler(
+    IApplicationDbContext context,
+    IExcelService excelService,
+    IMapper mapper,
+    IPDFService pdfService,
+    IStringLocalizer<ExportProductsQueryHandler> localizer)
+    :
+        IRequestHandler<ExportProductsQuery, Result<byte[]>>
 {
-    private readonly IApplicationDbContext _context;
-    private readonly IExcelService _excelService;
-    private readonly IMapper _mapper;
-    private readonly IStringLocalizer<ExportProductsQueryHandler> _localizer;
-    private readonly IPDFService _pdfService;
-
-    public ExportProductsQueryHandler(
-        IApplicationDbContext context,
-        IExcelService excelService,
-        IMapper mapper,
-        IPDFService pdfService,
-        IStringLocalizer<ExportProductsQueryHandler> localizer
-    )
-    {
-        _context = context;
-        _excelService = excelService;
-        _mapper = mapper;
-        _pdfService = pdfService;
-        _localizer = localizer;
-    }
 #nullable disable warnings
     public async Task<Result<byte[]>> Handle(ExportProductsQuery request, CancellationToken cancellationToken)
     {
-        var data = await _context.Products.ApplySpecification(request.Specification)
+        var data = await context.Products.ApplySpecification(request.Specification)
             .AsNoTracking()
-            .ProjectTo<ProductDto>(_mapper.ConfigurationProvider)
+            .ProjectTo<ProductDto>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
 
@@ -53,26 +39,26 @@ public class ExportProductsQueryHandler :
             case ExportType.PDF:
                 mappers = new Dictionary<string, Func<ProductDto, object?>>
                 {
-                    { _localizer["Brand Name"], item => item.Brand },
-                    { _localizer["Product Name"], item => item.Name },
-                    { _localizer["Description"], item => item.Description },
-                    { _localizer["Price of unit"], item => item.Price },
-                    { _localizer["Unit"], item => item.Unit }
+                    { localizer["Brand Name"], item => item.Brand },
+                    { localizer["Product Name"], item => item.Name },
+                    { localizer["Description"], item => item.Description },
+                    { localizer["Price of unit"], item => item.Price },
+                    { localizer["Unit"], item => item.Unit }
                     //{ _localizer["Pictures"], item => string.Join(",",item.Pictures??new string[]{ }) },
                 };
-                result = await _pdfService.ExportAsync(data, mappers, _localizer["Products"], true);
+                result = await pdfService.ExportAsync(data, mappers, localizer["Products"], true);
                 break;
             default:
                 mappers = new Dictionary<string, Func<ProductDto, object?>>
                 {
-                    { _localizer["Brand Name"], item => item.Brand },
-                    { _localizer["Product Name"], item => item.Name },
-                    { _localizer["Description"], item => item.Description },
-                    { _localizer["Price of unit"], item => item.Price },
-                    { _localizer["Unit"], item => item.Unit },
-                    { _localizer["Pictures"], item => JsonSerializer.Serialize(item.Pictures) }
+                    { localizer["Brand Name"], item => item.Brand },
+                    { localizer["Product Name"], item => item.Name },
+                    { localizer["Description"], item => item.Description },
+                    { localizer["Price of unit"], item => item.Price },
+                    { localizer["Unit"], item => item.Unit },
+                    { localizer["Pictures"], item => JsonSerializer.Serialize(item.Pictures) }
                 };
-                result = await _excelService.ExportAsync(data, mappers, _localizer["Products"]);
+                result = await excelService.ExportAsync(data, mappers, localizer["Products"]);
                 break;
         }
 

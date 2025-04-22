@@ -19,25 +19,16 @@ public class PicklistSetsWithPaginationQuery : PicklistSetAdvancedFilter, ICache
     }
 }
 
-public class PicklistSetsQueryHandler : IRequestHandler<PicklistSetsWithPaginationQuery, PaginatedData<PicklistSetDto>>
+public class PicklistSetsQueryHandler(
+    IMapper mapper,
+    IApplicationDbContext context) : IRequestHandler<PicklistSetsWithPaginationQuery, PaginatedData<PicklistSetDto>>
 {
-    private readonly IMapper _mapper;
-    private readonly IApplicationDbContext _context;
-
-    public PicklistSetsQueryHandler(
-        IMapper mapper,
-        IApplicationDbContext context)
-    {
-        _mapper = mapper;
-        _context = context;
-    }
-
     public async Task<PaginatedData<PicklistSetDto>> Handle(PicklistSetsWithPaginationQuery request,
         CancellationToken cancellationToken)
     {
-        var data = await _context.PicklistSets.OrderBy($"{request.OrderBy} {request.SortDirection}")
+        var data = await context.PicklistSets.OrderBy($"{request.OrderBy} {request.SortDirection}")
             .ProjectToPaginatedDataAsync<PicklistSet, PicklistSetDto>(request.Specification, request.PageNumber,
-                request.PageSize, _mapper.ConfigurationProvider, cancellationToken);
+                request.PageSize, mapper.ConfigurationProvider, cancellationToken);
 
         return data;
     }

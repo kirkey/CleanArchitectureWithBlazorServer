@@ -7,33 +7,22 @@ using CleanArchitecture.Blazor.Infrastructure.PermissionSet;
 
 namespace CleanArchitecture.Blazor.Infrastructure.Persistence;
 
-public class ApplicationDbContextInitializer
+public class ApplicationDbContextInitializer(
+    ILogger<ApplicationDbContextInitializer> logger,
+    ApplicationDbContext context,
+    UserManager<ApplicationUser> userManager,
+    RoleManager<ApplicationRole> roleManager)
 {
-    private readonly ApplicationDbContext _context;
-    private readonly ILogger<ApplicationDbContextInitializer> _logger;
-    private readonly RoleManager<ApplicationRole> _roleManager;
-    private readonly UserManager<ApplicationUser> _userManager;
-
-    public ApplicationDbContextInitializer(ILogger<ApplicationDbContextInitializer> logger,
-        ApplicationDbContext context, UserManager<ApplicationUser> userManager,
-        RoleManager<ApplicationRole> roleManager)
-    {
-        _logger = logger;
-        _context = context;
-        _userManager = userManager;
-        _roleManager = roleManager;
-    }
-
     public async Task InitialiseAsync()
     {
         try
         {
-            if (_context.Database.IsRelational())
-                await _context.Database.MigrateAsync();
+            if (context.Database.IsRelational())
+                await context.Database.MigrateAsync();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while initialising the database");
+            logger.LogError(ex, "An error occurred while initialising the database");
             throw;
         }
     }
@@ -46,11 +35,11 @@ public class ApplicationDbContextInitializer
             await SeedRolesAsync();
             await SeedUsersAsync();
             await SeedDataAsync();
-            _context.ChangeTracker.Clear();
+            context.ChangeTracker.Clear();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An error occurred while seeding the database");
+            logger.LogError(ex, "An error occurred while seeding the database");
             throw;
         }
     }
@@ -84,17 +73,17 @@ public class ApplicationDbContextInitializer
 
     private async Task SeedTenantsAsync()
     {
-        if (await _context.Tenants.AnyAsync()) return;
+        if (await context.Tenants.AnyAsync()) return;
 
-        _logger.LogInformation("Seeding tenants...");
+        logger.LogInformation("Seeding tenants...");
         var tenants = new[]
         {
                 new Tenant { Name = "Master", Description = "Master Site" },
                 new Tenant { Name = "Slave", Description = "Slave Site" }
             };
 
-        await _context.Tenants.AddRangeAsync(tenants);
-        await _context.SaveChangesAsync();
+        await context.Tenants.AddRangeAsync(tenants);
+        await context.SaveChangesAsync();
     }
 
     private async Task SeedRolesAsync()
@@ -102,48 +91,48 @@ public class ApplicationDbContextInitializer
         var adminRoleName = RoleName.Admin;
         var userRoleName = RoleName.Basic;
 
-        if (await _roleManager.RoleExistsAsync(adminRoleName)) return;
+        if (await roleManager.RoleExistsAsync(adminRoleName)) return;
 
-        _logger.LogInformation("Seeding roles...");
+        logger.LogInformation("Seeding roles...");
         var administratorRole = new ApplicationRole(adminRoleName)
         {
             Description = "Admin Group",
-            TenantId = (await _context.Tenants.FirstAsync()).Id
+            TenantId = (await context.Tenants.FirstAsync()).Id
         };
         var userRole = new ApplicationRole(userRoleName)
         {
             Description = "Basic Group",
-            TenantId = (await _context.Tenants.FirstAsync()).Id
+            TenantId = (await context.Tenants.FirstAsync()).Id
         };
 
-        await _roleManager.CreateAsync(administratorRole);
-        await _roleManager.CreateAsync(userRole);
+        await roleManager.CreateAsync(administratorRole);
+        await roleManager.CreateAsync(userRole);
 
         var permissions = GetAllPermissions();
 
         foreach (var permission in permissions)
         {
             var claim = new Claim(ApplicationClaimTypes.Permission, permission);
-            await _roleManager.AddClaimAsync(administratorRole, claim);
+            await roleManager.AddClaimAsync(administratorRole, claim);
 
             if (permission.StartsWith("Permissions.Products"))
             {
-                await _roleManager.AddClaimAsync(userRole, claim);
+                await roleManager.AddClaimAsync(userRole, claim);
             }
         }
     }
 
     private async Task SeedUsersAsync()
     {
-        if (await _userManager.Users.AnyAsync()) return;
+        if (await userManager.Users.AnyAsync()) return;
 
-        _logger.LogInformation("Seeding users...");
+        logger.LogInformation("Seeding users...");
         var adminUser = new ApplicationUser
         {
             UserName = UserName.Administrator,
             Provider = "Local",
             IsActive = true,
-            TenantId = (await _context.Tenants.FirstAsync()).Id,
+            TenantId = (await context.Tenants.FirstAsync()).Id,
             DisplayName = UserName.Administrator,
             Email = "admin@example.com",
             EmailConfirmed = true,
@@ -158,7 +147,7 @@ public class ApplicationDbContextInitializer
             UserName = UserName.Demo,
             IsActive = true,
             Provider = "Local",
-            TenantId = (await _context.Tenants.FirstAsync()).Id,
+            TenantId = (await context.Tenants.FirstAsync()).Id,
             DisplayName = UserName.Demo,
             Email = "demo@example.com",
             EmailConfirmed = true,
@@ -167,19 +156,19 @@ public class ApplicationDbContextInitializer
             ProfilePictureDataUrl = "https://s.gravatar.com/avatar/ea753b0b0f357a41491408307ade445e?s=80"
         };
 
-        await _userManager.CreateAsync(adminUser, UserName.DefaultPassword);
-        await _userManager.AddToRoleAsync(adminUser, RoleName.Admin);
+        await userManager.CreateAsync(adminUser, UserName.DefaultPassword);
+        await userManager.AddToRoleAsync(adminUser, RoleName.Admin);
 
-        await _userManager.CreateAsync(demoUser, UserName.DefaultPassword);
-        await _userManager.AddToRoleAsync(demoUser, RoleName.Basic);
+        await userManager.CreateAsync(demoUser, UserName.DefaultPassword);
+        await userManager.AddToRoleAsync(demoUser, RoleName.Basic);
     }
 
     private async Task SeedDataAsync()
     {
-        if (!await _context.PicklistSets.AnyAsync())
+        if (!await context.PicklistSets.AnyAsync())
         {
 
-            _logger.LogInformation("Seeding key values...");
+            logger.LogInformation("Seeding key values...");
             var keyValues = new[]
             {
                 new PicklistSet
@@ -261,14 +250,14 @@ public class ApplicationDbContextInitializer
                 }
             };
 
-            await _context.PicklistSets.AddRangeAsync(keyValues);
-            await _context.SaveChangesAsync();
+            await context.PicklistSets.AddRangeAsync(keyValues);
+            await context.SaveChangesAsync();
         }
 
-        if (!await _context.Products.AnyAsync())
+        if (!await context.Products.AnyAsync())
         {
 
-            _logger.LogInformation("Seeding products...");
+            logger.LogInformation("Seeding products...");
             var products = new[]
             {
                 new Product
@@ -307,8 +296,8 @@ public class ApplicationDbContextInitializer
 
             };
 
-            await _context.Products.AddRangeAsync(products);
-            await _context.SaveChangesAsync();
+            await context.Products.AddRangeAsync(products);
+            await context.SaveChangesAsync();
         }
     }
 }

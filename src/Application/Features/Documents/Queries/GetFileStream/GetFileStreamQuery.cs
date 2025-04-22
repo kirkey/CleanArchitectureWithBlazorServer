@@ -5,32 +5,19 @@ using CleanArchitecture.Blazor.Application.Features.Documents.Caching;
 
 namespace CleanArchitecture.Blazor.Application.Features.Documents.Queries.GetFileStream;
 
-public class GetFileStreamQuery : ICacheableRequest<(string, byte[])>
+public class GetFileStreamQuery(int id) : ICacheableRequest<(string, byte[])>
 {
-    public GetFileStreamQuery(int id)
-    {
-        Id = id;
-    }
-    public int Id { get; set; }
+    public int Id { get; set; } = id;
     public string CacheKey => DocumentCacheKey.GetStreamByIdKey(Id);
     public IEnumerable<string>? Tags => DocumentCacheKey.Tags;
 }
 
-public class GetFileStreamQueryHandler : IRequestHandler<GetFileStreamQuery, (string, byte[])>
+public class GetFileStreamQueryHandler(IApplicationDbContext context)
+    : IRequestHandler<GetFileStreamQuery, (string, byte[])>
 {
-    private readonly IApplicationDbContext _context;
-
-
-    public GetFileStreamQueryHandler(
-        IApplicationDbContext context
-    )
-    {
-        _context = context;
-    }
-
     public async Task<(string, byte[])> Handle(GetFileStreamQuery request, CancellationToken cancellationToken)
     {
-        var item = await _context.Documents.FindAsync(new object?[] { request.Id }, cancellationToken);
+        var item = await context.Documents.FindAsync(new object?[] { request.Id }, cancellationToken);
         if (item is null) throw new Exception($"not found document entry by Id:{request.Id}.");
         if (string.IsNullOrEmpty(item.URL)) return (string.Empty, Array.Empty<byte>());
 

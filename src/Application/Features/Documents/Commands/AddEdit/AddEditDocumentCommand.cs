@@ -30,48 +30,37 @@ public class AddEditDocumentCommand : ICacheInvalidatorRequest<Result<int>>
     }
 }
 
-public class AddEditDocumentCommandHandler : IRequestHandler<AddEditDocumentCommand, Result<int>>
+public class AddEditDocumentCommandHandler(
+    IMapper mapper,
+    IApplicationDbContext context,
+    IUploadService uploadService)
+    : IRequestHandler<AddEditDocumentCommand, Result<int>>
 {
-    private readonly IMapper _mapper;
-    private readonly IApplicationDbContext _context;
-    private readonly IUploadService _uploadService;
-
-    public AddEditDocumentCommandHandler(
-        IMapper mapper,
-        IApplicationDbContext context,
-        IUploadService uploadService
-    )
-    {
-        _mapper = mapper;
-        _context = context;
-        _uploadService = uploadService;
-    }
-
     public async Task<Result<int>> Handle(AddEditDocumentCommand request, CancellationToken cancellationToken)
     {
         if (request.Id > 0)
         {
-            var document = await _context.Documents.FindAsync(request.Id, cancellationToken);
+            var document = await context.Documents.FindAsync(request.Id, cancellationToken);
             if (document == null)
             {
                 return await Result<int>.FailureAsync($"Document with id: [{request.Id}] not found.");
             }
             document.AddDomainEvent(new UpdatedEvent<Document>(document));
-            if (request.UploadRequest != null) document.URL = await _uploadService.UploadAsync(request.UploadRequest);
+            if (request.UploadRequest != null) document.URL = await uploadService.UploadAsync(request.UploadRequest);
             document.Title = request.Title;
             document.Description = request.Description;
             document.IsPublic = request.IsPublic;
             document.DocumentType = request.DocumentType;
-            await _context.SaveChangesAsync(cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
             return await Result<int>.SuccessAsync(document.Id);
         }
         else
         {
-            var document = _mapper.Map<Document>(request);
-            if (request.UploadRequest != null) document.URL = await _uploadService.UploadAsync(request.UploadRequest);
+            var document = mapper.Map<Document>(request);
+            if (request.UploadRequest != null) document.URL = await uploadService.UploadAsync(request.UploadRequest);
             document.AddDomainEvent(new CreatedEvent<Document>(document));
-            _context.Documents.Add(document);
-            await _context.SaveChangesAsync(cancellationToken);
+            context.Documents.Add(document);
+            await context.SaveChangesAsync(cancellationToken);
             return await Result<int>.SuccessAsync(document.Id);
         }
     }

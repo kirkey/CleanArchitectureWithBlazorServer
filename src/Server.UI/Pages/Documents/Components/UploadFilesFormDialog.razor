@@ -150,32 +150,30 @@
                         var imgStream = new MemoryStream();
                         await filestream.CopyToAsync(imgStream);
                         imgStream.Position = 0;
-                        using (var outStream = new MemoryStream())
+                        using var outStream = new MemoryStream();
+                        using (var image = Image.Load(imgStream))
                         {
-                            using (var image = Image.Load(imgStream))
+                            var scale = 0m;
+                            if (image.Width > 1600)
                             {
-                                var scale = 0m;
-                                if (image.Width > 1600)
-                                {
-                                    scale = 0.3m;
-                                }
-                                else if (image.Width <= 1600 && image.Width > 800)
-                                {
-                                    scale = 0.5m;
-                                }
-                                else
-                                {
-                                    scale = 0.9m;
-                                }
-
-                                image.Mutate(
-                                    i => i.AutoOrient().Resize(Convert.ToInt32(image.Width * scale), 0));
-                                image.Save(outStream, PngFormat.Instance);
+                                scale = 0.3m;
+                            }
+                            else if (image.Width <= 1600 && image.Width > 800)
+                            {
+                                scale = 0.5m;
+                            }
+                            else
+                            {
+                                scale = 0.9m;
                             }
 
-                            var request = new UploadRequest(uploaded.FileName, UploadType.Document, outStream.ToArray());
-                            list.Add(request);
+                            image.Mutate(
+                                i => i.AutoOrient().Resize(Convert.ToInt32(image.Width * scale), 0));
+                            image.Save(outStream, PngFormat.Instance);
                         }
+
+                        var request = new UploadRequest(uploaded.FileName, UploadType.Document, outStream.ToArray());
+                        list.Add(request);
                     }
                     catch (Exception e)
                     {

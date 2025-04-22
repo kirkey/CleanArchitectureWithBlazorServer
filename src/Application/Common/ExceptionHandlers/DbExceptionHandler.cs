@@ -26,8 +26,6 @@ public class DbExceptionHandler<TRequest, TResponse, TException> : IRequestExcep
 
     private  string[] GetErrors(DbUpdateException exception)
     {
-
-
         return exception switch
         {
             UniqueConstraintException e => GetUniqueConstraintExceptionErrors(e),

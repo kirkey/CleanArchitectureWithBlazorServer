@@ -22,26 +22,16 @@ public class SystemLogsWithPaginationQuery : SystemLogAdvancedFilter, ICacheable
     }
 }
 
-public class LogsQueryHandler : IRequestHandler<SystemLogsWithPaginationQuery, PaginatedData<SystemLogDto>>
+public class LogsQueryHandler(
+    IMapper mapper,
+    IApplicationDbContext context) : IRequestHandler<SystemLogsWithPaginationQuery, PaginatedData<SystemLogDto>>
 {
-    private readonly IMapper _mapper;
-    private readonly IApplicationDbContext _context;
-
-    public LogsQueryHandler(
-        IMapper mapper,
-        IApplicationDbContext context
-    )
-    {
-        _mapper = mapper;
-        _context = context;
-    }
-
     public async Task<PaginatedData<SystemLogDto>> Handle(SystemLogsWithPaginationQuery request,
         CancellationToken cancellationToken)
     {
-        var data = await _context.SystemLogs.OrderBy($"{request.OrderBy} {request.SortDirection}")
+        var data = await context.SystemLogs.OrderBy($"{request.OrderBy} {request.SortDirection}")
             .ProjectToPaginatedDataAsync<SystemLog, SystemLogDto>(request.Specification, request.PageNumber, request.PageSize,
-                _mapper.ConfigurationProvider, cancellationToken);
+                mapper.ConfigurationProvider, cancellationToken);
         return data;
     }
 }

@@ -3,20 +3,14 @@
 
 namespace CleanArchitecture.Blazor.Application.Features.Documents.EventHandlers;
 
-public class DocumentDeletedEventHandler : INotificationHandler<DeletedEvent<Document>>
+public class DocumentDeletedEventHandler(ILogger<DocumentDeletedEventHandler> logger)
+    : INotificationHandler<DeletedEvent<Document>>
 {
-    private readonly ILogger<DocumentDeletedEventHandler> _logger;
-
-    public DocumentDeletedEventHandler(ILogger<DocumentDeletedEventHandler> logger)
-    {
-        _logger = logger;
-    }
-
     public Task Handle(DeletedEvent<Document> notification, CancellationToken cancellationToken)
     {
         if (string.IsNullOrEmpty(notification.Entity.URL))
         {
-            _logger.LogWarning("The document URL is null or empty, skipping file deletion.");
+            logger.LogWarning("The document URL is null or empty, skipping file deletion.");
             return Task.CompletedTask;
         }
 
@@ -29,16 +23,16 @@ public class DocumentDeletedEventHandler : INotificationHandler<DeletedEvent<Doc
             try
             {
                 File.Delete(deleteFilePath);
-                _logger.LogInformation("File deleted successfully: {FilePath}", deleteFilePath);
+                logger.LogInformation("File deleted successfully: {FilePath}", deleteFilePath);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to delete file: {FilePath}", deleteFilePath);
+                logger.LogError(ex, "Failed to delete file: {FilePath}", deleteFilePath);
             }
         }
         else
         {
-            _logger.LogWarning("File not found for deletion: {FilePath}", deleteFilePath);
+            logger.LogWarning("File not found for deletion: {FilePath}", deleteFilePath);
         }
 
         return Task.CompletedTask;

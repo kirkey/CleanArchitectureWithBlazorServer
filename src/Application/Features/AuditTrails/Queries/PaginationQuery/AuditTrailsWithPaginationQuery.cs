@@ -20,26 +20,16 @@ public class AuditTrailsWithPaginationQuery : AuditTrailAdvancedFilter, ICacheab
     }
 }
 
-public class AuditTrailsQueryHandler : IRequestHandler<AuditTrailsWithPaginationQuery, PaginatedData<AuditTrailDto>>
+public class AuditTrailsQueryHandler(
+    IApplicationDbContext context,
+    IMapper mapper) : IRequestHandler<AuditTrailsWithPaginationQuery, PaginatedData<AuditTrailDto>>
 {
-    private readonly IApplicationDbContext _context;
-    private readonly IMapper _mapper;
-
-    public AuditTrailsQueryHandler(
-        IApplicationDbContext context,
-        IMapper mapper
-    )
-    {
-        _context = context;
-        _mapper = mapper;
-    }
-
     public async Task<PaginatedData<AuditTrailDto>> Handle(AuditTrailsWithPaginationQuery request,
         CancellationToken cancellationToken)
     {
-        var data = await _context.AuditTrails.OrderBy($"{request.OrderBy} {request.SortDirection}")
+        var data = await context.AuditTrails.OrderBy($"{request.OrderBy} {request.SortDirection}")
             .ProjectToPaginatedDataAsync<AuditTrail, AuditTrailDto>(request.Specification, request.PageNumber,
-                request.PageSize, _mapper.ConfigurationProvider, cancellationToken);
+                request.PageSize, mapper.ConfigurationProvider, cancellationToken);
 
         return data;
     }

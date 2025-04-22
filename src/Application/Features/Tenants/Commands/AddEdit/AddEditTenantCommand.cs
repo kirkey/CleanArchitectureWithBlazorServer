@@ -26,37 +26,26 @@ public class AddEditTenantCommand : ICacheInvalidatorRequest<Result<string>>
     }
 }
 
-public class AddEditTenantCommandHandler : IRequestHandler<AddEditTenantCommand, Result<string>>
+public class AddEditTenantCommandHandler(
+    IMapper mapper,
+    ITenantService tenantsService,
+    IApplicationDbContext context)
+    : IRequestHandler<AddEditTenantCommand, Result<string>>
 {
-    private readonly IApplicationDbContext _context;
-    private readonly IMapper _mapper;
-    private readonly ITenantService _tenantsService;
-
-    public AddEditTenantCommandHandler(
-        IMapper mapper,
-        ITenantService tenantsService,
-        IApplicationDbContext context
-    )
-    {
-        _mapper = mapper;
-        _tenantsService = tenantsService;
-        _context = context;
-    }
-
     public async Task<Result<string>> Handle(AddEditTenantCommand request, CancellationToken cancellationToken)
     {
-        var item = await _context.Tenants.FindAsync(new object[] { request.Id }, cancellationToken);
+        var item = await context.Tenants.FindAsync(new object[] { request.Id }, cancellationToken);
         if (item is null)
         {
-            item = _mapper.Map<Tenant>(request);
-            await _context.Tenants.AddAsync(item, cancellationToken);
+            item = mapper.Map<Tenant>(request);
+            await context.Tenants.AddAsync(item, cancellationToken);
         }
         else
         {
-            item = _mapper.Map(request, item);
+            item = mapper.Map(request, item);
         }
-        await _context.SaveChangesAsync(cancellationToken);
-        _tenantsService.Refresh();
+        await context.SaveChangesAsync(cancellationToken);
+        tenantsService.Refresh();
         return await Result<string>.SuccessAsync(item.Id);
     }
 }

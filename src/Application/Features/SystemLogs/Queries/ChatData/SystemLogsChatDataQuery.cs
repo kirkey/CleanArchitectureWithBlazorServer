@@ -13,25 +13,18 @@ public class SystemLogsTimeLineChatDataQuery : ICacheableRequest<List<SystemLogT
     public IEnumerable<string>? Tags => SystemLogsCacheKey.Tags;
 }
 
-public class SystemLogsChatDataQueryHandler : IRequestHandler<SystemLogsTimeLineChatDataQuery, List<SystemLogTimeLineDto>>
+public class SystemLogsChatDataQueryHandler(
+    IApplicationDbContext context,
+    IStringLocalizer<SystemLogsChatDataQueryHandler> localizer)
+    : IRequestHandler<SystemLogsTimeLineChatDataQuery, List<SystemLogTimeLineDto>>
 
 {
-    private readonly IApplicationDbContext _context;
-    private readonly IStringLocalizer<SystemLogsChatDataQueryHandler> _localizer;
-
-    public SystemLogsChatDataQueryHandler(
-        IApplicationDbContext context,
-        IStringLocalizer<SystemLogsChatDataQueryHandler> localizer
-    )
-    {
-        _context = context;
-        _localizer = localizer;
-    }
+    private readonly IStringLocalizer<SystemLogsChatDataQueryHandler> _localizer = localizer;
 
     public async Task<List<SystemLogTimeLineDto>> Handle(SystemLogsTimeLineChatDataQuery request,
         CancellationToken cancellationToken)
     {
-        var data = await _context.SystemLogs.Where(x => x.TimeStamp >= request.LastDateTime)
+        var data = await context.SystemLogs.Where(x => x.TimeStamp >= request.LastDateTime)
             .GroupBy(x => new { x.TimeStamp.Date })
             .Select(x => new { x.Key.Date, Total = x.Count() })
             .OrderBy(x => x.Date)

@@ -5,38 +5,28 @@ using ZiggyCreatures.Caching.Fusion;
 
 namespace CleanArchitecture.Blazor.Application.Pipeline;
 
-public class CacheInvalidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public class CacheInvalidationBehaviour<TRequest, TResponse>(
+    IFusionCache cache,
+    ILogger<CacheInvalidationBehaviour<TRequest, TResponse>> logger)
+    : IPipelineBehavior<TRequest, TResponse>
     where TRequest : ICacheInvalidatorRequest<TResponse>
 {
-    private readonly IFusionCache _cache;
-    private readonly ILogger<CacheInvalidationBehaviour<TRequest, TResponse>> _logger;
-
-    public CacheInvalidationBehaviour(
-        IFusionCache cache,
-        ILogger<CacheInvalidationBehaviour<TRequest, TResponse>> logger
-    )
-    {
-        _cache = cache;
-        _logger = logger;
-    }
-
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        _logger.LogTrace("Handling request of type {RequestType} with details {@Request}", nameof(request), request);
+        logger.LogTrace("Handling request of type {RequestType} with details {@Request}", nameof(request), request);
         var response = await next().ConfigureAwait(false);
         if (!string.IsNullOrEmpty(request.CacheKey))
         {
-            _cache.Remove(request.CacheKey);
-            _logger.LogTrace("Cache key {CacheKey} removed from cache", request.CacheKey);
+            await cache.RemoveAsync(request.CacheKey, token: cancellationToken);
+            logger.LogTrace("Cache key {CacheKey} removed from cache", request.CacheKey);
         }
-        if(request.Tags!=null && request.Tags.Any())
+
+        if (request.Tags == null || !request.Tags.Any()) return response;
+        foreach (var tag in request.Tags)
         {
-            foreach (var tag in request.Tags)
-            {
-               await _cache.RemoveByTagAsync(tag);
-               _logger.LogTrace("Cache tag {CacheTag} removed from cache", tag);
-            }
+            await cache.RemoveByTagAsync(tag, token: cancellationToken);
+            logger.LogTrace("Cache tag {CacheTag} removed from cache", tag);
         }
         return response;
     }

@@ -42,10 +42,8 @@ public class FileUploadService : IUploadService
             fullPath = NextAvailableFilename(fullPath);
         }
 
-        await using (var stream = new FileStream(fullPath, FileMode.Create))
-        {
-            await stream.WriteAsync(request.Data, 0, request.Data.Length);
-        }
+        await using var stream = new FileStream(fullPath, FileMode.Create);
+        await stream.WriteAsync(request.Data, 0, request.Data.Length);
 
         return dbPath;
     }

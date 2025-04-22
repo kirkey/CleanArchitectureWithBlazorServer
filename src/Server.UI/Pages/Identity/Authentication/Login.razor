@@ -113,6 +113,7 @@
         HttpContext.Response.Headers.Append("blazor-enhanced-nav-redirect-location", redirectionUrl);
         HttpContext.Response.StatusCode = 200;
     }
+
     public async Task OnSubmit()
     {
         // Check if the user exists

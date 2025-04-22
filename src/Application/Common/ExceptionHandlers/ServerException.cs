@@ -2,16 +2,10 @@ using System.Net;
 
 namespace CleanArchitecture.Blazor.Application.Common.ExceptionHandlers;
 
-public class ServerException : Exception
+public class ServerException(string message, HttpStatusCode statusCode = HttpStatusCode.InternalServerError)
+    : Exception(message)
 {
-    public ServerException(string message, HttpStatusCode statusCode = HttpStatusCode.InternalServerError)
-        : base(message)
-    {
-        ErrorMessages = new[] { message };
-        StatusCode = statusCode;
-    }
+    public IEnumerable<string> ErrorMessages { get; } = new[] { message };
 
-    public IEnumerable<string> ErrorMessages { get; }
-
-    public HttpStatusCode StatusCode { get; }
+    public HttpStatusCode StatusCode { get; } = statusCode;
 }

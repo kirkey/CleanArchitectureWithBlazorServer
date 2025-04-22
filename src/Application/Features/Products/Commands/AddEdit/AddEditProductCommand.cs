@@ -31,40 +31,30 @@ public class AddEditProductCommand : ICacheInvalidatorRequest<Result<int>>
     }
 }
 
-public class AddEditProductCommandHandler : IRequestHandler<AddEditProductCommand, Result<int>>
+public class AddEditProductCommandHandler(
+    IMapper mapper,
+    IApplicationDbContext context) : IRequestHandler<AddEditProductCommand, Result<int>>
 {
-    private readonly IMapper _mapper;
-    private readonly IApplicationDbContext _context;
-
-    public AddEditProductCommandHandler(
-        IMapper mapper,
-        IApplicationDbContext context
-    )
-    {
-        _mapper = mapper;
-        _context = context;
-    }
-
     public async Task<Result<int>> Handle(AddEditProductCommand request, CancellationToken cancellationToken)
     {
         if (request.Id > 0)
         {
-            var item = await _context.Products.SingleOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            var item = await context.Products.SingleOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
             if (item == null)
             {
-                return await Result<int>.FailureAsync($"Prduct with id: [{request.Id}] not found.");
+                return await Result<int>.FailureAsync($"Product with id: [{request.Id}] not found.");
             }
-            item = _mapper.Map(request, item);
+            item = mapper.Map(request, item);
             item.AddDomainEvent(new UpdatedEvent<Product>(item));
-            await _context.SaveChangesAsync(cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
             return await Result<int>.SuccessAsync(item.Id);
         }
         else
         {
-            var item = _mapper.Map<Product>(request);
+            var item = mapper.Map<Product>(request);
             item.AddDomainEvent(new CreatedEvent<Product>(item));
-            _context.Products.Add(item);
-            await _context.SaveChangesAsync(cancellationToken);
+            context.Products.Add(item);
+            await context.SaveChangesAsync(cancellationToken);
             return await Result<int>.SuccessAsync(item.Id);
         }
     }

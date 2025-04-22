@@ -12,25 +12,16 @@ public class ClearSystemLogsCommand : ICacheInvalidatorRequest<Result>
     public IEnumerable<string>? Tags => SystemLogsCacheKey.Tags;
 }
 
-public class ClearSystemLogsCommandHandler : IRequestHandler<ClearSystemLogsCommand, Result>
+public class ClearSystemLogsCommandHandler(
+    IApplicationDbContext context,
+    ILogger<ClearSystemLogsCommandHandler> logger)
+    : IRequestHandler<ClearSystemLogsCommand, Result>
 
 {
-    private readonly IApplicationDbContext _context;
-    private readonly ILogger<ClearSystemLogsCommandHandler> _logger;
-
-    public ClearSystemLogsCommandHandler(
-        IApplicationDbContext context,
-        ILogger<ClearSystemLogsCommandHandler> logger
-    )
-    {
-        _context = context;
-        _logger = logger;
-    }
-
     public async Task<Result> Handle(ClearSystemLogsCommand request, CancellationToken cancellationToken)
     {
-        await _context.SystemLogs.ExecuteDeleteAsync();
-        _logger.LogInformation("Logs have been erased");
+        await context.SystemLogs.ExecuteDeleteAsync(cancellationToken: cancellationToken);
+        logger.LogInformation("Logs have been erased");
         return await Result.SuccessAsync();
     }
 }

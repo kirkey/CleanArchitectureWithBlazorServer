@@ -2,18 +2,11 @@
 
 namespace CleanArchitecture.Blazor.Server.UI.Services.JsInterop;
 
-public sealed class Swiper
+public sealed class Swiper(IJSRuntime jsRuntime)
 {
-    private readonly IJSRuntime _jsRuntime;
-
-    public Swiper(IJSRuntime jsRuntime)
-    {
-        _jsRuntime = jsRuntime;
-    }
-
     public async Task<ValueTask> Initialize(string elment,bool reverse=false)
     {
-        var jsmodule = await _jsRuntime.InvokeAsync<IJSObjectReference>("import", "/js/carousel.js").ConfigureAwait(false);
+        var jsmodule = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "/js/carousel.js").ConfigureAwait(false);
         return jsmodule.InvokeVoidAsync("initializeSwiper", elment, reverse);
     }
 }

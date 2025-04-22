@@ -142,55 +142,29 @@ public sealed class HubClient : IAsyncDisposable
     }
 }
 
-public class MessageReceivedEventArgs : EventArgs
+public class MessageReceivedEventArgs(string userName, string message) : EventArgs
 {
-    public MessageReceivedEventArgs(string userName, string message)
-    {
-        UserId = userName;
-        Message = message;
-    }
-
-    public string UserId { get; set; }
-    public string Message { get; set; }
+    public string UserId { get; set; } = userName;
+    public string Message { get; set; } = message;
 }
 
-public class UserStateChangeEventArgs : EventArgs
+public class UserStateChangeEventArgs(string connectionId, string userName) : EventArgs
 {
-    public UserStateChangeEventArgs(string connectionId, string userName)
-    {
-        ConnectionId = connectionId;
-        UserName = userName;
-    }
-
-    public string ConnectionId { get; set; }
-    public string UserName { get; set; }
+    public string ConnectionId { get; set; } = connectionId;
+    public string UserName { get; set; } = userName;
 }
 
-public class JobStartedEventArgs : EventArgs
+public class JobStartedEventArgs(int id, string message) : EventArgs
 {
-    public JobStartedEventArgs(int id,string message)
-    {
-        Message = message;
-        Id=id;
-    }
-    public string Message { get; }
-    public int Id { get; }
+    public string Message { get; } = message;
+    public int Id { get; } = id;
 }
-public class JobCompletedEventArgs : EventArgs
+public class JobCompletedEventArgs(int id, string message) : EventArgs
 {
-    public JobCompletedEventArgs(int id,string message)
-    {
-        Message = message;
-        Id = id;
-    }
-    public string Message { get; }
-    public int Id { get; }
+    public string Message { get; } = message;
+    public int Id { get; } = id;
 }
-public class NotificationReceivedEventArgs : EventArgs
+public class NotificationReceivedEventArgs(string message) : EventArgs
 {
-    public NotificationReceivedEventArgs(string message)
-    {
-        Message = message;
-    }
-    public string Message { get; set; }
+    public string Message { get; set; } = message;
 }

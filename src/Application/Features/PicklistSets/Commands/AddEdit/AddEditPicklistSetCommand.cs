@@ -25,39 +25,30 @@ public class AddEditPicklistSetCommand : ICacheInvalidatorRequest<Result<int>>
     }
 }
 
-public class AddEditPicklistSetCommandHandler : IRequestHandler<AddEditPicklistSetCommand, Result<int>>
+public class AddEditPicklistSetCommandHandler(
+    IMapper mapper,
+    IApplicationDbContext context) : IRequestHandler<AddEditPicklistSetCommand, Result<int>>
 {
-    private readonly IMapper _mapper;
-    private readonly IApplicationDbContext _context;
-
-    public AddEditPicklistSetCommandHandler(
-        IMapper mapper,
-        IApplicationDbContext context)
-    {
-        _mapper = mapper;
-        _context = context;
-    }
-
     public async Task<Result<int>> Handle(AddEditPicklistSetCommand request, CancellationToken cancellationToken)
     {
         if (request.Id > 0)
         {
-            var item = await _context.PicklistSets.FindAsync(request.Id, cancellationToken);
+            var item = await context.PicklistSets.FindAsync(request.Id, cancellationToken);
             if (item == null)
             {
                 return await Result<int>.FailureAsync($"Picklist with id: [{request.Id}] not found.");
             }
-            item = _mapper.Map(request, item);
+            item = mapper.Map(request, item);
             item.AddDomainEvent(new UpdatedEvent<PicklistSet>(item));
-            await _context.SaveChangesAsync(cancellationToken);
+            await context.SaveChangesAsync(cancellationToken);
             return await Result<int>.SuccessAsync(item.Id);
         }
         else
         {
-            var keyValue = _mapper.Map<PicklistSet>(request);
+            var keyValue = mapper.Map<PicklistSet>(request);
             keyValue.AddDomainEvent(new UpdatedEvent<PicklistSet>(keyValue));
-            _context.PicklistSets.Add(keyValue);
-            await _context.SaveChangesAsync(cancellationToken);
+            context.PicklistSets.Add(keyValue);
+            await context.SaveChangesAsync(cancellationToken);
             return await Result<int>.SuccessAsync(keyValue.Id);
         }
     }

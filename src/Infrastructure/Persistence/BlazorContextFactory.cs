@@ -1,20 +1,14 @@
 namespace CleanArchitecture.Blazor.Infrastructure.Persistence;
 
-public class BlazorContextFactory<TContext> : IDbContextFactory<TContext> where TContext : DbContext
+public class BlazorContextFactory<TContext>(IServiceProvider provider) : IDbContextFactory<TContext>
+    where TContext : DbContext
 {
-    private readonly IServiceProvider _provider;
-
-    public BlazorContextFactory(IServiceProvider provider)
-    {
-        _provider = provider;
-    }
-
     public TContext CreateDbContext()
     {
-        if (_provider == null)
+        if (provider == null)
             throw new InvalidOperationException(
                 "You must configure an instance of IServiceProvider");
 
-        return ActivatorUtilities.CreateInstance<TContext>(_provider);
+        return ActivatorUtilities.CreateInstance<TContext>(provider);
     }
 }

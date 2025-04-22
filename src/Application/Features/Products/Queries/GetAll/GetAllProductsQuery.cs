@@ -21,35 +21,25 @@ public class GetProductQuery : ICacheableRequest<ProductDto?>
     public IEnumerable<string>? Tags => ProductCacheKey.Tags;
 }
 
-public class GetAllProductsQueryHandler :
+public class GetAllProductsQueryHandler(
+    IMapper mapper,
+    IApplicationDbContext context) :
     IRequestHandler<GetAllProductsQuery, IEnumerable<ProductDto>>,
     IRequestHandler<GetProductQuery, ProductDto?>
 
 {
-    private readonly IMapper _mapper;
-    private readonly IApplicationDbContext _context;
-
-    public GetAllProductsQueryHandler(
-        IMapper mapper,
-        IApplicationDbContext context
-    )
-    {
-        _mapper = mapper;
-        _context = context;
-    }
-
     public async Task<IEnumerable<ProductDto>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
     {
-        var data = await _context.Products
-            .ProjectTo<ProductDto>(_mapper.ConfigurationProvider)
+        var data = await context.Products
+            .ProjectTo<ProductDto>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
         return data;
     }
 
     public async Task<ProductDto?> Handle(GetProductQuery request, CancellationToken cancellationToken)
     {
-        var data = await _context.Products.Where(x => x.Id == request.Id)
-                       .ProjectTo<ProductDto>(_mapper.ConfigurationProvider)
+        var data = await context.Products.Where(x => x.Id == request.Id)
+                       .ProjectTo<ProductDto>(mapper.ConfigurationProvider)
                        .FirstOrDefaultAsync(cancellationToken);
         return data;
     }

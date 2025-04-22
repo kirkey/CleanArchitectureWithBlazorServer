@@ -22,25 +22,15 @@ public class DocumentsWithPaginationQuery : AdvancedDocumentsFilter, ICacheableR
     }
 }
 
-public class DocumentsQueryHandler : IRequestHandler<DocumentsWithPaginationQuery, PaginatedData<DocumentDto>>
+public class DocumentsQueryHandler(
+    IMapper mapper,
+    IApplicationDbContext context) : IRequestHandler<DocumentsWithPaginationQuery, PaginatedData<DocumentDto>>
 {
-    private readonly IMapper _mapper;
-    private readonly IApplicationDbContext _context;
-
-    public DocumentsQueryHandler(
-        IMapper mapper,
-        IApplicationDbContext context
-    )
-    {
-        _mapper = mapper;
-        _context = context;
-    }
-
     public async Task<PaginatedData<DocumentDto>> Handle(DocumentsWithPaginationQuery request,
         CancellationToken cancellationToken)
     {
-        var data = await _context.Documents.OrderBy($"{request.OrderBy} {request.SortDirection}")
-            .ProjectToPaginatedDataAsync<Document, DocumentDto>(request.Specification, request.PageNumber, request.PageSize, _mapper.ConfigurationProvider, cancellationToken);
+        var data = await context.Documents.OrderBy($"{request.OrderBy} {request.SortDirection}")
+            .ProjectToPaginatedDataAsync<Document, DocumentDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
 
         return data;
     }

@@ -10,26 +10,14 @@ using CleanArchitecture.Blazor.Domain.Common.Enums;
 
 namespace CleanArchitecture.Blazor.Infrastructure.Services.PaddleOCR;
 
-public class DocumentOcrJob : IDocumentOcrJob
+public class DocumentOcrJob(
+    IApplicationHubWrapper appNotificationService,
+    IApplicationDbContext context,
+    IHttpClientFactory httpClientFactory,
+    ILogger<DocumentOcrJob> logger)
+    : IDocumentOcrJob
 {
-    private readonly IApplicationDbContext _context;
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly ILogger<DocumentOcrJob> _logger;
-    private readonly IApplicationHubWrapper _notificationService;
-    private readonly Stopwatch _timer;
-
-    public DocumentOcrJob(
-        IApplicationHubWrapper appNotificationService,
-        IApplicationDbContext context,
-        IHttpClientFactory httpClientFactory,
-        ILogger<DocumentOcrJob> logger)
-    {
-        _notificationService = appNotificationService;
-        _context = context;
-        _httpClientFactory = httpClientFactory;
-        _logger = logger;
-        _timer = new Stopwatch();
-    }
+    private readonly Stopwatch _timer = new();
 
     public void Do(int id)
     {
@@ -40,68 +28,66 @@ public class DocumentOcrJob : IDocumentOcrJob
     {
         try
         {
-            using (var client = _httpClientFactory.CreateClient("ocr"))
-            {
-                _timer.Start();
+            using var client = httpClientFactory.CreateClient("ocr");
+            _timer.Start();
 
-                var doc = await _context.Documents.FindAsync(id);
-                if (doc == null)
+            var doc = await context.Documents.FindAsync(id);
+            if (doc == null)
+            {
+                logger.LogWarning("Document with Id {Id} not found.", id);
+                return;
+            }
+
+            await appNotificationService.JobStarted(id, doc.Title!);
+            CancelCacheToken();
+
+            if (string.IsNullOrEmpty(doc.URL))
+            {
+                logger.LogWarning("Document URL is null or empty for Id {Id}.", id);
+                return;
+            }
+
+            var response = await client.GetAsync($"?imageUrl={doc.URL}", cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadAsStringAsync(cancellationToken);
+                if (result.Length > 4000)
                 {
-                    _logger.LogWarning("Document with Id {Id} not found.", id);
-                    return;
+                    result = result.Substring(0, 4000);
                 }
 
-                await _notificationService.JobStarted(id, doc.Title!);
+                doc.Status = JobStatus.Done;
+                doc.Description = "Recognition result: success";
+                doc.Content = result;
+
+                await context.SaveChangesAsync(cancellationToken);
+                await appNotificationService.JobCompleted(id, doc.Title!);
                 CancelCacheToken();
 
-                if (string.IsNullOrEmpty(doc.URL))
-                {
-                    _logger.LogWarning("Document URL is null or empty for Id {Id}.", id);
-                    return;
-                }
+                _timer.Stop();
+                logger.LogInformation(
+                    "Image recognition completed successfully {@Document}. Id: {Id}, Elapsed Time: {ElapsedMilliseconds}ms", doc,
+                    id, _timer.ElapsedMilliseconds);
+            }
+            else
+            {
+                var result = await response.Content.ReadAsStringAsync(cancellationToken);
+                doc.Status = JobStatus.Pending;
+                doc.Content = result;
 
-                var response = await client.GetAsync($"?imageUrl={doc.URL}");
+                await context.SaveChangesAsync(cancellationToken);
+                await appNotificationService.JobCompleted(id, $"Error: {result}");
+                CancelCacheToken();
 
-                if (response.IsSuccessStatusCode)
-                {
-                    var result = await response.Content.ReadAsStringAsync();
-                    if (result.Length > 4000)
-                    {
-                        result = result.Substring(0, 4000);
-                    }
-
-                    doc.Status = JobStatus.Done;
-                    doc.Description = "Recognition result: success";
-                    doc.Content = result;
-
-                    await _context.SaveChangesAsync(cancellationToken);
-                    await _notificationService.JobCompleted(id, doc.Title!);
-                    CancelCacheToken();
-
-                    _timer.Stop();
-                    _logger.LogInformation(
-                        "Image recognition completed successfully {@Document}. Id: {Id}, Elapsed Time: {ElapsedMilliseconds}ms", doc,
-                        id, _timer.ElapsedMilliseconds);
-                }
-                else
-                {
-                    var result = await response.Content.ReadAsStringAsync();
-                    doc.Status = JobStatus.Pending;
-                    doc.Content = result;
-
-                    await _context.SaveChangesAsync(cancellationToken);
-                    await _notificationService.JobCompleted(id, $"Error: {result}");
-                    CancelCacheToken();
-
-                    _logger.LogError("Image recognition failed for Id: {Id}, Status Code: {StatusCode}, Message: {Message}",
-                        id, response.StatusCode, result);
-                }
+                logger.LogError("Image recognition failed for Id: {Id}, Status Code: {StatusCode}, Message: {Message}",
+                    id, response.StatusCode, result);
             }
         }
         catch (Exception ex)
         {
-            await _notificationService.JobCompleted(id, $"Error: {ex.Message}");
-            _logger.LogError(ex, "Image recognition error for Id: {Id}, Message: {Message}", id, ex.Message);
+            await appNotificationService.JobCompleted(id, $"Error: {ex.Message}");
+            logger.LogError(ex, "Image recognition error for Id: {Id}, Message: {Message}", id, ex.Message);
         }
         finally
         {

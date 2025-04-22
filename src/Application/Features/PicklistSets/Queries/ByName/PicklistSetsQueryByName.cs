@@ -8,35 +8,23 @@ using CleanArchitecture.Blazor.Application.Features.PicklistSets.DTOs;
 
 namespace CleanArchitecture.Blazor.Application.Features.PicklistSets.Queries.ByName;
 
-public class PicklistSetsQueryByName : ICacheableRequest<IEnumerable<PicklistSetDto>>
+public class PicklistSetsQueryByName(Picklist name) : ICacheableRequest<IEnumerable<PicklistSetDto>>
 {
-    public PicklistSetsQueryByName(Picklist name)
-    {
-        Name = name;
-    }
-    public Picklist Name { get; set; }
+    public Picklist Name { get; set; } = name;
     public string CacheKey => PicklistSetCacheKey.GetCacheKey(Name.ToString());
     public IEnumerable<string>? Tags => PicklistSetCacheKey.Tags;
 }
 
-public class PicklistSetsQueryByNameHandler : IRequestHandler<PicklistSetsQueryByName, IEnumerable<PicklistSetDto>>
+public class PicklistSetsQueryByNameHandler(
+    IMapper mapper,
+    IApplicationDbContext context) : IRequestHandler<PicklistSetsQueryByName, IEnumerable<PicklistSetDto>>
 {
-    private readonly IMapper _mapper;
-    private readonly IApplicationDbContext _context;
-    public PicklistSetsQueryByNameHandler(
-        IMapper mapper,
-        IApplicationDbContext context)
-    {
-        _mapper = mapper;
-        _context = context;
-    }
-
     public async Task<IEnumerable<PicklistSetDto>> Handle(PicklistSetsQueryByName request,
         CancellationToken cancellationToken)
     {
-        var data = await _context.PicklistSets.Where(x => x.Name == request.Name)
+        var data = await context.PicklistSets.Where(x => x.Name == request.Name)
             .OrderBy(x => x.Text)
-            .ProjectTo<PicklistSetDto>(_mapper.ConfigurationProvider)
+            .ProjectTo<PicklistSetDto>(mapper.ConfigurationProvider)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
         return data;
