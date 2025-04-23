@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   blazorserverapp:
-    image: blazordevlab/cleanarchitectureblazorserver:1.2.4
+    image: blazordevlab/cleanarchitectureblazorserver:1.2.11
     environment:
       - UseInMemoryDatabase=${USE_IN_MEMORY_DATABASE}
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
@@ -9,6 +9,7 @@ services:
       - ASPNETCORE_HTTP_PORTS=${ASPNETCORE_HTTP_PORTS}
       - ASPNETCORE_HTTPS_PORTS=${ASPNETCORE_HTTPS_PORTS}
       - AppConfigurationSettings__ApplicationUrl=${APP_URL}
+      - AppConfigurationSettings__AppName=${APP_NAME}
       - DatabaseSettings__DBProvider=${DB_PROVIDER}
       - DatabaseSettings__ConnectionString=${DB_CONNECTION_STRING}
       - SmtpClientOptions__User=${SMTP_USER}

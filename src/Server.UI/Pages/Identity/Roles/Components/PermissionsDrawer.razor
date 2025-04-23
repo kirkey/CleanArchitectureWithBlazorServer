@@ -1,22 +1,22 @@
 ﻿@inherits MudComponentBase
 
-@inject IStringLocalizer<Roles> L
+@inject IStringLocalizer<PermissionsDrawer> L
 
 <MudDrawer Open="@Open"
-Width="400px"
-Height="100vh"
-OpenChanged="@(s => OnOpenChanged.InvokeAsync(s))"
-Anchor="Anchor.End" Elevation="1" Variant="@DrawerVariant.Temporary">
+           Width="400px"
+           Height="100vh"
+           OpenChanged="@(s => OnOpenChanged.InvokeAsync(s))"
+           Anchor="Anchor.End" Elevation="1" Variant="@DrawerVariant.Temporary">
     <MudDrawerHeader>
-        <MudText Typo="Typo.h6">Set Permissions</MudText>
+        <MudText Typo="Typo.h5">@L["Set Permissions"]</MudText>
     </MudDrawerHeader>
     <MudStack AlignItems="AlignItems.Stretch" Class="px-5">
         <MudTextField @bind-Value="Keyword" Label="Search"
-        Margin="Margin.Dense"
-        Variant="Variant.Text"
-        Adornment="Adornment.End"
-        AdornmentIcon="@Icons.Material.Filled.Search"
-        AdornmentColor="Color.Secondary" />
+                      Margin="Margin.Dense"
+                      Variant="Variant.Text"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      AdornmentColor="Color.Secondary" />
     </MudStack>
     @if (Permissions != null && Permissions.Any())
     {
@@ -29,13 +29,13 @@ Anchor="Anchor.End" Elevation="1" Variant="@DrawerVariant.Temporary">
                             <MudText Typo="Typo.body1">
                                 @L[group]
                             </MudText>
-                            <MudText Typo="Typo.body2">
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary">
                                 @(L[Permissions.First(x => x.Group == group).Description])
                             </MudText>
                         </MudStack>
                     </CardHeaderContent>
                     <CardHeaderActions>
-                        <MudTooltip Text="@L["Assign or Unassign all"]">
+                        <MudTooltip Text="@L["Assign / Unassign all permission set"]">
                             @if (Permissions.Any(x => x.Group == group && x.IsInherit))
                             {
                                 <MudIconButton Disabled="true" Icon="@Icons.Material.Filled.AutoFixHigh" Color="Color.Default" />
@@ -44,7 +44,7 @@ Anchor="Anchor.End" Elevation="1" Variant="@DrawerVariant.Temporary">
                             {
                                 <MudIconButton Disabled="@Waiting" Icon="@Icons.Material.Filled.AutoFixHigh" Color="Color.Default" OnClick="@(() => OnAssignAll(group))" />
                             }
-                           
+
                         </MudTooltip>
                     </CardHeaderActions>
                 </MudCardHeader>
@@ -54,17 +54,29 @@ Anchor="Anchor.End" Elevation="1" Variant="@DrawerVariant.Temporary">
                         var x = i;
                         if (Permissions[x].Group == group)
                         {
-                            <MudTooltip Delay="400" Text="@L[Permissions[x].HelpText??Permissions[x].Name]">
+                            <div class="d-flex mb-1 align-center">
                                 <MudCheckBox Dense="true"
                                              T="bool"
                                              Size="Size.Small"
                                              Value="@Permissions[x].Assigned"
                                              Disabled="@Permissions[x].IsInherit"
-                                             Label="@L[Permissions[x].Name]"
                                              ValueChanged="@(s => OnAssignChanged.InvokeAsync(Permissions[x]))"
                                              Color="Color.Primary">
                                 </MudCheckBox>
-                            </MudTooltip>
+                                <div class="d-flex flex-column">
+                                    <MudText Typo="Typo.body2">
+                                       @L[Permissions[x].Name]
+                                    </MudText>
+                                    @if (!string.IsNullOrEmpty(Permissions[x].HelpText))
+                                    {
+                                        <MudText Typo="Typo.caption" Class="mud-text-secondary">
+                                            @L[Permissions[x].HelpText]
+                                        </MudText>
+                                    }
+                                </div>
+                            </div>
+
+
                         }
                     }
                 </MudCardContent>
