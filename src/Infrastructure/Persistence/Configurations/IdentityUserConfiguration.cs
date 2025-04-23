@@ -10,6 +10,8 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
 {
     public void Configure(EntityTypeBuilder<ApplicationUser> builder)
     {
+        builder.ToTable("Users", SchemaNames.Identity);
+        
         // Each User can have many UserLogins
         builder.HasMany(e => e.Logins)
             .WithOne()
@@ -39,6 +41,8 @@ public class ApplicationRoleConfiguration : IEntityTypeConfiguration<Application
 {
     public void Configure(EntityTypeBuilder<ApplicationRole> builder)
     {
+        builder.ToTable("Roles", SchemaNames.Identity);
+        
         builder.HasIndex(x => x.NormalizedName).HasDatabaseName("RoleNameIndex").IsUnique(false);
         builder.HasIndex(x=>new { x.TenantId, x.Name }).IsUnique();
         builder.HasOne(x => x.Tenant).WithMany().HasForeignKey(u => u.TenantId);
@@ -49,6 +53,8 @@ public class ApplicationRoleClaimConfiguration : IEntityTypeConfiguration<Applic
 {
     public void Configure(EntityTypeBuilder<ApplicationRoleClaim> builder)
     {
+        builder.ToTable("RoleClaims", SchemaNames.Identity);
+        
         builder.HasOne(d => d.Role)
             .WithMany(p => p.RoleClaims)
             .HasForeignKey(d => d.RoleId)
@@ -60,6 +66,8 @@ public class ApplicationUserRoleConfiguration : IEntityTypeConfiguration<Applica
 {
     public void Configure(EntityTypeBuilder<ApplicationUserRole> builder)
     {
+        builder.ToTable("UserRoles", SchemaNames.Identity);
+        
         builder.HasOne(d => d.Role)
             .WithMany(p => p.UserRoles)
             .HasForeignKey(d => d.RoleId)
@@ -75,6 +83,8 @@ public class ApplicationUserClaimConfiguration : IEntityTypeConfiguration<Applic
 {
     public void Configure(EntityTypeBuilder<ApplicationUserClaim> builder)
     {
+        builder.ToTable("UserClaims", schema: SchemaNames.Identity);
+        
         builder.HasOne(d => d.User)
             .WithMany(p => p.UserClaims)
             .HasForeignKey(d => d.UserId)
@@ -86,6 +96,8 @@ public class ApplicationUserLoginConfiguration : IEntityTypeConfiguration<Applic
 {
     public void Configure(EntityTypeBuilder<ApplicationUserLogin> builder)
     {
+        builder.ToTable("UserLogins", SchemaNames.Identity);
+        
         builder.HasOne(d => d.User)
             .WithMany(p => p.Logins)
             .HasForeignKey(d => d.UserId)
@@ -97,6 +109,8 @@ public class ApplicationUserTokenConfiguration : IEntityTypeConfiguration<Applic
 {
     public void Configure(EntityTypeBuilder<ApplicationUserToken> builder)
     {
+        builder.ToTable("UserTokens", SchemaNames.Identity);
+        
         builder.HasOne(d => d.User)
             .WithMany(p => p.Tokens)
             .HasForeignKey(d => d.UserId)

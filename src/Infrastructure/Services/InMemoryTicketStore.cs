@@ -36,7 +36,7 @@ public class MemoryCacheTicketStore : ITicketStore
     public async Task<string> StoreAsync(AuthenticationTicket ticket)
     {
         var guid = Guid.NewGuid();
-        var key = KeyPrefix + guid.ToString();
+        var key = KeyPrefix + guid;
         await RenewAsync(key, ticket);
         return key;
     }

@@ -143,22 +143,22 @@ public static class SerilogExtensions
     {
         if (string.IsNullOrEmpty(connectionString)) return;
 
-        const string tableName = "system_logs";
+        const string tableName = "SystemLogs";
         //Used columns (Key is a column name) 
         //Column type is writer's constructor parameter
         IDictionary<string, ColumnWriterBase> columnOptions = new Dictionary<string, ColumnWriterBase>
         {
-            { "message", new RenderedMessageColumnWriter(NpgsqlDbType.Text) },
-            { "message_template", new MessageTemplateColumnWriter(NpgsqlDbType.Text) },
-            { "level", new LevelColumnWriter(true, NpgsqlDbType.Varchar) },
-            { "time_stamp", new TimestampColumnWriter(NpgsqlDbType.Timestamp) },
-            { "exception", new ExceptionColumnWriter(NpgsqlDbType.Text) },
-            { "properties", new PropertiesColumnWriter(NpgsqlDbType.Varchar) },
-            { "log_event", new LogEventSerializedColumnWriter(NpgsqlDbType.Varchar) },
-            { "user_name", new SinglePropertyColumnWriter("UserName", PropertyWriteMethod.Raw, NpgsqlDbType.Varchar) },
-            { "client_ip", new SinglePropertyColumnWriter("ClientIP", PropertyWriteMethod.Raw, NpgsqlDbType.Varchar) },
+            { "Message", new RenderedMessageColumnWriter(NpgsqlDbType.Text) },
+            { "MessageTemplate", new MessageTemplateColumnWriter(NpgsqlDbType.Text) },
+            { "Level", new LevelColumnWriter(true, NpgsqlDbType.Varchar) },
+            { "TimeStamp", new TimestampColumnWriter(NpgsqlDbType.Timestamp) },
+            { "Exception", new ExceptionColumnWriter(NpgsqlDbType.Text) },
+            { "Properties", new PropertiesColumnWriter(NpgsqlDbType.Varchar) },
+            { "LogEvent", new LogEventSerializedColumnWriter(NpgsqlDbType.Varchar) },
+            { "UserName", new SinglePropertyColumnWriter("UserName", PropertyWriteMethod.Raw, NpgsqlDbType.Varchar) },
+            { "ClientIp", new SinglePropertyColumnWriter("ClientIP", PropertyWriteMethod.Raw, NpgsqlDbType.Varchar) },
             {
-                "client_agent",
+                "ClientAgent",
                 new SinglePropertyColumnWriter("ClientAgent", PropertyWriteMethod.ToString, NpgsqlDbType.Varchar)
             }
         };

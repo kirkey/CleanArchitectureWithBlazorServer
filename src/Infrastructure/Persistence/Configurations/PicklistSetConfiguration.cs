@@ -10,6 +10,8 @@ public class PicklistSetConfiguration : IEntityTypeConfiguration<PicklistSet>
 {
     public void Configure(EntityTypeBuilder<PicklistSet> builder)
     {
+        builder.ToTable("PicklistSets", SchemaNames.Sample);
+        
         builder.Property(t => t.Name).HasConversion<string>().HasMaxLength(30);
         builder.Property(t => t.Value).HasMaxLength(50);
         builder.Property(t => t.Text).HasMaxLength(100);

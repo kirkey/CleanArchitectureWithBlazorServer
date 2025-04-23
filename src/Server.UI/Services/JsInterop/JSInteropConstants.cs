@@ -1,6 +1,6 @@
 ﻿namespace CleanArchitecture.Blazor.Server.UI.Services.JsInterop;
 
-public static class JSInteropConstants
+public static class JsInteropConstants
 {
     public const string ExternalLogin = "externalLogin";
     public const string ExternalLogout = "externalLogout";

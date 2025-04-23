@@ -37,7 +37,7 @@ namespace CleanArchitecture.Blazor.Migrators.MSSQL.Migrations
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
-                name: "Created",
+                name: "CreatedOn",
                 table: "AspNetRoles",
                 type: "datetime2",
                 nullable: true);
@@ -50,7 +50,7 @@ namespace CleanArchitecture.Blazor.Migrators.MSSQL.Migrations
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
-                name: "LastModified",
+                name: "LastModifiedOn",
                 table: "AspNetRoles",
                 type: "datetime2",
                 nullable: true);
@@ -75,7 +75,7 @@ namespace CleanArchitecture.Blazor.Migrators.MSSQL.Migrations
                 table: "AspNetUsers");
 
             migrationBuilder.DropColumn(
-                name: "Created",
+                name: "CreatedOn",
                 table: "AspNetRoles");
 
             migrationBuilder.DropColumn(
@@ -83,7 +83,7 @@ namespace CleanArchitecture.Blazor.Migrators.MSSQL.Migrations
                 table: "AspNetRoles");
 
             migrationBuilder.DropColumn(
-                name: "LastModified",
+                name: "LastModifiedOn",
                 table: "AspNetRoles");
 
             migrationBuilder.DropColumn(

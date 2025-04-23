@@ -72,6 +72,7 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
     private void UpdateAuditableEntities(DbContext context)
     {
         var userId = _currentUserAccessor.SessionInfo?.UserId;
+        var userName = _currentUserAccessor.SessionInfo?.UserName;
         var tenantId = _currentUserAccessor.SessionInfo?.TenantId;
         var now = _dateTime.Now;
 
@@ -80,44 +81,54 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
             switch (entry.State)
             {
                 case EntityState.Added:
-                    SetCreationAuditInfo(entry.Entity, userId, tenantId, now);
+                    SetCreationAuditInfo(entry.Entity, userId, userName, tenantId, now);
                     break;
 
                 case EntityState.Modified:
-                    SetModificationAuditInfo(entry.Entity, userId, now);
+                    SetModificationAuditInfo(entry.Entity, userId, userName, now);
                     break;
 
                 case EntityState.Deleted:
-                    SetDeletionAuditInfo(entry, userId, now);
+                    SetDeletionAuditInfo(entry, userId, userName, now);
                     break;
 
                 case EntityState.Unchanged when entry.HasChangedOwnedEntities():
-                    SetModificationAuditInfo(entry.Entity, userId, now);
+                    SetModificationAuditInfo(entry.Entity, userId, userName, now);
                     break;
+
+                // case EntityState.Detached:
+                //     break;
+                //
+                // default:
+                //     throw new ArgumentOutOfRangeException();
             }
         }
     }
 
-    private static void SetCreationAuditInfo(IAuditableEntity entity, string userId, string tenantId, DateTime now)
+    private static void SetCreationAuditInfo(IAuditableEntity entity, string userId, string userName, string tenantId, DateTime now)
     {
+        entity.CreatedOn = now;
         entity.CreatedBy = userId;
-        entity.Created = now;
+        entity.CreatedUser = userName;
+
         if (entity is IMustHaveTenant mustTenant && mustTenant.TenantId==null) mustTenant.TenantId = tenantId;
         if (entity is IMayHaveTenant mayTenant && mayTenant.TenantId==null) mayTenant.TenantId = tenantId;
     }
 
-    private static void SetModificationAuditInfo(IAuditableEntity entity, string userId, DateTime now)
+    private static void SetModificationAuditInfo(IAuditableEntity entity, string userId, string userName, DateTime now)
     {
+        entity.LastModifiedOn = now;
         entity.LastModifiedBy = userId;
-        entity.LastModified = now;
+        entity.LastModifiedUser = userName;
     }
 
-    private static void SetDeletionAuditInfo(EntityEntry entry, string userId, DateTime now)
+    private static void SetDeletionAuditInfo(EntityEntry entry, string userId, string userName, DateTime now)
     {
         if (entry.Entity is ISoftDelete softDelete)
         {
+            softDelete.DeletedOn = now;
             softDelete.DeletedBy = userId;
-            softDelete.Deleted = now;
+            softDelete.DeletedUser = userName;
             entry.State = EntityState.Modified;
         }
     }

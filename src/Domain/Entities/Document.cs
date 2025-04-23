@@ -11,7 +11,6 @@ namespace CleanArchitecture.Blazor.Domain.Entities;
 public sealed class Document : BaseAuditableEntity, IMayHaveTenant, IAuditTrial
 {
     public string? Title { get; set; }
-    public string? Description { get; set; }
     public JobStatus Status { get; set; } = default!;
     public string? Content { get; set; }
     public bool IsPublic { get; set; }

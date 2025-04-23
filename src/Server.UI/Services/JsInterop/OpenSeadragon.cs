@@ -8,6 +8,6 @@ public class OpenSeadragon(IJSRuntime jsRuntime)
     {
         var target = "openseadragon";
         var jsmodule = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "/js/openseadragon.js").ConfigureAwait(false);
-        return jsmodule.InvokeVoidAsync(JSInteropConstants.ShowOpenSeadragon, target, url);
+        return jsmodule.InvokeVoidAsync(JsInteropConstants.ShowOpenSeadragon, target, url);
     }
 }

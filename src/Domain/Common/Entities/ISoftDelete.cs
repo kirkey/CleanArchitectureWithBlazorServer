@@ -5,6 +5,7 @@ namespace CleanArchitecture.Blazor.Domain.Common.Entities;
 
 public interface ISoftDelete
 {
-    DateTime? Deleted { get; set; }
+    DateTime? DeletedOn { get; set; }
     string? DeletedBy { get; set; }
+    string? DeletedUser { get; set; }
 }

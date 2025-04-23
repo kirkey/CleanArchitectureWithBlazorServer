@@ -308,10 +308,10 @@
     <value>Last Modified</value>
   </data>
   <data name="Created By" xml:space="preserve">
-    <value>Created By</value>
+    <value>CreatedOn By</value>
   </data>
   <data name="Created" xml:space="preserve">
-    <value>Created</value>
+    <value>CreatedOn</value>
   </data>
   <data name="Time Zone" xml:space="preserve">
     <value>Time Zone</value>

@@ -17,6 +17,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Tenant> Tenants { get; set; }
     public DbSet<SystemLog> SystemLogs { get; set; }
     public DbSet<AuditTrail> AuditTrails { get; set; }
+
     public DbSet<Document> Documents { get; set; }
 
     public DbSet<PicklistSet> PicklistSets { get; set; }
@@ -26,10 +27,17 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
-        
+        foreach (var entity in builder.Model.GetEntityTypes())
+        {
+            foreach (var property in entity.GetProperties())
+            {
+                property.SetColumnName(property.Name); // Use property name as column name
+            }
+        }
+
         base.OnModelCreating(builder);
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-        builder.ApplyGlobalFilters<ISoftDelete>(s => s.Deleted == null);
+        builder.ApplyGlobalFilters<ISoftDelete>(s => s.DeletedOn == null);
     }
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

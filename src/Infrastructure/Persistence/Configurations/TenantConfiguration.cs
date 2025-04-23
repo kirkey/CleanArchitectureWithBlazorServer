@@ -9,6 +9,8 @@ public class TenantConfiguration : IEntityTypeConfiguration<Tenant>
 {
     public void Configure(EntityTypeBuilder<Tenant> builder)
     {
+        builder.ToTable("Tenants");
+
         //builder.Ignore(e => e.DomainEvents);
     }
 }

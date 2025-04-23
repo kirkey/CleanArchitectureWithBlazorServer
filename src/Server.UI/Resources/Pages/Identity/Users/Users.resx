@@ -299,10 +299,10 @@
     <value>Superior</value>
   </data>
   <data name="Created" xml:space="preserve">
-    <value>Created</value>
+    <value>CreatedOn</value>
   </data>
   <data name="Created By" xml:space="preserve">
-    <value>Created By</value>
+    <value>CreatedOn By</value>
   </data>
   <data name="Last Modified" xml:space="preserve">
     <value>Last Modified</value>

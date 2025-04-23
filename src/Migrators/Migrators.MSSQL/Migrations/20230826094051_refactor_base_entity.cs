@@ -12,7 +12,7 @@ namespace CleanArchitecture.Blazor.Migrators.MSSQL.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "Created",
+                name: "CreatedOn",
                 table: "Tenants");
 
             migrationBuilder.DropColumn(
@@ -20,7 +20,7 @@ namespace CleanArchitecture.Blazor.Migrators.MSSQL.Migrations
                 table: "Tenants");
 
             migrationBuilder.DropColumn(
-                name: "LastModified",
+                name: "LastModifiedOn",
                 table: "Tenants");
 
             migrationBuilder.DropColumn(
@@ -32,7 +32,7 @@ namespace CleanArchitecture.Blazor.Migrators.MSSQL.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<DateTime>(
-                name: "Created",
+                name: "CreatedOn",
                 table: "Tenants",
                 type: "datetime2",
                 nullable: true);
@@ -44,7 +44,7 @@ namespace CleanArchitecture.Blazor.Migrators.MSSQL.Migrations
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
-                name: "LastModified",
+                name: "LastModifiedOn",
                 table: "Tenants",
                 type: "datetime2",
                 nullable: true);

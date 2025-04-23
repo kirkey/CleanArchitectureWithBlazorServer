@@ -5,6 +5,7 @@ namespace CleanArchitecture.Blazor.Domain.Common.Entities;
 
 public abstract class BaseAuditableSoftDeleteEntity : BaseAuditableEntity, ISoftDelete
 {
-    public DateTime? Deleted { get; set; }
+    public DateTime? DeletedOn { get; set; }
     public string? DeletedBy { get; set; }
+    public string? DeletedUser { get; set; }
 }

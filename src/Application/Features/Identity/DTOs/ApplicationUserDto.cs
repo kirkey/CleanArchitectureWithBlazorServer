@@ -54,11 +54,11 @@ public class ApplicationUserDto
     public DateTime? LastModified { get; set; }
     [Description("Last Modified By")]
     public string? LastModifiedBy { get; set; }
-    [Description("Created")]
+    [Description("CreatedOn")]
     public DateTime? Created { get; set; }
-    [Description("Created By")]
+    [Description("CreatedOn By")]
     public string? CreatedBy { get; set; }
-    [Description("Created By User")]
+    [Description("CreatedOn By User")]
     public ApplicationUserDto? CreatedByUser { get; set; }
     [Description("Last Modified By User")]
     public ApplicationUserDto? LastModifiedByUser { get; set; }

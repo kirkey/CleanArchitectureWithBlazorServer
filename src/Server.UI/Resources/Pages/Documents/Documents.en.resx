@@ -188,6 +188,6 @@
     <value>Status</value>
   </data>
   <data name="Created By User" xml:space="preserve">
-    <value>Created By User</value>
+    <value>CreatedOn By User</value>
   </data>
 </root>

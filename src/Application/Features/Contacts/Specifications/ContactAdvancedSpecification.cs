@@ -5,7 +5,7 @@
 //     See the LICENSE file in the project root for more information.
 //
 //     Author: neozhu
-//     Created Date: 2025-03-19
+//     CreatedOn Date: 2025-03-19
 //     Last Modified: 2025-03-19
 //     Description: 
 //       Defines a specification for applying advanced filtering options to the 
@@ -29,8 +29,8 @@ public class ContactAdvancedSpecification : Specification<Contact>
         Query.Where(q => q.Name != null)
              .Where(filter.Keyword,!string.IsNullOrEmpty(filter.Keyword))
              .Where(q => q.CreatedBy == filter.CurrentUser.UserId, filter.ListView == ContactListView.My && filter.CurrentUser is not null)
-             .Where(x => x.Created >= todayrange.Start && x.Created < todayrange.End.AddDays(1), filter.ListView == ContactListView.TODAY)
-             .Where(x => x.Created >= last30daysrange.Start, filter.ListView == ContactListView.LAST_30_DAYS);
+             .Where(x => x.CreatedOn >= todayrange.Start && x.CreatedOn < todayrange.End.AddDays(1), filter.ListView == ContactListView.TODAY)
+             .Where(x => x.CreatedOn >= last30daysrange.Start, filter.ListView == ContactListView.LAST_30_DAYS);
        
     }
 }

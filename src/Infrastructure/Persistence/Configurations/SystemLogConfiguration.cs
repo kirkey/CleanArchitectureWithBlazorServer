@@ -9,6 +9,8 @@ public class SystemLogConfiguration : IEntityTypeConfiguration<SystemLog>
 {
     public void Configure(EntityTypeBuilder<SystemLog> builder)
     {
+        builder.ToTable("SystemLogs");
+        
         builder.Property(x => x.Level).HasMaxLength(450);
         builder.Property(x => x.Message).HasMaxLength(int.MaxValue);
         builder.Property(x => x.Exception).HasMaxLength(int.MaxValue);

@@ -129,7 +129,7 @@
     <value>Audit Type</value>
   </data>
     <data name="Created DateTime" xml:space="preserve">
-    <value>Created DateTime</value>
+    <value>CreatedOn DateTime</value>
   </data>
     <data name="Hide Details" xml:space="preserve">
     <value>Hide Details</value>

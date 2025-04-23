@@ -8,7 +8,6 @@ namespace CleanArchitecture.Blazor.Domain.Entities;
 public class Product : BaseAuditableEntity
 {
     public string? Name { get; set; }
-    public string? Description { get; set; }
     public string? Brand { get; set; }
     public string? Unit { get; set; }
     public decimal Price { get; set; }
