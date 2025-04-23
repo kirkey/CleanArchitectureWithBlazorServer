@@ -15,7 +15,7 @@ public class DatabaseSettings : IValidatableObject
     /// <summary>
     ///     Represents the database provider, which to connect to
     /// </summary>
-    public string DBProvider { get; set; } = string.Empty;
+    public string DbProvider { get; set; } = string.Empty;
 
     /// <summary>
     ///     The connection string being used to connect with the given database provider
@@ -29,10 +29,10 @@ public class DatabaseSettings : IValidatableObject
     /// <returns>The result of the validation</returns>
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        if (string.IsNullOrEmpty(DBProvider))
+        if (string.IsNullOrEmpty(DbProvider))
             yield return new ValidationResult(
-                $"{nameof(DatabaseSettings)}.{nameof(DBProvider)} is not configured",
-                new[] { nameof(DBProvider) });
+                $"{nameof(DatabaseSettings)}.{nameof(DbProvider)} is not configured",
+                new[] { nameof(DbProvider) });
 
         if (string.IsNullOrEmpty(ConnectionString))
             yield return new ValidationResult(

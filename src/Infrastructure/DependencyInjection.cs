@@ -100,8 +100,8 @@ public static class DependencyInjection
             {
                 var databaseSettings = p.GetRequiredService<IOptions<DatabaseSettings>>().Value;
                 m.AddInterceptors(p.GetServices<ISaveChangesInterceptor>());
-                m.UseExceptionProcessor(databaseSettings.DBProvider);
-                m.UseDatabase(databaseSettings.DBProvider, databaseSettings.ConnectionString);
+                m.UseExceptionProcessor(databaseSettings.DbProvider);
+                m.UseDatabase(databaseSettings.DbProvider, databaseSettings.ConnectionString);
             });
 
         services.AddScoped<IDbContextFactory<ApplicationDbContext>, BlazorContextFactory<ApplicationDbContext>>();
@@ -196,7 +196,7 @@ public static class DependencyInjection
             .AddScoped<IDateTime, DateTimeService>()
             .AddScoped<IExcelService, ExcelService>()
             .AddScoped<IUploadService, MinioUploadService>()
-            .AddScoped<IPDFService, PDFService>()
+            .AddScoped<IPdfService, PdfService>()
             .AddTransient<IDocumentOcrJob, DocumentOcrJob>();
     }
 

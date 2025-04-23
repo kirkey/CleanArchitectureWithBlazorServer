@@ -5,7 +5,7 @@ using Document = QuestPDF.Fluent.Document;
 
 namespace CleanArchitecture.Blazor.Infrastructure.Services;
 
-public class PDFService : IPDFService
+public class PdfService : IPdfService
 {
     private const int MarginPTs = 56;
     private const string FontFamilyName = Fonts.Arial;

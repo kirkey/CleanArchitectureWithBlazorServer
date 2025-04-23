@@ -60,6 +60,6 @@ public class ServerHub : Hub<ISignalRHub>
 
     public async Task Completed(int id,string message)
     {
-        await Clients.All.Completed(id,message).ConfigureAwait(false);
+        await Clients.All.Completed(id, message).ConfigureAwait(false);
     }
 }
