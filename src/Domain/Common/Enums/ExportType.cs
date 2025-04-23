@@ -3,5 +3,5 @@
 public enum ExportType
 {
     Excel,
-    PDF
+    Pdf
 }

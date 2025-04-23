@@ -19,9 +19,9 @@ public class GetFileStreamQueryHandler(IApplicationDbContext context)
     {
         var item = await context.Documents.FindAsync(new object?[] { request.Id }, cancellationToken);
         if (item is null) throw new Exception($"not found document entry by Id:{request.Id}.");
-        if (string.IsNullOrEmpty(item.URL)) return (string.Empty, Array.Empty<byte>());
+        if (string.IsNullOrEmpty(item.Url)) return (string.Empty, Array.Empty<byte>());
 
-        var filepath = Path.Combine(Directory.GetCurrentDirectory(), item.URL);
+        var filepath = Path.Combine(Directory.GetCurrentDirectory(), item.Url);
         if (!File.Exists(filepath)) return (string.Empty, Array.Empty<byte>());
 
         var fileName = new FileInfo(filepath).Name;

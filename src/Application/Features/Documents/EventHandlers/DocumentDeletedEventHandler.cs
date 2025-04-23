@@ -8,7 +8,7 @@ public class DocumentDeletedEventHandler(ILogger<DocumentDeletedEventHandler> lo
 {
     public Task Handle(DeletedEvent<Document> notification, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(notification.Entity.URL))
+        if (string.IsNullOrEmpty(notification.Entity.Url))
         {
             logger.LogWarning("The document URL is null or empty, skipping file deletion.");
             return Task.CompletedTask;
@@ -16,7 +16,7 @@ public class DocumentDeletedEventHandler(ILogger<DocumentDeletedEventHandler> lo
 
         var folder = UploadType.Document.GetDescription();
         var folderName = Path.Combine("Files", folder);
-        var deleteFilePath = Path.Combine(Directory.GetCurrentDirectory(), folderName, notification.Entity.URL);
+        var deleteFilePath = Path.Combine(Directory.GetCurrentDirectory(), folderName, notification.Entity.Url);
 
         if (File.Exists(deleteFilePath))
         {

@@ -26,7 +26,7 @@ public class UploadDocumentCommandHandler(
             var document = new Document
             {
                 Title = fileName,
-                URL = url,
+                Url = url,
                 Status = JobStatus.Queueing,
                 IsPublic = true,
                 DocumentType = DocumentType.Image

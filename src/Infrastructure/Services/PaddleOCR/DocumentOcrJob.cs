@@ -41,13 +41,13 @@ public class DocumentOcrJob(
             await appNotificationService.JobStarted(id, doc.Title!);
             CancelCacheToken();
 
-            if (string.IsNullOrEmpty(doc.URL))
+            if (string.IsNullOrEmpty(doc.Url))
             {
                 logger.LogWarning("Document URL is null or empty for Id {Id}.", id);
                 return;
             }
 
-            var response = await client.GetAsync($"?imageUrl={doc.URL}", cancellationToken);
+            var response = await client.GetAsync($"?imageUrl={doc.Url}", cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {

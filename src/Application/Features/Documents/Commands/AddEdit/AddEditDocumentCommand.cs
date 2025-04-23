@@ -46,7 +46,7 @@ public class AddEditDocumentCommandHandler(
                 return await Result<int>.FailureAsync($"Document with id: [{request.Id}] not found.");
             }
             document.AddDomainEvent(new UpdatedEvent<Document>(document));
-            if (request.UploadRequest != null) document.URL = await uploadService.UploadAsync(request.UploadRequest);
+            if (request.UploadRequest != null) document.Url = await uploadService.UploadAsync(request.UploadRequest);
             document.Title = request.Title;
             document.Description = request.Description;
             document.IsPublic = request.IsPublic;
@@ -57,7 +57,7 @@ public class AddEditDocumentCommandHandler(
         else
         {
             var document = mapper.Map<Document>(request);
-            if (request.UploadRequest != null) document.URL = await uploadService.UploadAsync(request.UploadRequest);
+            if (request.UploadRequest != null) document.Url = await uploadService.UploadAsync(request.UploadRequest);
             document.AddDomainEvent(new CreatedEvent<Document>(document));
             context.Documents.Add(document);
             await context.SaveChangesAsync(cancellationToken);

@@ -36,7 +36,7 @@ public class ExportProductsQueryHandler(
         Dictionary<string, Func<ProductDto, object?>> mappers;
         switch (request.ExportType)
         {
-            case ExportType.PDF:
+            case ExportType.Pdf:
                 mappers = new Dictionary<string, Func<ProductDto, object?>>
                 {
                     { localizer["Brand Name"], item => item.Brand },
