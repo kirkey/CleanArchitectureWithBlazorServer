@@ -47,7 +47,7 @@
 @code {
     public string? Title { get; private set; }
     MudForm? _contactForm;
-    private bool _saving = false;
+    private bool _saving;
     private List<BreadcrumbItem>? _breadcrumbItems;
     private CreateContactCommand _model = new();
     protected override Task OnInitializedAsync()

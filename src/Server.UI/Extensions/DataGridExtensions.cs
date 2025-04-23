@@ -9,7 +9,7 @@ public static class DataGridExtensions
         return source.EfOrderBySortDefinitions(state.SortDefinitions);
     }
 
-    public static IQueryable<T> EfOrderBySortDefinitions<T, T1>(this IQueryable<T> source,
+    private static IQueryable<T> EfOrderBySortDefinitions<T, T1>(this IQueryable<T> source,
         ICollection<SortDefinition<T1>> sortDefinitions)
     {
         // avoid multiple enumeration
@@ -34,7 +34,7 @@ public static class DataGridExtensions
                     .Single(m => m.GetParameters().ToList().Count == 2);
                 var genericMethod = sortMethod.MakeGenericMethod(typeof(T), orderByProperty.Type);
                 orderedQuery =
-                    (IOrderedQueryable<T>?)genericMethod.Invoke(genericMethod, new object[] { source, sortLambda });
+                    (IOrderedQueryable<T>?)genericMethod.Invoke(genericMethod, [source, sortLambda]);
             }
             else
             {
@@ -45,7 +45,7 @@ public static class DataGridExtensions
                     .Single(m => m.GetParameters().ToList().Count == 2);
                 var genericMethod = sortMethod.MakeGenericMethod(typeof(T), orderByProperty.Type);
                 orderedQuery =
-                    (IOrderedQueryable<T>?)genericMethod.Invoke(genericMethod, new object[] { source, sortLambda });
+                    (IOrderedQueryable<T>?)genericMethod.Invoke(genericMethod, [source, sortLambda]);
             }
         }
 

@@ -55,7 +55,7 @@
     [Parameter]
     public int Id { get; set; }
     MudForm? _contactForm;
-    private bool _saving = false;
+    private bool _saving;
     private List<BreadcrumbItem>? _breadcrumbItems;
     private UpdateContactCommand? _model;
     protected override async Task OnInitializedAsync()

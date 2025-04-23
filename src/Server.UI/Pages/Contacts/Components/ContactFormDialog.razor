@@ -37,8 +37,8 @@
 
 @code {
     MudForm? _contactForm;
-    private bool _saving = false;
-    private bool _savingnew = false;
+    private bool _saving;
+    private bool _savingnew;
     [CascadingParameter]
     IMudDialogInstance MudDialog { get; set; } = default!;
     [EditorRequired] [Parameter] public AddEditContactCommand _model { get; set; } = null!;
