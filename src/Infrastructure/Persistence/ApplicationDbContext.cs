@@ -36,13 +36,18 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         }
 
         base.OnModelCreating(builder);
+
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         builder.ApplyGlobalFilters<ISoftDelete>(s => s.DeletedOn == null);
     }
+
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         base.ConfigureConventions(configurationBuilder);
-        configurationBuilder.Properties<string>().HaveMaxLength(450);
+        
+        configurationBuilder.Properties<decimal>().HavePrecision(16, 2);
+        configurationBuilder.Properties<double>().HavePrecision(8, 2);
+        configurationBuilder.Properties<string>().HaveMaxLength(1024);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
