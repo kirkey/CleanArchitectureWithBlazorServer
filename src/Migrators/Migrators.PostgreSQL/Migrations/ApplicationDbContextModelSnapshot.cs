@@ -68,13 +68,13 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("primary_key");
 
                     b.Property<string>("TableName")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("TableName");
 
                     b.Property<string>("UserId")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("UserId");
 
                     b.HasKey("Id")
@@ -96,13 +96,13 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Country")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Country");
 
                     b.Property<string>("CreatedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("CreatedBy");
 
                     b.Property<DateTime?>("CreatedOn")
@@ -110,23 +110,23 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("CreatedOn");
 
                     b.Property<string>("CreatedUser")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("CreatedUser");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Description");
 
                     b.Property<string>("Email")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Email");
 
                     b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("LastModifiedBy");
 
                     b.Property<DateTime?>("LastModifiedOn")
@@ -134,8 +134,8 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("LastModifiedOn");
 
                     b.Property<string>("LastModifiedUser")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("LastModifiedUser");
 
                     b.Property<string>("Name")
@@ -145,13 +145,13 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("Name");
 
                     b.Property<string>("Notes")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Notes");
 
                     b.Property<string>("PhoneNumber")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("PhoneNumber");
 
                     b.HasKey("Id")
@@ -175,8 +175,8 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("Content");
 
                     b.Property<string>("CreatedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("CreatedBy");
 
                     b.Property<DateTime?>("CreatedOn")
@@ -184,13 +184,13 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("CreatedOn");
 
                     b.Property<string>("CreatedUser")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("CreatedUser");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Description");
 
                     b.Property<string>("DocumentType")
@@ -203,8 +203,8 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("IsPublic");
 
                     b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("LastModifiedBy");
 
                     b.Property<DateTime?>("LastModifiedOn")
@@ -212,13 +212,13 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("LastModifiedOn");
 
                     b.Property<string>("LastModifiedUser")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("LastModifiedUser");
 
                     b.Property<string>("Notes")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Notes");
 
                     b.Property<int>("Status")
@@ -226,18 +226,18 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("Status");
 
                     b.Property<string>("TenantId")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("TenantId");
 
                     b.Property<string>("Title")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Title");
 
                     b.Property<string>("Url")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Url");
 
                     b.HasKey("Id")
@@ -265,8 +265,8 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CreatedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("CreatedBy");
 
                     b.Property<DateTime?>("CreatedOn")
@@ -274,8 +274,8 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("CreatedOn");
 
                     b.Property<string>("CreatedUser")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("CreatedUser");
 
                     b.Property<string>("Description")
@@ -284,8 +284,8 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("Description");
 
                     b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("LastModifiedBy");
 
                     b.Property<DateTime?>("LastModifiedOn")
@@ -293,8 +293,8 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("LastModifiedOn");
 
                     b.Property<string>("LastModifiedUser")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("LastModifiedUser");
 
                     b.Property<string>("Name")
@@ -304,8 +304,8 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("Name");
 
                     b.Property<string>("Notes")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Notes");
 
                     b.Property<string>("Text")
@@ -338,13 +338,13 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Brand")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Brand");
 
                     b.Property<string>("CreatedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("CreatedBy");
 
                     b.Property<DateTime?>("CreatedOn")
@@ -352,18 +352,18 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("CreatedOn");
 
                     b.Property<string>("CreatedUser")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("CreatedUser");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Description");
 
                     b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("LastModifiedBy");
 
                     b.Property<DateTime?>("LastModifiedOn")
@@ -371,8 +371,8 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("LastModifiedOn");
 
                     b.Property<string>("LastModifiedUser")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("LastModifiedUser");
 
                     b.Property<string>("Name")
@@ -382,8 +382,8 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("Name");
 
                     b.Property<string>("Notes")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Notes");
 
                     b.Property<string>("Pictures")
@@ -391,12 +391,13 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("pictures");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("numeric")
+                        .HasPrecision(16, 2)
+                        .HasColumnType("numeric(16,2)")
                         .HasColumnName("Price");
 
                     b.Property<string>("Unit")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Unit");
 
                     b.HasKey("Id")
@@ -419,13 +420,13 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClientAgent")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("ClientAgent");
 
                     b.Property<string>("ClientIp")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("ClientIp");
 
                     b.Property<string>("Exception")
@@ -464,8 +465,8 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("TimeStamp");
 
                     b.Property<string>("UserName")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("UserName");
 
                     b.HasKey("Id")
@@ -483,18 +484,18 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
             modelBuilder.Entity("CleanArchitecture.Blazor.Domain.Entities.Tenant", b =>
                 {
                     b.Property<string>("Id")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Id");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Description");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Name");
 
                     b.HasKey("Id")
@@ -506,19 +507,19 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
             modelBuilder.Entity("CleanArchitecture.Blazor.Domain.Identity.ApplicationRole", b =>
                 {
                     b.Property<string>("Id")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Id");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("ConcurrencyStamp");
 
                     b.Property<string>("CreatedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("CreatedBy");
 
                     b.Property<DateTime?>("CreatedOn")
@@ -526,18 +527,18 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("CreatedOn");
 
                     b.Property<string>("CreatedUser")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("CreatedUser");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Description");
 
                     b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("LastModifiedBy");
 
                     b.Property<DateTime?>("LastModifiedOn")
@@ -545,8 +546,8 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("LastModifiedOn");
 
                     b.Property<string>("LastModifiedUser")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("LastModifiedUser");
 
                     b.Property<string>("Name")
@@ -560,8 +561,8 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("NormalizedName");
 
                     b.Property<string>("TenantId")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("TenantId");
 
                     b.HasKey("Id")
@@ -587,29 +588,29 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("ClaimType");
 
                     b.Property<string>("ClaimValue")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("ClaimValue");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Description");
 
                     b.Property<string>("Group")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Group");
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("RoleId");
 
                     b.HasKey("Id")
@@ -624,8 +625,8 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
             modelBuilder.Entity("CleanArchitecture.Blazor.Domain.Identity.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Id");
 
                     b.Property<int>("AccessFailedCount")
@@ -634,8 +635,8 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("ConcurrencyStamp");
 
                     b.Property<DateTime?>("Created")
@@ -643,13 +644,13 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("Created");
 
                     b.Property<string>("CreatedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("CreatedBy");
 
                     b.Property<string>("DisplayName")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("DisplayName");
 
                     b.Property<string>("Email")
@@ -670,8 +671,8 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("IsLive");
 
                     b.Property<string>("LanguageCode")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("LanguageCode");
 
                     b.Property<DateTime?>("LastModified")
@@ -679,8 +680,8 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("LastModified");
 
                     b.Property<string>("LastModifiedBy")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("LastModifiedBy");
 
                     b.Property<bool>("LockoutEnabled")
@@ -702,13 +703,13 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("NormalizedUserName");
 
                     b.Property<string>("PasswordHash")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("PasswordHash");
 
                     b.Property<string>("PhoneNumber")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("PhoneNumber");
 
                     b.Property<bool>("PhoneNumberConfirmed")
@@ -716,18 +717,18 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("PhoneNumberConfirmed");
 
                     b.Property<string>("ProfilePictureDataUrl")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("ProfilePictureDataUrl");
 
                     b.Property<string>("Provider")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Provider");
 
                     b.Property<string>("RefreshToken")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("RefreshToken");
 
                     b.Property<DateTime>("RefreshTokenExpiryTime")
@@ -735,23 +736,23 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                         .HasColumnName("RefreshTokenExpiryTime");
 
                     b.Property<string>("SecurityStamp")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("SecurityStamp");
 
                     b.Property<string>("SuperiorId")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("SuperiorId");
 
                     b.Property<string>("TenantId")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("TenantId");
 
                     b.Property<string>("TimeZoneId")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("TimeZoneId");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -798,24 +799,24 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("ClaimType")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("ClaimType");
 
                     b.Property<string>("ClaimValue")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("ClaimValue");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Description");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("UserId");
 
                     b.HasKey("Id")
@@ -830,24 +831,24 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
             modelBuilder.Entity("CleanArchitecture.Blazor.Domain.Identity.ApplicationUserLogin", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("LoginProvider");
 
                     b.Property<string>("ProviderKey")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("ProviderKey");
 
                     b.Property<string>("ProviderDisplayName")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("ProviderDisplayName");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("UserId");
 
                     b.HasKey("LoginProvider", "ProviderKey")
@@ -862,13 +863,13 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
             modelBuilder.Entity("CleanArchitecture.Blazor.Domain.Identity.ApplicationUserRole", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("UserId");
 
                     b.Property<string>("RoleId")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("RoleId");
 
                     b.HasKey("UserId", "RoleId")
@@ -883,23 +884,23 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
             modelBuilder.Entity("CleanArchitecture.Blazor.Domain.Identity.ApplicationUserToken", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("UserId");
 
                     b.Property<string>("LoginProvider")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("LoginProvider");
 
                     b.Property<string>("Name")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Name");
 
                     b.Property<string>("Value")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("Value");
 
                     b.HasKey("UserId", "LoginProvider", "Name")
@@ -918,8 +919,8 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("FriendlyName")
-                        .HasMaxLength(450)
-                        .HasColumnType("character varying(450)")
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)")
                         .HasColumnName("FriendlyName");
 
                     b.Property<string>("Xml")

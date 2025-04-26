@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialDb : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -26,17 +26,17 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Email = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    PhoneNumber = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    Country = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    Description = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    Notes = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    Email = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    PhoneNumber = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    Country = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    Description = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    Notes = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    CreatedUser = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    CreatedBy = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    CreatedUser = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     LastModifiedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    LastModifiedUser = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true)
+                    LastModifiedBy = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    LastModifiedUser = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -49,7 +49,7 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    FriendlyName = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    FriendlyName = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     Xml = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: true)
                 },
                 constraints: table =>
@@ -68,13 +68,13 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                     Value = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     Text = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     Description = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
-                    Notes = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    Notes = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    CreatedUser = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    CreatedBy = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    CreatedUser = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     LastModifiedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    LastModifiedUser = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true)
+                    LastModifiedBy = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    LastModifiedUser = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -89,18 +89,18 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "character varying(80)", maxLength: 80, nullable: false),
-                    Brand = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    Unit = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    Price = table.Column<decimal>(type: "numeric", nullable: false),
+                    Brand = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    Unit = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    Price = table.Column<decimal>(type: "numeric(16,2)", precision: 16, scale: 2, nullable: false),
                     pictures = table.Column<string>(type: "text", nullable: true),
-                    Description = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    Notes = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    Description = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    Notes = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    CreatedUser = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    CreatedBy = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    CreatedUser = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     LastModifiedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    LastModifiedUser = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true)
+                    LastModifiedBy = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    LastModifiedUser = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -118,9 +118,9 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                     Level = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
                     TimeStamp = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     Exception = table.Column<string>(type: "text", maxLength: 2147483647, nullable: true),
-                    UserName = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    ClientIp = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    ClientAgent = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    UserName = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    ClientIp = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    ClientAgent = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     Properties = table.Column<string>(type: "text", maxLength: 2147483647, nullable: true),
                     LogEvent = table.Column<string>(type: "text", maxLength: 2147483647, nullable: true)
                 },
@@ -133,9 +133,9 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                 name: "Tenants",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
-                    Name = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    Description = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true)
+                    Id = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false),
+                    Name = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    Description = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -147,18 +147,18 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                 schema: "Identity",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
-                    TenantId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    Description = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    Id = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false),
+                    TenantId = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    Description = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    CreatedUser = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    CreatedBy = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    CreatedUser = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     LastModifiedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    LastModifiedUser = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    LastModifiedUser = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true)
+                    ConcurrencyStamp = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -175,31 +175,31 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                 schema: "Identity",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
-                    DisplayName = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    Provider = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    TenantId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    ProfilePictureDataUrl = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    Id = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false),
+                    DisplayName = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    Provider = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    TenantId = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    ProfilePictureDataUrl = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     IsLive = table.Column<bool>(type: "boolean", nullable: false),
-                    RefreshToken = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    RefreshToken = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     RefreshTokenExpiryTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    SuperiorId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    SuperiorId = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     Created = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    CreatedBy = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     LastModified = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    TimeZoneId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    LanguageCode = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    LastModifiedBy = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    TimeZoneId = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    LanguageCode = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    PasswordHash = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    SecurityStamp = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    PhoneNumber = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    PasswordHash = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    SecurityStamp = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    PhoneNumber = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     PhoneNumberConfirmed = table.Column<bool>(type: "boolean", nullable: false),
                     TwoFactorEnabled = table.Column<bool>(type: "boolean", nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
@@ -241,11 +241,11 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Description = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    Group = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    RoleId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
-                    ClaimType = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    ClaimValue = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true)
+                    Description = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    Group = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    RoleId = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false),
+                    ClaimType = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    ClaimValue = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -265,9 +265,9 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    UserId = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     AuditType = table.Column<string>(type: "text", nullable: false),
-                    TableName = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    TableName = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     DateTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     old_values = table.Column<string>(type: "text", nullable: true),
                     new_values = table.Column<string>(type: "text", nullable: true),
@@ -295,21 +295,21 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Title = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    Title = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     Content = table.Column<string>(type: "character varying(4000)", maxLength: 4000, nullable: true),
                     IsPublic = table.Column<bool>(type: "boolean", nullable: false),
-                    Url = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    Url = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     DocumentType = table.Column<string>(type: "text", nullable: false),
-                    TenantId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    Description = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    Notes = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    TenantId = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    Description = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    Notes = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CreatedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    CreatedUser = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
+                    CreatedBy = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    CreatedUser = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
                     LastModifiedOn = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    LastModifiedBy = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    LastModifiedUser = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true)
+                    LastModifiedBy = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    LastModifiedUser = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -342,10 +342,10 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Description = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    UserId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
-                    ClaimType = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    ClaimValue = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true)
+                    Description = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    UserId = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false),
+                    ClaimType = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    ClaimValue = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -364,10 +364,10 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                 schema: "Identity",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
-                    ProviderKey = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true),
-                    UserId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false)
+                    LoginProvider = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false),
+                    ProviderKey = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true),
+                    UserId = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -386,8 +386,8 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                 schema: "Identity",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
-                    RoleId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false)
+                    UserId = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false),
+                    RoleId = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -413,10 +413,10 @@ namespace CleanArchitecture.Blazor.Migrators.PostgreSQL.Migrations
                 schema: "Identity",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
-                    LoginProvider = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
-                    Name = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: false),
-                    Value = table.Column<string>(type: "character varying(450)", maxLength: 450, nullable: true)
+                    UserId = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false),
+                    LoginProvider = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false),
+                    Name = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: false),
+                    Value = table.Column<string>(type: "character varying(1024)", maxLength: 1024, nullable: true)
                 },
                 constraints: table =>
                 {

@@ -7,8 +7,8 @@ namespace CleanArchitecture.Blazor.Domain.Common.Entities;
 
 public abstract class BaseAuditableEntity : BaseEntity, IAuditableEntity
 {
-    public virtual string? Description { get; set; }
-    public virtual string? Notes { get; set; }
+    public string? Description { get; set; }
+    public string? Notes { get; set; }
     
     public virtual DateTime? CreatedOn { get; set; }
 
