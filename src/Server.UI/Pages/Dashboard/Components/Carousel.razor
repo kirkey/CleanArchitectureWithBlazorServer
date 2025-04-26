@@ -6,7 +6,7 @@
             <MudCard Elevation="24">
                 <MudCardHeader Class="px-6 pt-6">
                     <CardHeaderAvatar>
-                        <MudIcon Class="mt-n4" Icon="@Icons.Material.Rounded.FormatQuote" Size="Size.Large" />
+                        <MudIcon Class="mt-n4" Icon="@Icons.Material.Rounded.FormatQuote" Size="Size.Large"/>
                     </CardHeaderAvatar>
                     <CardHeaderContent>
                         <MudText Typo="Typo.subtitle2">Brian</MudText>
@@ -22,7 +22,7 @@
             <MudCard Elevation="24">
                 <MudCardHeader Class="px-6 pt-6">
                     <CardHeaderAvatar>
-                        <MudIcon Class="mt-n4" Icon="@Icons.Material.Rounded.FormatQuote" Size="Size.Large" />
+                        <MudIcon Class="mt-n4" Icon="@Icons.Material.Rounded.FormatQuote" Size="Size.Large"/>
                     </CardHeaderAvatar>
                     <CardHeaderContent>
                         <MudText Typo="Typo.subtitle2">Developer Team</MudText>
@@ -38,7 +38,7 @@
             <MudCard Elevation="24">
                 <MudCardHeader Class="px-6 pt-6">
                     <CardHeaderAvatar>
-                        <MudIcon Icon="@Icons.Material.Rounded.FormatQuote" Size="Size.Large" />
+                        <MudIcon Icon="@Icons.Material.Rounded.FormatQuote" Size="Size.Large"/>
                     </CardHeaderAvatar>
                     <CardHeaderContent>
                         <MudText Typo="Typo.subtitle2">Wave Master</MudText>
@@ -53,7 +53,7 @@
             <MudCard Elevation="24">
                 <MudCardHeader Class="px-6 pt-6">
                     <CardHeaderAvatar>
-                        <MudIcon Class="mt-n4" Icon="@Icons.Material.Rounded.FormatQuote" Size="Size.Large" />
+                        <MudIcon Class="mt-n4" Icon="@Icons.Material.Rounded.FormatQuote" Size="Size.Large"/>
                     </CardHeaderAvatar>
                     <CardHeaderContent>
                         <MudText Typo="Typo.subtitle2">Karakoulak Spyridon</MudText>
@@ -69,7 +69,7 @@
             <MudCard Elevation="24">
                 <MudCardHeader Class="px-6 pt-6">
                     <CardHeaderAvatar>
-                        <MudIcon Class="mt-n4" Icon="@Icons.Material.Rounded.FormatQuote" Size="Size.Large" />
+                        <MudIcon Class="mt-n4" Icon="@Icons.Material.Rounded.FormatQuote" Size="Size.Large"/>
                     </CardHeaderAvatar>
                     <CardHeaderContent>
                         <MudText Typo="Typo.subtitle2">Hayden Ravenscroft</MudText>
@@ -85,7 +85,7 @@
             <MudCard Elevation="24">
                 <MudCardHeader Class="px-6 pt-6">
                     <CardHeaderAvatar>
-                        <MudIcon Class="mt-n4" Icon="@Icons.Material.Rounded.FormatQuote" Size="Size.Large" />
+                        <MudIcon Class="mt-n4" Icon="@Icons.Material.Rounded.FormatQuote" Size="Size.Large"/>
                     </CardHeaderAvatar>
                     <CardHeaderContent>
                         <MudText Typo="Typo.subtitle2">Frederik</MudText>
@@ -97,15 +97,18 @@
                 </MudCardContent>
             </MudCard>
         </div>
-     
+
     </div>
 </div>
+
 @code {
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            var result = await (new Swiper(JS)).Initialize(".swiper-container", false);
+            var result = await new Swiper(JS).Initialize(".swiper-container", false);
         }
     }
+
 }

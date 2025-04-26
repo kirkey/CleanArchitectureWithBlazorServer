@@ -69,8 +69,6 @@ public class ApplicationDbContextInitializer(
     }
 
 
-
-
     private async Task SeedTenantsAsync()
     {
         if (await context.Tenants.AnyAsync()) return;
@@ -78,9 +76,9 @@ public class ApplicationDbContextInitializer(
         logger.LogInformation("Seeding tenants...");
         var tenants = new[]
         {
-                new Tenant { Name = "Master", Description = "Master Site" },
-                new Tenant { Name = "Slave", Description = "Slave Site" }
-            };
+            new Tenant { Name = "Master", Description = "Master Site" },
+            new Tenant { Name = "Slave", Description = "Slave Site" }
+        };
 
         await context.Tenants.AddRangeAsync(tenants);
         await context.SaveChangesAsync();
@@ -115,10 +113,7 @@ public class ApplicationDbContextInitializer(
             var claim = new Claim(ApplicationClaimTypes.Permission, permission);
             await roleManager.AddClaimAsync(administratorRole, claim);
 
-            if (permission.StartsWith("Permissions.Products"))
-            {
-                await roleManager.AddClaimAsync(userRole, claim);
-            }
+            if (permission.StartsWith("Permissions.Products")) await roleManager.AddClaimAsync(userRole, claim);
         }
     }
 
@@ -137,8 +132,8 @@ public class ApplicationDbContextInitializer(
             Email = "admin@example.com",
             EmailConfirmed = true,
             ProfilePictureDataUrl = "https://s.gravatar.com/avatar/78be68221020124c23c665ac54e07074?s=80",
-            LanguageCode="en-US",
-            TimeZoneId= "Asia/Shanghai",
+            LanguageCode = "en-US",
+            TimeZoneId = "Asia/Shanghai",
             TwoFactorEnabled = false
         };
 
@@ -167,7 +162,6 @@ public class ApplicationDbContextInitializer(
     {
         if (!await context.PicklistSets.AnyAsync())
         {
-
             logger.LogInformation("Seeding key values...");
             var keyValues = new[]
             {
@@ -256,7 +250,6 @@ public class ApplicationDbContextInitializer(
 
         if (!await context.Products.AnyAsync())
         {
-
             logger.LogInformation("Seeding products...");
             var products = new[]
             {
@@ -265,7 +258,7 @@ public class ApplicationDbContextInitializer(
                     Brand = "Apple",
                     Name = "IPhone 13 Pro",
                     Description =
-                    "Apple iPhone 13 Pro smartphone. Announced Sep 2021. Features 6.1″ display, Apple A15 Bionic chipset, 3095 mAh battery, 1024 GB storage.",
+                        "Apple iPhone 13 Pro smartphone. Announced Sep 2021. Features 6.1″ display, Apple A15 Bionic chipset, 3095 mAh battery, 1024 GB storage.",
                     Unit = "EA",
                     Price = 999.98m
                 },
@@ -273,7 +266,8 @@ public class ApplicationDbContextInitializer(
                 {
                     Brand = "Sony",
                     Name = "WH-1000XM4",
-                    Description = "Sony WH-1000XM4 Wireless Noise-Canceling Over-Ear Headphones. Features industry-leading noise cancellation, up to 30 hours of battery life, touch sensor controls.",
+                    Description =
+                        "Sony WH-1000XM4 Wireless Noise-Canceling Over-Ear Headphones. Features industry-leading noise cancellation, up to 30 hours of battery life, touch sensor controls.",
                     Unit = "EA",
                     Price = 349.99m
                 },
@@ -281,7 +275,8 @@ public class ApplicationDbContextInitializer(
                 {
                     Brand = "Nintendo",
                     Name = "Switch OLED Model",
-                    Description = "Nintendo Switch OLED Model console. Released October 2021. Features 7″ OLED screen, 64GB internal storage, enhanced audio, dock with wired LAN port.",
+                    Description =
+                        "Nintendo Switch OLED Model console. Released October 2021. Features 7″ OLED screen, 64GB internal storage, enhanced audio, dock with wired LAN port.",
                     Unit = "EA",
                     Price = 349.99m
                 },
@@ -289,11 +284,11 @@ public class ApplicationDbContextInitializer(
                 {
                     Brand = "Apple",
                     Name = "MacBook Air M1",
-                    Description = "Apple MacBook Air with M1 chip. Features 13.3″ Retina display, Apple M1 chip with 8‑core CPU, 8GB RAM, 256GB SSD storage, up to 18 hours of battery life.",
+                    Description =
+                        "Apple MacBook Air with M1 chip. Features 13.3″ Retina display, Apple M1 chip with 8‑core CPU, 8GB RAM, 256GB SSD storage, up to 18 hours of battery life.",
                     Unit = "EA",
                     Price = 999.99m
                 }
-
             };
 
             await context.Products.AddRangeAsync(products);

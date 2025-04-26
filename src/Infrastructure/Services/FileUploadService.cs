@@ -22,15 +22,9 @@ public class FileUploadService : IUploadService
         if (request.Data == null || !request.Data.Any()) return string.Empty;
         var folder = request.UploadType.GetDescription();
         var folderName = Path.Combine("Files", folder);
-        if (!string.IsNullOrEmpty(request.Folder))
-        {
-            folderName = Path.Combine(folderName, request.Folder);
-        }
+        if (!string.IsNullOrEmpty(request.Folder)) folderName = Path.Combine(folderName, request.Folder);
         var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-        if (!Directory.Exists(pathToSave))
-        {
-            Directory.CreateDirectory(pathToSave);
-        }
+        if (!Directory.Exists(pathToSave)) Directory.CreateDirectory(pathToSave);
 
         var fileName = request.FileName.Trim('"');
         var fullPath = Path.Combine(pathToSave, fileName);
@@ -47,6 +41,7 @@ public class FileUploadService : IUploadService
 
         return dbPath;
     }
+
     /// <summary>
     /// remove file
     /// </summary>
@@ -54,13 +49,10 @@ public class FileUploadService : IUploadService
     public Task RemoveAsync(string filename)
     {
         var removefile = Path.Combine(Directory.GetCurrentDirectory(), filename);
-        if (File.Exists(removefile))
-        {
-            File.Delete(removefile);
-        }
+        if (File.Exists(removefile)) File.Delete(removefile);
         return Task.CompletedTask;
     }
-     
+
     /// <summary>
     /// Gets the next available filename based on the given path.
     /// </summary>

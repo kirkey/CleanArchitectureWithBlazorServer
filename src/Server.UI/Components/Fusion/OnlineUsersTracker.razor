@@ -44,9 +44,10 @@
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
     [Inject] private UIActionTracker UIActionTracker { get; init; } = null!;
     private TimeSpan UpdateDelay { get; set; } = TimeSpan.FromSeconds(5);
+
     protected override async Task OnInitializedAsync()
     {
-        if (SessionInfoAccessor.SessionInfo!=null)
+        if (SessionInfoAccessor.SessionInfo != null)
         {
             currentUserId = SessionInfoAccessor.SessionInfo?.UserId;
             await OnlineUserTracker.Initial(SessionInfoAccessor.SessionInfo);
@@ -54,7 +55,9 @@
     }
 
     protected override ComputedState<List<SessionInfo>>.Options GetStateOptions()
-     => new() { UpdateDelayer = new UpdateDelayer(UIActionTracker, UpdateDelay) };
+    {
+        return new ComputedState<List<SessionInfo>>.Options { UpdateDelayer = new UpdateDelayer(UIActionTracker, UpdateDelay) };
+    }
 
     protected override Task<List<SessionInfo>> ComputeState(CancellationToken cancellationToken)
     {
@@ -63,9 +66,12 @@
 
     public override async ValueTask DisposeAsync()
     {
-        if (!string.IsNullOrEmpty(currentUserId)){
+        if (!string.IsNullOrEmpty(currentUserId))
+        {
             await OnlineUserTracker.Clear(currentUserId);
         }
+
         GC.Collect();
     }
+
 }

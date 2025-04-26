@@ -23,7 +23,7 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
     public AuditableEntityInterceptor(IServiceProvider serviceProvider, IDateTime dateTime)
     {
         _currentUserAccessor = serviceProvider.GetRequiredService<ICurrentUserAccessor>();
-        _dbContextFactory= serviceProvider.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
+        _dbContextFactory = serviceProvider.GetRequiredService<IDbContextFactory<ApplicationDbContext>>();
         _dateTime = dateTime;
     }
 
@@ -46,29 +46,24 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
     {
         var context = eventData.Context;
         var saveResult = await base.SavedChangesAsync(eventData, result, cancellationToken);
-        if (context != null)
-        {
-            await FinalizeAuditTrailsAsync(context, cancellationToken);
-        }
+        if (context != null) await FinalizeAuditTrailsAsync(context, cancellationToken);
         return saveResult;
     }
-    public override async Task SaveChangesFailedAsync(DbContextErrorEventData eventData, CancellationToken cancellationToken = default)
+
+    public override async Task SaveChangesFailedAsync(DbContextErrorEventData eventData,
+        CancellationToken cancellationToken = default)
     {
         await base.SaveChangesFailedAsync(eventData, cancellationToken);
         var context = eventData.Context;
         var exception = eventData.Exception;
         if (context != null)
         {
-            var errorMessage = exception.InnerException!=null? exception.InnerException.Message:exception.Message;
-            foreach (var auditTrail in _temporaryAuditTrailList)
-            {
-                auditTrail.ErrorMessage = errorMessage;
-            }
+            var errorMessage = exception.InnerException != null ? exception.InnerException.Message : exception.Message;
+            foreach (var auditTrail in _temporaryAuditTrailList) auditTrail.ErrorMessage = errorMessage;
             await SaveAuditTrailsWithNewContextAsync(_temporaryAuditTrailList, cancellationToken);
         }
-
-       
     }
+
     private void UpdateAuditableEntities(DbContext context)
     {
         var userId = _currentUserAccessor.SessionInfo?.UserId;
@@ -77,7 +72,6 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
         var now = _dateTime.Now;
 
         foreach (var entry in context.ChangeTracker.Entries<IAuditableEntity>())
-        {
             switch (entry.State)
             {
                 case EntityState.Added:
@@ -95,24 +89,23 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
                 case EntityState.Unchanged when entry.HasChangedOwnedEntities():
                     SetModificationAuditInfo(entry.Entity, userId, userName, now);
                     break;
-
                 // case EntityState.Detached:
                 //     break;
                 //
                 // default:
                 //     throw new ArgumentOutOfRangeException();
             }
-        }
     }
 
-    private static void SetCreationAuditInfo(IAuditableEntity entity, string userId, string userName, string tenantId, DateTime now)
+    private static void SetCreationAuditInfo(IAuditableEntity entity, string userId, string userName, string tenantId,
+        DateTime now)
     {
         entity.CreatedOn = now;
         entity.CreatedBy = userId;
         entity.CreatedUser = userName;
 
-        if (entity is IMustHaveTenant mustTenant && mustTenant.TenantId==null) mustTenant.TenantId = tenantId;
-        if (entity is IMayHaveTenant mayTenant && mayTenant.TenantId==null) mayTenant.TenantId = tenantId;
+        if (entity is IMustHaveTenant mustTenant && mustTenant.TenantId == null) mustTenant.TenantId = tenantId;
+        if (entity is IMayHaveTenant mayTenant && mayTenant.TenantId == null) mayTenant.TenantId = tenantId;
     }
 
     private static void SetModificationAuditInfo(IAuditableEntity entity, string userId, string userName, DateTime now)
@@ -140,23 +133,22 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
         var auditTrails = new List<AuditTrail>();
 
         foreach (var entry in context.ChangeTracker.Entries<IAuditTrial>())
-        {
             if (IsValidAuditEntry(entry))
             {
-                var auditTrail = CreateAuditTrail(entry, userId, now,entry.DebugView.LongView);
+                var auditTrail = CreateAuditTrail(entry, userId, now, entry.DebugView.LongView);
                 auditTrails.Add(auditTrail);
             }
-        }
 
         return auditTrails;
     }
 
     private static bool IsValidAuditEntry(EntityEntry entry)
     {
-        return entry.Entity is not AuditTrail && entry.State != EntityState.Detached && entry.State != EntityState.Unchanged;
+        return entry.Entity is not AuditTrail && entry.State != EntityState.Detached &&
+               entry.State != EntityState.Unchanged;
     }
 
-    private AuditTrail CreateAuditTrail(EntityEntry entry, string userId, DateTime now,string? debugView)
+    private AuditTrail CreateAuditTrail(EntityEntry entry, string userId, DateTime now, string? debugView)
     {
         var auditTrail = new AuditTrail
         {
@@ -196,7 +188,8 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
                     if (property.OriginalValue != null) auditTrail.OldValues[propertyName] = property.OriginalValue;
                     break;
 
-                case EntityState.Modified when property.IsModified && !Equals(property.OriginalValue, property.CurrentValue):
+                case EntityState.Modified
+                    when property.IsModified && !Equals(property.OriginalValue, property.CurrentValue):
                     auditTrail.AuditType = AuditType.Update;
                     auditTrail.AffectedColumns.Add(propertyName);
                     if (property.OriginalValue != null) auditTrail.OldValues[propertyName] = property.OriginalValue;
@@ -213,43 +206,30 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
         if (_temporaryAuditTrailList.Any())
         {
             foreach (var auditTrail in _temporaryAuditTrailList)
-            {
-                foreach (var prop in auditTrail.TemporaryProperties)
-                {
-                    if (prop.Metadata.IsPrimaryKey() && prop.CurrentValue != null)
-                    {
-                        auditTrail.PrimaryKey[prop.Metadata.Name] = prop.CurrentValue;
-                    }
-                    else if (auditTrail.NewValues != null && prop.CurrentValue != null)
-                    {
-                        auditTrail.NewValues[prop.Metadata.Name] = prop.CurrentValue;
-                    }
-                }
-            }
+            foreach (var prop in auditTrail.TemporaryProperties)
+                if (prop.Metadata.IsPrimaryKey() && prop.CurrentValue != null)
+                    auditTrail.PrimaryKey[prop.Metadata.Name] = prop.CurrentValue;
+                else if (auditTrail.NewValues != null && prop.CurrentValue != null)
+                    auditTrail.NewValues[prop.Metadata.Name] = prop.CurrentValue;
 
             await context.AddRangeAsync(_temporaryAuditTrailList, cancellationToken);
             await context.SaveChangesAsync(cancellationToken);
             _temporaryAuditTrailList.Clear();
         }
     }
-    private async Task SaveAuditTrailsWithNewContextAsync(List<AuditTrail> auditTrails, CancellationToken cancellationToken)
+
+    private async Task SaveAuditTrailsWithNewContextAsync(List<AuditTrail> auditTrails,
+        CancellationToken cancellationToken)
     {
         if (_temporaryAuditTrailList.Any())
         {
             foreach (var auditTrail in _temporaryAuditTrailList)
-            {
-                foreach (var prop in auditTrail.TemporaryProperties)
-                {
-                    if (prop.Metadata.IsPrimaryKey() && prop.CurrentValue != null)
-                    {
-                        auditTrail.PrimaryKey[prop.Metadata.Name] = prop.CurrentValue;
-                    }
-                    else if (auditTrail.NewValues != null && prop.CurrentValue != null)
-                    {
-                        auditTrail.NewValues[prop.Metadata.Name] = prop.CurrentValue;
-                    }
-                }
-            }
+            foreach (var prop in auditTrail.TemporaryProperties)
+                if (prop.Metadata.IsPrimaryKey() && prop.CurrentValue != null)
+                    auditTrail.PrimaryKey[prop.Metadata.Name] = prop.CurrentValue;
+                else if (auditTrail.NewValues != null && prop.CurrentValue != null)
+                    auditTrail.NewValues[prop.Metadata.Name] = prop.CurrentValue;
+
             var dbcontext = _dbContextFactory.CreateDbContext();
             await dbcontext.AddRangeAsync(auditTrails, cancellationToken);
             await dbcontext.SaveChangesAsync(cancellationToken);

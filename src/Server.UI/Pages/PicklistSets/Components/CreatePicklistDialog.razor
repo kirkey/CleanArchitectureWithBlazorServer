@@ -14,7 +14,8 @@
                     </MudEnumSelect>
                 </MudItem>
                 <MudItem xs="12" md="6">
-                    <MudTextField Label="@L[Model.GetMemberDescription(x => x.Description)]" @bind-Value="Model.Description"
+                    <MudTextField Label="@L[Model.GetMemberDescription(x => x.Description)]"
+                                  @bind-Value="Model.Description"
                                   For="@(() => Model.Description)">
                     </MudTextField>
                 </MudItem>
@@ -38,7 +39,8 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Loading="@_saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+        <MudLoadingButton Loading="@_saving" Color="Color.Primary"
+                          OnClick="Submit">@ConstantString.Save</MudLoadingButton>
     </DialogActions>
 </MudDialog>
 
@@ -47,7 +49,7 @@
 {
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 
-    [EditorRequired][Parameter] public AddEditPicklistSetCommand Model { get; set; } = default!;
+    [EditorRequired] [Parameter] public AddEditPicklistSetCommand Model { get; set; } = default!;
 
     private MudForm? _form;
     private bool _saving;

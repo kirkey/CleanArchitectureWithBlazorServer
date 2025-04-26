@@ -12,7 +12,7 @@ public class AuditTrailConfiguration : IEntityTypeConfiguration<AuditTrail>
     public void Configure(EntityTypeBuilder<AuditTrail> builder)
     {
         builder.ToTable("AuditTrails");
-        
+
         builder.HasOne(x => x.Owner)
             .WithMany()
             .HasForeignKey(x => x.UserId)

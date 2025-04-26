@@ -19,13 +19,17 @@
                 {
                     <MudGrid Spacing="2">
                         <MudItem xs="4" Class="align-self-center">
-                            <MudText Typo="Typo.body2" Inline="false" Style="text-overflow:ellipsis;overflow: hidden;">@item.FileName</MudText>
+                            <MudText Typo="Typo.body2" Inline="false"
+                                     Style="text-overflow:ellipsis;overflow: hidden;">@item.FileName</MudText>
                         </MudItem>
                         <MudItem xs="5">
-                            <MudProgressLinear Color="Color.Success" Value="@item.UploadedBytes" Max="@item.Size" Class="my-7"/>
+                            <MudProgressLinear Color="Color.Success" Value="@item.UploadedBytes" Max="@item.Size"
+                                               Class="my-7"/>
                         </MudItem>
                         <MudItem xs="3" Class="align-self-center justify-end">
-                            <MudText Typo="Typo.body2" Style="float: right;">(@FormatBytes(item.UploadedBytes) / @FormatBytes(item.Size))</MudText>
+                            <MudText Typo="Typo.body2" Style="float: right;">
+                                (@FormatBytes(item.UploadedBytes) / @FormatBytes(item.Size))
+                            </MudText>
                         </MudItem>
                     </MudGrid>
                 }
@@ -33,23 +37,27 @@
         }
         else
         {
-            <MudAlert Severity="Severity.Info"> @L["Please click [Choose Files] button to upload your photo."]</MudAlert>
+            <MudAlert
+                Severity="Severity.Info"> @L["Please click [Choose Files] button to upload your photo."]</MudAlert>
         }
     </DialogContent>
     <DialogActions>
 
-        <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Clear" Disabled="@(!_uploadedFiles.Any())" OnClick="Clear">@ConstantString.Clear</MudButton>
-        <MudFileUpload @ref="@_fileUpload" T="IReadOnlyList<IBrowserFile>" Accept=".jpg, .jpeg, .png, .webp" FilesChanged="LoadFiles">
+        <MudButton Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Clear"
+                   Disabled="@(!_uploadedFiles.Any())" OnClick="Clear">@ConstantString.Clear</MudButton>
+        <MudFileUpload @ref="@_fileUpload" T="IReadOnlyList<IBrowserFile>" Accept=".jpg, .jpeg, .png, .webp"
+                       FilesChanged="LoadFiles">
             <ActivatorContent>
-                <MudLoadingButton Loading="@_uploading" Variant="Variant.Filled"  
-                StartIcon="@Icons.Material.Filled.AttachFile"
+                <MudLoadingButton Loading="@_uploading" Variant="Variant.Filled"
+                                  StartIcon="@Icons.Material.Filled.AttachFile"
                 >
                     @L["Choose files"]
                 </MudLoadingButton>
             </ActivatorContent>
         </MudFileUpload>
 
-        <MudLoadingButton Loading="@_processing" Disabled="@(!_uploadedFiles.Any())" Variant="Variant.Filled" OnClick="Submit">@ConstantString.Submit</MudLoadingButton>
+        <MudLoadingButton Loading="@_processing" Disabled="@(!_uploadedFiles.Any())" Variant="Variant.Filled"
+                          OnClick="Submit">@ConstantString.Submit</MudLoadingButton>
 
     </DialogActions>
 </MudDialog>
@@ -58,7 +66,7 @@
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 
     [EditorRequired] [Parameter] public AddEditDocumentCommand Model { get; set; } = default!;
-    private MudFileUpload<IReadOnlyList<IBrowserFile>> _fileUpload=default!;
+    private MudFileUpload<IReadOnlyList<IBrowserFile>> _fileUpload = default!;
     private bool _processing;
     private bool _uploading;
     private List<FileUploadProgress> _uploadedFiles = new();
@@ -68,7 +76,6 @@
         if (files is null || !files.Any()) return;
         try
         {
-
             _uploading = true;
             var startIndex = _uploadedFiles.Count;
             // Add all files to the UI
@@ -180,13 +187,14 @@
                         Snackbar.Add($"{e.Message}", Severity.Error);
                     }
                 }
-                if (list.Any()){
+
+                if (list.Any())
+                {
                     var uploadCommand = new UploadDocumentCommand(list);
                     await Mediator.Send(uploadCommand);
                     await Clear();
                     MudDialog.Close(DialogResult.Ok(true));
                 }
-                
             }
         }
         finally
@@ -200,10 +208,10 @@
         MudDialog.Cancel();
     }
 
-    private  Task Clear()
+    private Task Clear()
     {
         _uploadedFiles.Clear();
-        return _fileUpload?.ClearAsync()??Task.CompletedTask;
+        return _fileUpload?.ClearAsync() ?? Task.CompletedTask;
     }
 
     private record FileUploadProgress(string FileName, long Size, IBrowserFile File)

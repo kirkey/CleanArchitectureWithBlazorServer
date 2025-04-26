@@ -34,7 +34,6 @@ public static partial class Permissions
     }
 }
 
-
 public class ProductsAccessRights
 {
     public bool View { get; set; }

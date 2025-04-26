@@ -30,12 +30,10 @@ public static class SpecificationBuilderExtensions
 
         // If no properties are specified, search all string properties by default
         if (properties == null || properties.Length == 0)
-        {
             properties = typeof(T).GetProperties()
                 .Where(p => p.PropertyType == typeof(string))
                 .Select(p => CreatePropertyExpression<T>(p))
                 .ToArray();
-        }
 
         Expression? predicate = null;
         var parameter = Expression.Parameter(typeof(T), "x");
@@ -87,4 +85,3 @@ public static class SpecificationBuilderExtensions
         return Expression.Lambda<Func<T, string?>>(propertyAccess, parameter);
     }
 }
-

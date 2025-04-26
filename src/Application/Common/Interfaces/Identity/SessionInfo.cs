@@ -5,19 +5,37 @@ using MessagePack;
 using KeyAttribute = MessagePack.KeyAttribute;
 
 namespace CleanArchitecture.Blazor.Application.Common.Interfaces.Identity;
-[DataContract, MemoryPackable, MessagePackObject]
+
+[DataContract]
+[MemoryPackable]
+[MessagePackObject]
 [ParameterComparer(typeof(ByValueParameterComparer))]
 public sealed partial record SessionInfo(
-    [property: DataMember, Key(0)] string? UserId,
-    [property: DataMember, Key(1)] string? UserName,
-    [property: DataMember, Key(2)] string? DisplayName,
-    [property: DataMember, Key(3)] string? IPAddress,
-    [property: DataMember, Key(4)] string? TenantId,
-    [property: DataMember, Key(5)] string? ProfilePictureDataUrl,
-    [property: DataMember, Key(6)] UserPresence Status
+    [property: DataMember]
+    [property: Key(0)]
+    string? UserId,
+    [property: DataMember]
+    [property: Key(1)]
+    string? UserName,
+    [property: DataMember]
+    [property: Key(2)]
+    string? DisplayName,
+    [property: DataMember]
+    [property: Key(3)]
+    string? IPAddress,
+    [property: DataMember]
+    [property: Key(4)]
+    string? TenantId,
+    [property: DataMember]
+    [property: Key(5)]
+    string? ProfilePictureDataUrl,
+    [property: DataMember]
+    [property: Key(6)]
+    UserPresence Status
+)
+{
+}
 
-    )
-{ }
 public enum UserPresence
 {
     Available,

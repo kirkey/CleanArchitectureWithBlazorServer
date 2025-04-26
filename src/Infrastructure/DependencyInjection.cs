@@ -25,6 +25,7 @@ using Microsoft.Extensions.Configuration;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace CleanArchitecture.Blazor.Infrastructure;
+
 public static class DependencyInjection
 {
     private const string IDENTITY_SETTINGS_KEY = "IdentitySettings";
@@ -122,7 +123,7 @@ public static class DependencyInjection
                 return builder.UseNpgsql(connectionString,
                         e => e.MigrationsAssembly(POSTGRESQL_MIGRATIONS_ASSEMBLY))
                     .UseSnakeCaseNamingConvention();
-                  
+
             case DbProviderKeys.SqlServer:
                 return builder.UseSqlServer(connectionString,
                     e => e.MigrationsAssembly(MSSQL_MIGRATIONS_ASSEMBLY));
@@ -136,9 +137,9 @@ public static class DependencyInjection
         }
     }
 
-    private static DbContextOptionsBuilder UseExceptionProcessor(this DbContextOptionsBuilder builder, string dbProvider)
+    private static DbContextOptionsBuilder UseExceptionProcessor(this DbContextOptionsBuilder builder,
+        string dbProvider)
     {
-     
         switch (dbProvider.ToLowerInvariant())
         {
             case DbProviderKeys.Npgsql:
@@ -222,7 +223,6 @@ public static class DependencyInjection
     private static IServiceCollection AddAuthenticationService(this IServiceCollection services,
         IConfiguration configuration)
     {
-
         services.AddScoped<IUserStore<ApplicationUser>, MultiTenantUserStore>();
         services.AddScoped<UserManager<ApplicationUser>, MultiTenantUserManager>();
         services.AddIdentityCore<ApplicationUser>()
@@ -237,13 +237,11 @@ public static class DependencyInjection
         services.AddScoped<IRoleValidator<ApplicationRole>, MultiTenantRoleValidator>();
 
         // Find the default RoleValidator<ApplicationRole> registration in the service collection.
-        var defaultRoleValidator = services.FirstOrDefault(descriptor => descriptor.ImplementationType == typeof(RoleValidator<ApplicationRole>));
+        var defaultRoleValidator = services.FirstOrDefault(descriptor =>
+            descriptor.ImplementationType == typeof(RoleValidator<ApplicationRole>));
 
         // If the default role validator is found, remove it to ensure only MultiTenantRoleValidator is used.
-        if (defaultRoleValidator != null)
-        {
-            services.Remove(defaultRoleValidator);
-        }
+        if (defaultRoleValidator != null) services.Remove(defaultRoleValidator);
         services.Configure<IdentityOptions>(options =>
         {
             var identitySettings = configuration.GetRequiredSection(IDENTITY_SETTINGS_KEY).Get<IdentitySettings>();
@@ -268,7 +266,6 @@ public static class DependencyInjection
             // User settings
             options.User.RequireUniqueEmail = true;
             //options.Tokens.EmailConfirmationTokenProvider = "Email";
-            
         });
 
         services.AddScoped<IIdentityService, IdentityService>()
@@ -292,15 +289,20 @@ public static class DependencyInjection
             })
             .AddMicrosoftAccount(microsoftOptions =>
             {
-                microsoftOptions.ClientId = configuration.GetValue<string>("Authentication:Microsoft:ClientId") ?? string.Empty;
-                microsoftOptions.ClientSecret = configuration.GetValue<string>("Authentication:Microsoft:ClientSecret") ?? string.Empty;
+                microsoftOptions.ClientId =
+                    configuration.GetValue<string>("Authentication:Microsoft:ClientId") ?? string.Empty;
+                microsoftOptions.ClientSecret =
+                    configuration.GetValue<string>("Authentication:Microsoft:ClientSecret") ?? string.Empty;
                 //microsoftOptions.CallbackPath = new PathString("/pages/authentication/ExternalLogin"); # dotn't set this parameter!!
             })
             .AddGoogle(googleOptions =>
-            {
-                googleOptions.ClientId = configuration.GetValue<string>("Authentication:Google:ClientId") ?? string.Empty;
-                googleOptions.ClientSecret = configuration.GetValue<string>("Authentication:Google:ClientSecret") ?? string.Empty; ;
-            }
+                {
+                    googleOptions.ClientId =
+                        configuration.GetValue<string>("Authentication:Google:ClientId") ?? string.Empty;
+                    googleOptions.ClientSecret = configuration.GetValue<string>("Authentication:Google:ClientSecret") ??
+                                                 string.Empty;
+                    ;
+                }
             )
             //.AddFacebook(facebookOptions =>
             //{
@@ -318,7 +320,6 @@ public static class DependencyInjection
         });
         services.AddDataProtection().PersistKeysToDbContext<ApplicationDbContext>();
 
-        
 
         return services;
     }
@@ -337,7 +338,7 @@ public static class DependencyInjection
             // FACTORY TIMEOUTS
             FactorySoftTimeout = TimeSpan.FromSeconds(10),
             FactoryHardTimeout = TimeSpan.FromSeconds(30),
-            AllowTimedOutFactoryBackgroundCompletion = true,    
+            AllowTimedOutFactoryBackgroundCompletion = true
         });
         return services;
     }

@@ -24,23 +24,24 @@
         p {
             line-height: 1.6;
         }
-        .x_verification-code{
-             font-size: 48px;
-             line-height: 60px;
-             color: #032e61; 
-             margin: 12px 0;
+
+        .x_verification-code {
+            font-size: 48px;
+            line-height: 60px;
+            color: #032e61;
+            margin: 12px 0;
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <h2>Verification Code</h2>
-        <p>Dear @Model.UserName,</p>
-        <p>Your verification code is:</p>
-        <h1>@Model.AuthenticatorCode</h1>
-        <p>This code is valid for 10 minutes. If you did not request it, please contact support immediately.</p>
-        <p>@Model.Company Team</p>
-    </div>
+<div class="container">
+    <h2>Verification Code</h2>
+    <p>Dear @Model.UserName,</p>
+    <p>Your verification code is:</p>
+    <h1>@Model.AuthenticatorCode</h1>
+    <p>This code is valid for 10 minutes. If you did not request it, please contact support immediately.</p>
+    <p>@Model.Company Team</p>
+</div>
 </body>
 </html>

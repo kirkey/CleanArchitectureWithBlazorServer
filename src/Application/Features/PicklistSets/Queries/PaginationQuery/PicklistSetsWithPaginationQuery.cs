@@ -7,7 +7,8 @@ using CleanArchitecture.Blazor.Application.Features.PicklistSets.Specifications;
 
 namespace CleanArchitecture.Blazor.Application.Features.PicklistSets.Queries.PaginationQuery;
 
-public class PicklistSetsWithPaginationQuery : PicklistSetAdvancedFilter, ICacheableRequest<PaginatedData<PicklistSetDto>>
+public class PicklistSetsWithPaginationQuery : PicklistSetAdvancedFilter,
+    ICacheableRequest<PaginatedData<PicklistSetDto>>
 {
     public PicklistSetAdvancedSpecification Specification => new(this);
     public string CacheKey => $"{nameof(PicklistSetsWithPaginationQuery)},{this}";
@@ -15,7 +16,8 @@ public class PicklistSetsWithPaginationQuery : PicklistSetAdvancedFilter, ICache
 
     public override string ToString()
     {
-        return $"ListView:{ListView}-{Picklist}-{CurrentUser?.UserId},Search:{Keyword},OrderBy:{OrderBy} {SortDirection},{PageNumber},{PageSize}";
+        return
+            $"ListView:{ListView}-{Picklist}-{CurrentUser?.UserId},Search:{Keyword},OrderBy:{OrderBy} {SortDirection},{PageNumber},{PageSize}";
     }
 }
 

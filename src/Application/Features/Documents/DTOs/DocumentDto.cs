@@ -20,6 +20,7 @@ public class DocumentDto
     [Description("Status")] public JobStatus Status { get; set; } = JobStatus.NotStart;
     [Description("Content")] public string? Content { get; set; }
     [Description("CreatedOn By User")] public ApplicationUserDto? CreatedByUser { get; set; }
+
     private class Mapping : Profile
     {
         public Mapping()

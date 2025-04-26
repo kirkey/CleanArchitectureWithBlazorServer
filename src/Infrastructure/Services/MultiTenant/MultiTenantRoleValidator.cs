@@ -1,6 +1,7 @@
 ﻿using CleanArchitecture.Blazor.Domain.Identity;
 
 namespace CleanArchitecture.Blazor.Infrastructure.Services.MultiTenant;
+
 /// <summary>
 /// A custom role validator to enforce multi-tenant uniqueness for roles.
 /// Ensures that role names are unique within a specific tenant.
@@ -25,18 +26,13 @@ internal class MultiTenantRoleValidator(ApplicationDbContext context) : RoleVali
             .FirstOrDefaultAsync(r => r.Name == role.Name && r.TenantId == role.TenantId);
 
         if (duplicateRole != null && duplicateRole.Id != role.Id)
-        {
             errors.Add(new IdentityError
             {
                 Code = "DuplicateRoleName",
                 Description = $"Role name '{role.Name}' already exists in the tenant."
             });
-        }
 
-        if (errors.Count > 0)
-        {
-            return IdentityResult.Failed(errors.ToArray());
-        }
+        if (errors.Count > 0) return IdentityResult.Failed(errors.ToArray());
 
         return IdentityResult.Success;
     }

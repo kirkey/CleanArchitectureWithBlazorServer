@@ -19,7 +19,8 @@ public class RequestLoggerTests
     [Test]
     public async Task ShouldCallGetUserNameAsyncOnceIfAuthenticated()
     {
-        _currentUserAccessor.Setup(x => x.SessionInfo).Returns(new SessionInfo("Administrator", "Administrator", "","","","", UserPresence.Available));
+        _currentUserAccessor.Setup(x => x.SessionInfo).Returns(new SessionInfo("Administrator", "Administrator", "", "",
+            "", "", UserPresence.Available));
         var requestLogger = new LoggingPreProcessor<AddEditProductCommand>(_logger.Object, _currentUserAccessor.Object);
         await requestLogger.Process(
             new AddEditProductCommand { Brand = "Brand", Name = "Brand", Price = 1.0m, Unit = "EA" },

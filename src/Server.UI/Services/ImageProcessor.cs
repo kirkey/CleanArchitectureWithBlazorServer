@@ -3,7 +3,9 @@ using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using Size = SixLabors.ImageSharp.Size;
 using ResizeMode = SixLabors.ImageSharp.Processing.ResizeMode;
+
 namespace CleanArchitecture.Blazor.Server.UI.Services;
+
 public static class ImageProcessor
 {
     /// <summary>

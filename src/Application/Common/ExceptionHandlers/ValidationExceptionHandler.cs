@@ -7,7 +7,6 @@ public class
     where TResponse : Result
     where TException : ValidationException
 {
-
     public Task Handle(TRequest request, TException exception, RequestExceptionHandlerState<TResponse> state,
         CancellationToken cancellationToken)
     {

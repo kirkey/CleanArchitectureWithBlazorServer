@@ -19,6 +19,7 @@ public class ProductDto
     [Description("Price")] public decimal Price { get; set; }
 
     [Description("Pictures")] public List<ProductImage>? Pictures { get; set; }
+
     private class Mapping : Profile
     {
         public Mapping()

@@ -9,7 +9,7 @@ public abstract class BaseAuditableEntity : BaseEntity, IAuditableEntity
 {
     public string? Description { get; set; }
     public string? Notes { get; set; }
-    
+
     public virtual DateTime? CreatedOn { get; set; }
 
     public virtual string? CreatedBy { get; set; }
@@ -28,7 +28,7 @@ public interface IAuditableEntity
     string? CreatedBy { get; set; }
     string? CreatedUser { get; set; }
 
-   DateTime? LastModifiedOn { get; set; }
+    DateTime? LastModifiedOn { get; set; }
 
     string? LastModifiedBy { get; set; }
     string? LastModifiedUser { get; set; }

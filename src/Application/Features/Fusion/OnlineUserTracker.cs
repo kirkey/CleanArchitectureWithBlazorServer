@@ -28,14 +28,13 @@ public class OnlineUserTracker : IOnlineUserTracker
     {
         if (Invalidation.IsActive)
             return;
-        if (sessionInfo!=null && !_activeUserSessions.Any(x => x.UserId == sessionInfo.UserId))
+        if (sessionInfo != null && !_activeUserSessions.Any(x => x.UserId == sessionInfo.UserId))
         {
             _activeUserSessions = _activeUserSessions.Add(sessionInfo);
             using var invalidating = Invalidation.Begin();
             _ = await GetOnlineUsers(cancellationToken).ConfigureAwait(false);
         }
     }
-
 
 
     /// <summary>
@@ -64,14 +63,16 @@ public class OnlineUserTracker : IOnlineUserTracker
     /// <param name="displayName">The display name.</param>
     /// <param name="profilePictureDataUrl">The profile picture data URL.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    public virtual async Task Update(string userId, string userName, string displayName, string profilePictureDataUrl, CancellationToken cancellationToken = default)
+    public virtual async Task Update(string userId, string userName, string displayName, string profilePictureDataUrl,
+        CancellationToken cancellationToken = default)
     {
         if (Invalidation.IsActive)
             return;
         var userSessions = _activeUserSessions.Where(s => s.UserId == userId).ToList();
         foreach (var session in userSessions)
         {
-            var updatedSession = new SessionInfo(userId, userName, displayName, session.IPAddress, session.TenantId, profilePictureDataUrl, session.Status);
+            var updatedSession = new SessionInfo(userId, userName, displayName, session.IPAddress, session.TenantId,
+                profilePictureDataUrl, session.Status);
             _activeUserSessions = _activeUserSessions.Remove(session).Add(updatedSession);
             using var invalidating = Invalidation.Begin();
             _ = await GetOnlineUsers(cancellationToken).ConfigureAwait(false);

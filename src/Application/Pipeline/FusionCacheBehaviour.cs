@@ -20,7 +20,7 @@ public class FusionCacheBehaviour<TRequest, TResponse>(
         var response = await fusionCache.GetOrSetAsync(
             request.CacheKey,
             _ => next(),
-            tags:request.Tags, token: cancellationToken).ConfigureAwait(false);
+            tags: request.Tags, token: cancellationToken).ConfigureAwait(false);
 
         return response;
     }

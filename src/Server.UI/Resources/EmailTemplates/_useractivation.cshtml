@@ -30,7 +30,7 @@
             border-radius: 5px;
             font-size: 16px;
             margin-top: 20px;
-            margin-bottom:10px;
+            margin-bottom: 10px;
         }
 
         p {
@@ -40,13 +40,13 @@
 </head>
 
 <body>
-    <div class="container">
-        <h2>Activate Your Account</h2>
-        <p>Hi @Model.UserName,</p>
-        <p>Welcome to @Model.AppName! Click below to activate your account:</p>
-        <a href="@Model.ActivationUrl" class="button">Activate Account</a>
-        <p>The link expires in 24 hours. If you didn't sign up, please ignore this email or contact support.</p>
-        <p>Thanks,<br>@Model.Company Support Team</p>
-    </div>
+<div class="container">
+    <h2>Activate Your Account</h2>
+    <p>Hi @Model.UserName,</p>
+    <p>Welcome to @Model.AppName! Click below to activate your account:</p>
+    <a href="@Model.ActivationUrl" class="button">Activate Account</a>
+    <p>The link expires in 24 hours. If you didn't sign up, please ignore this email or contact support.</p>
+    <p>Thanks,<br>@Model.Company Support Team</p>
+</div>
 </body>
 </html>

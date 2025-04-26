@@ -9,7 +9,7 @@ public class LayoutService(IUserPreferencesService userPreferencesService)
 
     public DarkLightMode DarkModeToggle { get; private set; } = DarkLightMode.System;
 
-    public UserPreferences.UserPreference UserPreferences { get; private set; } = new();
+    public UserPreference UserPreferences { get; private set; } = new();
     public bool IsRTL { get; private set; }
     public bool IsDarkMode { get; private set; }
     public MudTheme CurrentTheme { get; private set; } = new();
@@ -78,7 +78,7 @@ public class LayoutService(IUserPreferencesService userPreferencesService)
         CurrentTheme.LayoutProperties.DefaultBorderRadius = UserPreferences.BorderRadius + "px";
 
         // Update typography settings
-        string defaultFontSize = FormatFontSize(UserPreferences.DefaultFontSize);
+        var defaultFontSize = FormatFontSize(UserPreferences.DefaultFontSize);
         CurrentTheme.Typography.Default.FontSize = defaultFontSize;
 
         CurrentTheme.Typography.Button.FontSize = FormatFontSize(UserPreferences.ButtonFontSize);
@@ -110,14 +110,17 @@ public class LayoutService(IUserPreferencesService userPreferencesService)
 
         // Subtitles
         CurrentTheme.Typography.Subtitle1.FontSize = FormatFontSize(UserPreferences.Subtitle1FontSize);
-        CurrentTheme.Typography.Subtitle2.FontSize = FormatFontSize(UserPreferences.Subtitle2FontSize); ;
+        CurrentTheme.Typography.Subtitle2.FontSize = FormatFontSize(UserPreferences.Subtitle2FontSize);
+        ;
     }
 
     /// <summary>
     /// Formats a font size value as a string with the "rem" unit.
     /// </summary>
-    private string FormatFontSize(double size) =>
-        size.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+    private string FormatFontSize(double size)
+    {
+        return size.ToString("0.0000", CultureInfo.InvariantCulture) + "rem";
+    }
 
     #region Events and System Preferences
 
@@ -126,8 +129,10 @@ public class LayoutService(IUserPreferencesService userPreferencesService)
     /// <summary>
     /// Raises the MajorUpdateOccured event.
     /// </summary>
-    private void OnMajorUpdateOccured() =>
+    private void OnMajorUpdateOccured()
+    {
         MajorUpdateOccured?.Invoke(this, EventArgs.Empty);
+    }
 
     /// <summary>
     /// Handles system preference changes (e.g., system dark mode).
@@ -141,6 +146,7 @@ public class LayoutService(IUserPreferencesService userPreferencesService)
             IsDarkMode = newValue;
             OnMajorUpdateOccured();
         }
+
         return Task.CompletedTask;
     }
 
@@ -169,6 +175,7 @@ public class LayoutService(IUserPreferencesService userPreferencesService)
                 IsDarkMode = _systemPreferences;
                 break;
         }
+
         UserPreferences.DarkLightTheme = DarkModeToggle;
         await userPreferencesService.SaveUserPreferences(UserPreferences).ConfigureAwait(false);
         OnMajorUpdateOccured();

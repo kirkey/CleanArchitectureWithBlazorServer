@@ -20,6 +20,7 @@ using CleanArchitecture.Blazor.Domain.Identity;
 using NUnit.Framework;
 
 namespace CleanArchitecture.Blazor.Application.UnitTests.Common.Mappings;
+
 public class MappingTests
 {
     private readonly IConfigurationProvider _configuration;
@@ -27,7 +28,8 @@ public class MappingTests
 
     public MappingTests()
     {
-        _configuration = new MapperConfiguration(cfg => cfg.AddMaps(Assembly.GetAssembly(typeof(IApplicationDbContext))));
+        _configuration =
+            new MapperConfiguration(cfg => cfg.AddMaps(Assembly.GetAssembly(typeof(IApplicationDbContext))));
         _mapper = _configuration.CreateMapper();
     }
 
@@ -53,10 +55,7 @@ public class MappingTests
 
         _mapper.Map(instance, source, destination);
 
-        if (inverseMap)
-        {
-            ShouldSupportMappingFromSourceToDestination(destination, source, false);
-        }
+        if (inverseMap) ShouldSupportMappingFromSourceToDestination(destination, source, false);
     }
 
     private object GetInstanceOf(Type type)

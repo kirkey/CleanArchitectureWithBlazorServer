@@ -73,7 +73,7 @@
 @code {
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 
-    [EditorRequired][Parameter] public AddEditDocumentCommand Model { get; set; } = default!;
+    [EditorRequired] [Parameter] public AddEditDocumentCommand Model { get; set; } = default!;
 
     private MudForm? _form;
 

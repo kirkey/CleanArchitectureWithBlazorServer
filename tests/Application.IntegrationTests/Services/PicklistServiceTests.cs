@@ -6,10 +6,10 @@ using NUnit.Framework;
 namespace CleanArchitecture.Blazor.Application.IntegrationTests.Services;
 
 using static Testing;
+
 [NonParallelizable]
 public class PicklistServiceTests : TestBase
 {
-  
     [SetUp]
     public async Task InitData()
     {
@@ -25,8 +25,7 @@ public class PicklistServiceTests : TestBase
         var picklist = CreatePicklistService();
         picklist.Refresh();
         var count = picklist.DataSource.Count();
-        Assert.That(count,Is.EqualTo(4));
-  
+        Assert.That(count, Is.EqualTo(4));
     }
 
     [Test]

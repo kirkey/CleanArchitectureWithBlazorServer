@@ -8,19 +8,21 @@
     <div class="@ContentClassNames">
         <MudPaper Class="pa-4 mb-3">
             <style>
-               
+
                 .circle {
                     width: 0.5rem;
                     height: 0.5rem;
                     display: inline-block;
                 }
 
-                .rounded-circle{
+                .rounded-circle {
                     border-radius: 50%;
                 }
+
                 .bg-success {
                     background-color: #28a745 !important;
                 }
+
                 .bg-warning {
                     background-color: #ffc107 !important;
                 }
@@ -70,12 +72,11 @@
                     height: 100%;
                     transition: width 0.6s ease;
                 }
-                @@media (max-width: 850px) {
-                    .flex-row
 
-                {
-                    flex-wrap: wrap;
-                }
+                @@media (max-width: 850px) {
+                    .flex-row {
+                        flex-wrap: wrap;
+                    }
 
                 }
 
@@ -96,70 +97,76 @@
                     <div class="d-flex flex-row flex-grow-1">
                         <div class="d-flex flex-column justify-content-between align-center mt-2 flex-grow-1">
                             <div class="d-flex align-center gap-2">
-                                <div class="circle bg-success rounded-circle" ></div>
+                                <div class="circle bg-success rounded-circle"></div>
                                 <span class="bar-label text-nowrap">Paid in full</span>
                             </div>
                             <div class="text-nowrap fw-semibold small">789,238 EUR</div>
                         </div>
                         <div class="d-flex flex-column justify-content-between align-center mt-2 flex-grow-1">
                             <div class="d-flex align-center gap-2">
-                                <div class="circle bg-primary rounded-circle" ></div>
+                                <div class="circle bg-primary rounded-circle"></div>
                                 <span class="bar-label text-nowrap">Awaiting payment</span>
                             </div>
                             <div class="text-nowrap fw-semibold small">244,900 EUR</div>
                         </div>
                         <div class="d-flex flex-column justify-content-between align-center mt-2 flex-grow-1">
                             <div class="d-flex align-center gap-2">
-                                <div class="circle bg-warning rounded-circle" ></div>
+                                <div class="circle bg-warning rounded-circle"></div>
                                 <span class="bar-label text-nowrap">Overdue 1-6 days</span>
                             </div>
                             <div class="text-nowrap fw-semibold small">74,808 EUR</div>
                         </div>
                         <div class="d-flex flex-column justify-content-between align-center mt-2 flex-grow-1">
                             <div class="d-flex align-center gap-2">
-                                <div class="circle bg-danger rounded-circle" ></div>
+                                <div class="circle bg-danger rounded-circle"></div>
                                 <span class="bar-label text-nowrap">Overdue 7-13 days</span>
                             </div>
                             <div class="text-nowrap fw-semibold small">32,221 EUR</div>
                         </div>
                         <div class="d-flex flex-column justify-content-between align-center mt-2 flex-grow-1">
                             <div class="d-flex align-center gap-2">
-                                <div class="circle bg-secondary rounded-circle" ></div>
+                                <div class="circle bg-secondary rounded-circle"></div>
                                 <span class="bar-label text-nowrap">Overdue 14-29 days</span>
                             </div>
                             <div class="text-nowrap fw-semibold small">17,338 EUR</div>
                         </div>
                         <div class="d-flex flex-column justify-content-between align-center mt-2 flex-grow-1">
                             <div class="d-flex align-center gap-2">
-                                <div class="circle bg-dark rounded-circle" ></div>
+                                <div class="circle bg-dark rounded-circle"></div>
                                 <span class="bar-label text-nowrap">Overdue 30 days or more</span>
                             </div>
                             <div class="text-nowrap fw-semibold small">9,481 EUR</div>
                         </div>
                     </div>
                     <div class="progress bg-body mb-2" style="height: 8px;">
-                        <div class="progress-bar bg-success" role="progressbar" style="width: 68%;" aria-valuenow="68" aria-valuemin="0" aria-valuemax="100"></div>
-                        <div class="progress-bar bg-primary" role="progressbar" style="width: 21%;" aria-valuenow="21" aria-valuemin="0" aria-valuemax="100"></div>
-                        <div class="progress-bar bg-warning" role="progressbar" style="width: 6%;" aria-valuenow="6" aria-valuemin="0" aria-valuemax="100"></div>
-                        <div class="progress-bar bg-danger" role="progressbar" style="width: 3%;" aria-valuenow="3" aria-valuemin="0" aria-valuemax="100"></div>
-                        <div class="progress-bar bg-secondary" role="progressbar" style="width: 1%;" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100"></div>
-                        <div class="progress-bar bg-dark" role="progressbar" style="width: 1%;" aria-valuenow="1" aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 68%;" aria-valuenow="68"
+                             aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 21%;" aria-valuenow="21"
+                             aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 6%;" aria-valuenow="6"
+                             aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: 3%;" aria-valuenow="3"
+                             aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-bar bg-secondary" role="progressbar" style="width: 1%;" aria-valuenow="1"
+                             aria-valuemin="0" aria-valuemax="100"></div>
+                        <div class="progress-bar bg-dark" role="progressbar" style="width: 1%;" aria-valuenow="1"
+                             aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
                 </div>
-               
+
             </div>
-   
-     
-   
-</MudPaper>
+
+
+        </MudPaper>
         <div class="lp-app-grid">
-            
+
 
             <MudPaper Class="py-4 px-6 rounded-lg d-flex align-center">
                 <div class="flex-grow-1">
                     <MudText Typo="Typo.h6">@L["Graphite on roof"]</MudText>
                     <div class="d-flex align-center my-1">
-                        <MudAvatar Class="me-2 pa-4" Style="background-color: var(--mud-palette-primary-hover);" Size="Size.Small">
+                        <MudAvatar Class="me-2 pa-4" Style="background-color: var(--mud-palette-primary-hover);"
+                                   Size="Size.Small">
                             <MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.TrendingDown" Size="Size.Small"/>
                         </MudAvatar>
                         <MudText Typo="Typo.subtitle2">+2.6%</MudText>
@@ -183,7 +190,8 @@
                 <div class="flex-grow-1">
                     <MudText Typo="Typo.h6">@L["Global Spread"]</MudText>
                     <div class="d-flex align-center my-1">
-                        <MudAvatar Class="me-2 pa-4" Style="background-color: var(--mud-palette-secondary-hover);" Size="Size.Small">
+                        <MudAvatar Class="me-2 pa-4" Style="background-color: var(--mud-palette-secondary-hover);"
+                                   Size="Size.Small">
                             <MudIcon Color="Color.Primary" Icon="@Icons.Material.Filled.TrendingUp" Size="Size.Small"/>
                         </MudAvatar>
                         <MudText Typo="Typo.subtitle2">+9.6%</MudText>
@@ -207,8 +215,10 @@
                 <div class="flex-grow-1">
                     <MudText Typo="Typo.h6">@L["Roentgen"]</MudText>
                     <div class="d-flex align-center my-1">
-                        <MudAvatar Class="me-2 pa-4" Style="background-color: var(--mud-palette-tertiary-hover);" Size="Size.Small">
-                            <MudIcon Color="Color.Tertiary" Icon="@Icons.Material.Filled.TrendingFlat" Size="Size.Small"/>
+                        <MudAvatar Class="me-2 pa-4" Style="background-color: var(--mud-palette-tertiary-hover);"
+                                   Size="Size.Small">
+                            <MudIcon Color="Color.Tertiary" Icon="@Icons.Material.Filled.TrendingFlat"
+                                     Size="Size.Small"/>
                         </MudAvatar>
                         <MudText Typo="Typo.subtitle2">~0.0%</MudText>
                     </div>
@@ -241,35 +251,36 @@
                 <div class="mx-n2 mb-2">
                     <MudChip T="string" Color="Color.Primary">RBMK-1000</MudChip>
                     <MudChip Color="Color.Secondary" T="string">RBMK-1500</MudChip>
-                    <MudChip  Color="Color.Tertiary" T="string">RBMKP-2400</MudChip>
+                    <MudChip Color="Color.Tertiary" T="string">RBMKP-2400</MudChip>
                 </div>
                 <div>
-                    <MudButton Variant="Variant.Text" Color="Color.Primary" Class="ml-n2 mb-n2">@L["Read More"]</MudButton>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary"
+                               Class="ml-n2 mb-n2">@L["Read More"]</MudButton>
                 </div>
             </MudPaper>
             @if (IsMobile == false)
             {
                 <MudSimpleTable Dense="true" Hover="true" Class="flex-grow-1">
                     <thead>
-                        <tr>
-                            <th>@L["Nr"]</th>
-                            <th>@L["Sign"]</th>
-                            <th>@L["Name"]</th>
-                            <th>@L["Position"]</th>
-                            <th>@L["Molar mass"]</th>
-                        </tr>
+                    <tr>
+                        <th>@L["Nr"]</th>
+                        <th>@L["Sign"]</th>
+                        <th>@L["Name"]</th>
+                        <th>@L["Position"]</th>
+                        <th>@L["Molar mass"]</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in Elements)
-                        {
-                            <tr>
-                                <td>@item.Number</td>
-                                <td>@item.Sign</td>
-                                <td>@item.Name</td>
-                                <td>@item.Position</td>
-                                <td>@item.Molar</td>
-                            </tr>
-                        }
+                    @foreach (var item in Elements)
+                    {
+                        <tr>
+                            <td>@item.Number</td>
+                            <td>@item.Sign</td>
+                            <td>@item.Name</td>
+                            <td>@item.Position</td>
+                            <td>@item.Molar</td>
+                        </tr>
+                    }
                     </tbody>
                 </MudSimpleTable>
             }
@@ -277,8 +288,9 @@
     </div>
 
     <LandingSection StraightEnd="true" SectionClass="dark-section-text" BackgroundClass="mud-dark">
-        <MudText Typo="Typo.h3" Align="Align.Center" Class="mt-16 mb-8">“Never had such a good time making a site“</MudText>
-         <Carousel />
+        <MudText Typo="Typo.h3" Align="Align.Center" Class="mt-16 mb-8">“Never had such a good time making a site“
+        </MudText>
+        <Carousel/>
     </LandingSection>
 
     <MudText Typo="Typo.h1">H1 Title</MudText>
@@ -292,25 +304,47 @@
     <MudText Typo="Typo.subtitle2"> Subtitle2 Blazor</MudText>
     <MudText Typo="Typo.button">Button Text</MudText>
 
-    <MudText Typo="Typo.body1"> Here we add each class to the divs to change the background color, text color and both background and text color with one class only. </MudText>
-    <MudText Typo="Typo.body2"> Here we add each class to the divs to change the background color, text color and both background and text color with one class only. </MudText>
-    <MudText Typo="Typo.overline"> Here we add each class to the divs to change the background color, text color and both background and text color with one class only. </MudText>
-    <MudText Typo="Typo.caption"> Here we add each class to the divs to change the background color, text color and both background and text color with one class only. </MudText>
+    <MudText Typo="Typo.body1"> Here we add each class to the divs to change the background color, text color and both
+        background and text color with one class only.
+    </MudText>
+    <MudText Typo="Typo.body2"> Here we add each class to the divs to change the background color, text color and both
+        background and text color with one class only.
+    </MudText>
+    <MudText Typo="Typo.overline"> Here we add each class to the divs to change the background color, text color and
+        both background and text color with one class only.
+    </MudText>
+    <MudText Typo="Typo.caption"> Here we add each class to the divs to change the background color, text color and both
+        background and text color with one class only.
+    </MudText>
 
-    <MudText Typo="Typo.body1" Class="mud-secondary-text"> Here we add each class to the divs to change the background color, text color and both background and text color with one class only. </MudText>
-    <MudText Typo="Typo.body1" Class="mud-primary-text"> Here we add each class to the divs to change the background color, text color and both background and text color with one class only. </MudText>
-    <MudText Typo="Typo.body1" Class="mud-error-text"> Here we add each class to the divs to change the background color, text color and both background and text color with one class only. </MudText>
-    <MudText Typo="Typo.body1" Class="mud-info-text"> Here we add each class to the divs to change the background color, text color and both background and text color with one class only. </MudText>
-    <MudText Typo="Typo.body1" Class="mud-warning-text"> Here we add each class to the divs to change the background color, text color and both background and text color with one class only. </MudText>
-    <MudText Typo="Typo.body1" Class="mud-dark-text"> Here we add each class to the divs to change the background color, text color and both background and text color with one class only. </MudText>
-    <MudText Typo="Typo.body1" Class="mud-tertiary-text"> Here we add each class to the divs to change the background color, text color and both background and text color with one class only. </MudText>
+    <MudText Typo="Typo.body1" Class="mud-secondary-text"> Here we add each class to the divs to change the background
+        color, text color and both background and text color with one class only.
+    </MudText>
+    <MudText Typo="Typo.body1" Class="mud-primary-text"> Here we add each class to the divs to change the background
+        color, text color and both background and text color with one class only.
+    </MudText>
+    <MudText Typo="Typo.body1" Class="mud-error-text"> Here we add each class to the divs to change the background
+        color, text color and both background and text color with one class only.
+    </MudText>
+    <MudText Typo="Typo.body1" Class="mud-info-text"> Here we add each class to the divs to change the background color,
+        text color and both background and text color with one class only.
+    </MudText>
+    <MudText Typo="Typo.body1" Class="mud-warning-text"> Here we add each class to the divs to change the background
+        color, text color and both background and text color with one class only.
+    </MudText>
+    <MudText Typo="Typo.body1" Class="mud-dark-text"> Here we add each class to the divs to change the background color,
+        text color and both background and text color with one class only.
+    </MudText>
+    <MudText Typo="Typo.body1" Class="mud-tertiary-text"> Here we add each class to the divs to change the background
+        color, text color and both background and text color with one class only.
+    </MudText>
 </MudContainer>
 
 <style>
     .lp-app-grid {
         display: grid;
         gap: 24px;
-        grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     }
 </style>
 
@@ -326,7 +360,6 @@
         .AddClass("pa-5", !IsMobile)
         .AddClass("px-8", IsMobile)
         .Build();
-
 
 
     private readonly IEnumerable<Element> Elements = new List<Element>

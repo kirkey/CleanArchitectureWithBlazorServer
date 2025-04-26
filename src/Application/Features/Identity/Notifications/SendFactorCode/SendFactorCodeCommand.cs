@@ -21,7 +21,9 @@ public class SendFactorCodeNotificationHandler(
                 notification.AuthenticatorCode, settings.AppName, notification.Email, notification.UserName,
                 settings.Company
             });
-        logger.LogInformation("Verification Code email sent to {Email}. Authenticator Code:{AuthenticatorCode} sending result {Successful} {ErrorMessages}",
-            notification.Email, notification.AuthenticatorCode,sendMailResult.Successful, string.Join(' ', sendMailResult.ErrorMessages));
+        logger.LogInformation(
+            "Verification Code email sent to {Email}. Authenticator Code:{AuthenticatorCode} sending result {Successful} {ErrorMessages}",
+            notification.Email, notification.AuthenticatorCode, sendMailResult.Successful,
+            string.Join(' ', sendMailResult.ErrorMessages));
     }
 }

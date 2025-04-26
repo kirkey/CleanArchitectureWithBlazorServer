@@ -28,12 +28,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     protected override void OnModelCreating(ModelBuilder builder)
     {
         foreach (var entity in builder.Model.GetEntityTypes())
-        {
-            foreach (var property in entity.GetProperties())
-            {
-                property.SetColumnName(property.Name); // Use property name as column name
-            }
-        }
+        foreach (var property in entity.GetProperties())
+            property.SetColumnName(property.Name); // Use property name as column name
 
         base.OnModelCreating(builder);
 
@@ -44,7 +40,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         base.ConfigureConventions(configurationBuilder);
-        
+
         configurationBuilder.Properties<decimal>().HavePrecision(16, 2);
         configurationBuilder.Properties<double>().HavePrecision(8, 2);
         configurationBuilder.Properties<string>().HaveMaxLength(1024);
@@ -52,6 +48,5 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-
     }
 }

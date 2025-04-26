@@ -34,7 +34,8 @@ public static class DependencyInjection
     /// <returns>The updated service collection.</returns>
     public static IServiceCollection AddServerUI(this IServiceCollection services, IConfiguration config)
     {
-        services.AddRazorComponents().AddInteractiveServerComponents().AddHubOptions(options=> options.MaximumReceiveMessageSize = 64 * 1024);
+        services.AddRazorComponents().AddInteractiveServerComponents()
+            .AddHubOptions(options => options.MaximumReceiveMessageSize = 64 * 1024);
         services.AddCascadingAuthenticationState();
         services.AddScoped<IdentityUserAccessor>();
         services.AddScoped<IdentityRedirectManager>();
@@ -50,7 +51,7 @@ public static class DependencyInjection
             config.SnackbarConfiguration.HideTransitionDuration = 500;
             config.SnackbarConfiguration.ShowTransitionDuration = 500;
             config.SnackbarConfiguration.SnackbarVariant = Variant.Filled;
-           
+
             // we're currently planning on deprecating `PreventDuplicates`, at least to the end dev. however,
             // we may end up wanting to instead set it as internal because the docs project relies on it
             // to ensure that the Snackbar always allows duplicates. disabling the warning for now because
@@ -67,7 +68,6 @@ public static class DependencyInjection
         services.AddScoped<LocalizationCookiesMiddleware>()
             .Configure<RequestLocalizationOptions>(options =>
             {
-    
                 options.AddSupportedUICultures(LocalizationConstants.SupportedLanguages.Select(x => x.Code).ToArray());
                 options.AddSupportedCultures(LocalizationConstants.SupportedLanguages.Select(x => x.Code).ToArray());
                 options.DefaultRequestCulture = new RequestCulture(LocalizationConstants.DefaultLanguageCode);
@@ -86,7 +86,7 @@ public static class DependencyInjection
         services.AddControllers();
 
         services.AddScoped<IApplicationHubWrapper, ServerHubWrapper>()
-            .AddSignalR(options=>options.MaximumReceiveMessageSize=64*1024);
+            .AddSignalR(options => options.MaximumReceiveMessageSize = 64 * 1024);
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddProblemDetails();
         services.AddHealthChecks();
@@ -138,6 +138,7 @@ public static class DependencyInjection
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
         }
+
         app.InitializeCacheFactory();
         app.UseStatusCodePagesWithRedirects("/404");
         app.MapHealthChecks("/health");
@@ -146,11 +147,10 @@ public static class DependencyInjection
         app.UseAntiforgery();
         app.UseHttpsRedirection();
         app.MapStaticAssets();
-        
+
 
         if (!Directory.Exists(Path.Combine(Directory.GetCurrentDirectory(), @"Files")))
             Directory.CreateDirectory(Path.Combine(Directory.GetCurrentDirectory(), @"Files"));
-
 
 
         app.UseStaticFiles(new StaticFileOptions
@@ -168,10 +168,7 @@ public static class DependencyInjection
         var acceptLanguageProvider = localizationOptions.RequestCultureProviders
             .OfType<AcceptLanguageHeaderRequestCultureProvider>()
             .FirstOrDefault();
-        if (acceptLanguageProvider != null)
-        {
-            localizationOptions.RequestCultureProviders.Remove(acceptLanguageProvider);
-        }
+        if (acceptLanguageProvider != null) localizationOptions.RequestCultureProviders.Remove(acceptLanguageProvider);
         app.UseRequestLocalization(localizationOptions);
         app.UseMiddleware<LocalizationCookiesMiddleware>();
         app.UseExceptionHandler();
@@ -190,10 +187,11 @@ public static class DependencyInjection
         app.MapAdditionalIdentityEndpoints();
         app.UseForwardedHeaders();
         app.UseWebSockets(new WebSocketOptions()
-        { // We obviously need this
-            KeepAliveInterval = TimeSpan.FromSeconds(30), // Just in case
+        {
+            // We obviously need this
+            KeepAliveInterval = TimeSpan.FromSeconds(30) // Just in case
         });
-       
+
         return app;
     }
 }

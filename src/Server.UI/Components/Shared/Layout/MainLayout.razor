@@ -5,12 +5,13 @@
 @inject LayoutService LayoutService
 <PageTitle>@ApplicationSettings.AppName</PageTitle>
 <MudRTLProvider RightToLeft="@LayoutService.IsRTL">
-    <MudPopoverProvider />
-    <MudDialogProvider />
-    <MudSnackbarProvider />
-    <MudThemeProvider @ref="@_mudThemeProvider" Theme="@LayoutService.CurrentTheme" IsDarkMode="@LayoutService.IsDarkMode" IsDarkModeChanged="@LayoutService.SetDarkMode" />
+    <MudPopoverProvider/>
+    <MudDialogProvider/>
+    <MudSnackbarProvider/>
+    <MudThemeProvider @ref="@_mudThemeProvider" Theme="@LayoutService.CurrentTheme"
+                      IsDarkMode="@LayoutService.IsDarkMode" IsDarkModeChanged="@LayoutService.SetDarkMode"/>
 
-        @Body
+    @Body
 
 </MudRTLProvider>
 
@@ -18,6 +19,7 @@
 {
     private MudThemeProvider _mudThemeProvider = null!;
     private bool _defaultDarkMode;
+
     public void Dispose()
     {
         LayoutService.MajorUpdateOccured -= LayoutServiceOnMajorUpdateOccured;

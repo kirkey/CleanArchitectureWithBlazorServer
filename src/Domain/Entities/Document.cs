@@ -19,7 +19,7 @@ public sealed class Document : BaseAuditableEntity, IMayHaveTenant, IAuditTrial
     public Tenant? Tenant { get; set; }
     public string? TenantId { get; set; }
 
-    public ApplicationUser? CreatedByUser { get;set;}
+    public ApplicationUser? CreatedByUser { get; set; }
     public ApplicationUser? LastModifiedByUser { get; set; }
 }
 

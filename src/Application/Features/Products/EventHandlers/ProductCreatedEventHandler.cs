@@ -16,6 +16,8 @@ public class ProductCreatedEventHandler(ILogger<ProductCreatedEventHandler> logg
         _timer.Start();
         await Task.Delay(3000, cancellationToken);
         _timer.Stop();
-        logger.LogInformation("Handled domain event '{EventType}' with notification: {@Notification} in {ElapsedMilliseconds} ms", notification.GetType().Name, notification, _timer.ElapsedMilliseconds);
+        logger.LogInformation(
+            "Handled domain event '{EventType}' with notification: {@Notification} in {ElapsedMilliseconds} ms",
+            notification.GetType().Name, notification, _timer.ElapsedMilliseconds);
     }
 }

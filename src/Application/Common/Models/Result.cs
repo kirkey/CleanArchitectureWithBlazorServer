@@ -14,7 +14,7 @@ public class Result : IResult
     {
         Succeeded = succeeded;
         // Convert to a read-only list to ensure immutability.
-        Errors = errors?.ToList().AsReadOnly() ?? ((IReadOnlyList<string>)Array.Empty<string>());
+        Errors = errors?.ToList().AsReadOnly() ?? (IReadOnlyList<string>)Array.Empty<string>();
     }
 
     /// <inheritdoc/>
@@ -31,24 +31,36 @@ public class Result : IResult
     /// <summary>
     /// Creates a successful <see cref="Result"/> instance.
     /// </summary>
-    public static Result Success() => new(true, Array.Empty<string>());
+    public static Result Success()
+    {
+        return new Result(true, Array.Empty<string>());
+    }
 
     /// <summary>
     /// Asynchronously creates a successful <see cref="Result"/> instance.
     /// </summary>
-    public static Task<Result> SuccessAsync() => Task.FromResult(Success());
+    public static Task<Result> SuccessAsync()
+    {
+        return Task.FromResult(Success());
+    }
 
     /// <summary>
     /// Creates a failed <see cref="Result"/> instance with a collection of error messages.
     /// </summary>
     /// <param name="errors">A collection of error messages.</param>
-    public static Result Failure(params IEnumerable<string> errors) => new(false, errors);
+    public static Result Failure(params IEnumerable<string> errors)
+    {
+        return new Result(false, errors);
+    }
 
     /// <summary>
     /// Asynchronously creates a failed <see cref="Result"/> instance with a collection of error messages.
     /// </summary>
     /// <param name="errors">A collection of error messages.</param>
-    public static Task<Result> FailureAsync(params IEnumerable<string> errors) => Task.FromResult(Failure(errors));
+    public static Task<Result> FailureAsync(params IEnumerable<string> errors)
+    {
+        return Task.FromResult(Failure(errors));
+    }
 
     /// <summary>
     /// Executes the corresponding action based on whether the operation succeeded.
@@ -69,7 +81,9 @@ public class Result : IResult
     /// <param name="onSuccess">Async action to execute on success.</param>
     /// <param name="onFailure">Async action to execute on failure (receives the error message).</param>
     public Task MatchAsync(Func<Task> onSuccess, Func<string, Task> onFailure)
-        => Succeeded ? onSuccess() : onFailure(ErrorMessage);
+    {
+        return Succeeded ? onSuccess() : onFailure(ErrorMessage);
+    }
 }
 
 /// <summary>
@@ -100,23 +114,37 @@ public class Result<T> : Result, IResult<T>
     /// Creates a successful <see cref="Result{T}"/> instance with data.
     /// </summary>
     /// <param name="data">The data to include in the result.</param>
-    public static Result<T> Success(T data) => new(true, Array.Empty<string>(), data);
+    public static Result<T> Success(T data)
+    {
+        return new Result<T>(true, Array.Empty<string>(), data);
+    }
 
     /// <summary>
     /// Asynchronously creates a successful <see cref="Result{T}"/> instance with data.
     /// </summary>
     /// <param name="data">The data to include in the result.</param>
-    public static Task<Result<T>> SuccessAsync(T data) => Task.FromResult(Success(data));
+    public static Task<Result<T>> SuccessAsync(T data)
+    {
+        return Task.FromResult(Success(data));
+    }
+
     /// <summary>
     /// Creates a failed <see cref="Result{T}"/> instance with a collection of error messages.
     /// </summary>
     /// <param name="errors">A collection of error messages.</param>
-    public static new Result<T> Failure(params IEnumerable<string> errors) => new(false, errors, default);
+    public new static Result<T> Failure(params IEnumerable<string> errors)
+    {
+        return new Result<T>(false, errors, default);
+    }
+
     /// <summary>
     /// Asynchronously creates a failed <see cref="Result{T}"/> instance with a collection of error messages.
     /// </summary>
     /// <param name="errors">A collection of error messages.</param>
-    public static new Task<Result<T>> FailureAsync(params IEnumerable<string> errors) => Task.FromResult(Failure(errors));
+    public new static Task<Result<T>> FailureAsync(params IEnumerable<string> errors)
+    {
+        return Task.FromResult(Failure(errors));
+    }
 
     /// <summary>
     /// Executes the corresponding action based on whether the operation succeeded.
@@ -137,7 +165,9 @@ public class Result<T> : Result, IResult<T>
     /// <param name="onSuccess">Async action to execute on success (receives the data).</param>
     /// <param name="onFailure">Async action to execute on failure (receives the error message).</param>
     public Task MatchAsync(Func<T, Task> onSuccess, Func<string, Task> onFailure)
-        => Succeeded ? onSuccess(Data!) : onFailure(ErrorMessage);
+    {
+        return Succeeded ? onSuccess(Data!) : onFailure(ErrorMessage);
+    }
 
     /// <summary>
     /// Maps the data contained in the result to a new type.
@@ -145,7 +175,9 @@ public class Result<T> : Result, IResult<T>
     /// <typeparam name="TResult">The new data type.</typeparam>
     /// <param name="map">Mapping function.</param>
     public Result<TResult> Map<TResult>(Func<T, TResult> map)
-        => Succeeded ? Result<TResult>.Success(map(Data!)) : Result<TResult>.Failure(Errors);
+    {
+        return Succeeded ? Result<TResult>.Success(map(Data!)) : Result<TResult>.Failure(Errors);
+    }
 
     /// <summary>
     /// Asynchronously maps the data contained in the result to a new type.
@@ -153,7 +185,9 @@ public class Result<T> : Result, IResult<T>
     /// <typeparam name="TResult">The new data type.</typeparam>
     /// <param name="map">Async mapping function.</param>
     public async Task<Result<TResult>> MapAsync<TResult>(Func<T, Task<TResult>> map)
-        => Succeeded ? Result<TResult>.Success(await map(Data!)) : await Result<TResult>.FailureAsync(Errors);
+    {
+        return Succeeded ? Result<TResult>.Success(await map(Data!)) : await Result<TResult>.FailureAsync(Errors);
+    }
 
     /// <summary>
     /// Binds the result to another result, enabling chained operations.
@@ -161,7 +195,9 @@ public class Result<T> : Result, IResult<T>
     /// <typeparam name="TResult">The data type of the resulting result.</typeparam>
     /// <param name="bind">Binding function that returns a new result.</param>
     public Result<TResult> Bind<TResult>(Func<T, Result<TResult>> bind)
-        => Succeeded ? bind(Data!) : Result<TResult>.Failure(Errors);
+    {
+        return Succeeded ? bind(Data!) : Result<TResult>.Failure(Errors);
+    }
 
     /// <summary>
     /// Asynchronously binds the result to another result, enabling chained operations.
@@ -169,5 +205,7 @@ public class Result<T> : Result, IResult<T>
     /// <typeparam name="TResult">The data type of the resulting result.</typeparam>
     /// <param name="bind">Async binding function that returns a new result.</param>
     public Task<Result<TResult>> BindAsync<TResult>(Func<T, Task<Result<TResult>>> bind)
-        => Succeeded ? bind(Data!) : Result<TResult>.FailureAsync(Errors);
+    {
+        return Succeeded ? bind(Data!) : Result<TResult>.FailureAsync(Errors);
+    }
 }

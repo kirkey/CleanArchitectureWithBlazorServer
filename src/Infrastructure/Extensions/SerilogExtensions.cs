@@ -37,11 +37,14 @@ public static class SerilogExtensions
                 .MinimumLevel.Override("ZiggyCreatures.Caching.Fusion.FusionCache", LogEventLevel.Error)
                 .MinimumLevel.Override("ActualLab.CommandR.Interception.CommandServiceInterceptor", LogEventLevel.Error)
                 .MinimumLevel.Override("ActualLab.Fusion.Interception.ComputeServiceInterceptor", LogEventLevel.Error)
-                .MinimumLevel.Override("ActualLab.Fusion.Extensions.Services.InMemoryKeyValueStore", LogEventLevel.Error)
+                .MinimumLevel.Override("ActualLab.Fusion.Extensions.Services.InMemoryKeyValueStore",
+                    LogEventLevel.Error)
                 .MinimumLevel.Override("ActualLab.Fusion.Operations.Internal.CompletionProducer", LogEventLevel.Error)
                 .MinimumLevel.Override("ActualLab.Fusion.Internal.ComputedGraphPruner", LogEventLevel.Error)
-                .MinimumLevel.Override("CleanArchitecture.Blazor.Server.UI.Services.Fusion.UserSessionTracker", LogEventLevel.Error)
-                .MinimumLevel.Override("CleanArchitecture.Blazor.Server.UI.Services.Fusion.OnlineUserTracker", LogEventLevel.Error)
+                .MinimumLevel.Override("CleanArchitecture.Blazor.Server.UI.Services.Fusion.UserSessionTracker",
+                    LogEventLevel.Error)
+                .MinimumLevel.Override("CleanArchitecture.Blazor.Server.UI.Services.Fusion.OnlineUserTracker",
+                    LogEventLevel.Error)
                 .Enrich.FromLogContext()
                 .Enrich.WithUtcTime()
                 .Enrich.WithUserInfo()
@@ -81,7 +84,6 @@ public static class SerilogExtensions
         }
     }
 
-   
 
     private static void WriteToSqlServer(LoggerConfiguration serilogConfig, string? connectionString)
     {
@@ -94,8 +96,7 @@ public static class SerilogExtensions
             AutoCreateSqlDatabase = false,
             AutoCreateSqlTable = false,
             BatchPostingLimit = 100,
-            BatchPeriod = new TimeSpan(0, 0, 20),
-            
+            BatchPeriod = new TimeSpan(0, 0, 20)
         };
 
         ColumnOptions columnOpts = new()
@@ -115,15 +116,17 @@ public static class SerilogExtensions
             {
                 new()
                 {
-                    ColumnName = "ClientIP", PropertyName = "ClientIP",AllowNull=true, DataType = SqlDbType.NVarChar, DataLength = 64
+                    ColumnName = "ClientIP", PropertyName = "ClientIP", AllowNull = true, DataType = SqlDbType.NVarChar,
+                    DataLength = 64
                 },
                 new()
                 {
-                    ColumnName = "UserName", PropertyName = "UserName",AllowNull=true, DataType = SqlDbType.NVarChar
+                    ColumnName = "UserName", PropertyName = "UserName", AllowNull = true, DataType = SqlDbType.NVarChar
                 },
                 new()
                 {
-                    ColumnName = "ClientAgent", PropertyName = "ClientAgent",AllowNull=true, DataType = SqlDbType.NVarChar
+                    ColumnName = "ClientAgent", PropertyName = "ClientAgent", AllowNull = true,
+                    DataType = SqlDbType.NVarChar
                 }
             },
             TimeStamp = { ConvertToUtc = true, ColumnName = "TimeStamp" },
@@ -188,9 +191,9 @@ public static class SerilogExtensions
 
     public static LoggerConfiguration WithUtcTime(this LoggerEnrichmentConfiguration enrichmentConfiguration)
     {
-        
         return enrichmentConfiguration.With<UtcTimestampEnricher>();
     }
+
     public static LoggerConfiguration WithUserInfo(this LoggerEnrichmentConfiguration enrichmentConfiguration)
     {
         return enrichmentConfiguration.With<UserInfoEnricher>();
@@ -204,11 +207,13 @@ internal class UtcTimestampEnricher : ILogEventEnricher
         logEvent.AddOrUpdateProperty(pf.CreateProperty("TimeStamp", logEvent.Timestamp.UtcDateTime));
     }
 }
+
 internal class UserInfoEnricher(IHttpContextAccessor httpContextAccessor) : ILogEventEnricher
 {
     public UserInfoEnricher() : this(new HttpContextAccessor())
     {
     }
+
     //Dependency injection can be used to retrieve any service required to get a user or any data.
     //Here, I easily get data from HTTPContext
     public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
@@ -216,8 +221,8 @@ internal class UserInfoEnricher(IHttpContextAccessor httpContextAccessor) : ILog
         var userName = httpContextAccessor.HttpContext?.User?.Identity?.Name ?? "";
         var headers = httpContextAccessor.HttpContext?.Request?.Headers;
         var clientIp = headers != null && headers.ContainsKey("X-Forwarded-For")
-        ? headers["X-Forwarded-For"].ToString().Split(',').First().Trim()
-        : httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString() ?? "";
+            ? headers["X-Forwarded-For"].ToString().Split(',').First().Trim()
+            : httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString() ?? "";
         var clientAgent = headers != null && headers.ContainsKey("User-Agent")
             ? headers["User-Agent"].ToString()
             : "";

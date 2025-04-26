@@ -15,7 +15,7 @@
 
 <MudDialog>
     <DialogContent>
-        <ActiveUserSession PageComponent="@($"{nameof(ProductFormDialog)}/{_model.Id}")" />
+        <ActiveUserSession PageComponent="@($"{nameof(ProductFormDialog)}/{_model.Id}")"/>
         <MudForm Model="@_model" @ref="@_form" Validation="@(Validator.ValidateValue(_model))">
             <MudGrid Spacing="2">
                 <MudItem xs="12">
@@ -40,7 +40,7 @@
                                           ShowProgressIndicator="true"
                                           @bind-Value="_model.Brand">
                         <ProgressIndicatorTemplate>
-                            <MudProgressLinear Size="MudBlazor.Size.Small" Indeterminate="true" />
+                            <MudProgressLinear Size="MudBlazor.Size.Small" Indeterminate="true"/>
                         </ProgressIndicatorTemplate>
                     </PicklistAutocomplete>
                 </MudItem>
@@ -61,7 +61,7 @@
                                           ShowProgressIndicator="true"
                                           @bind-Value="_model.Unit">
                         <ProgressIndicatorTemplate>
-                            <MudProgressLinear Size="MudBlazor.Size.Small" Indeterminate="true" />
+                            <MudProgressLinear Size="MudBlazor.Size.Small" Indeterminate="true"/>
                         </ProgressIndicatorTemplate>
                     </PicklistAutocomplete>
                 </MudItem>
@@ -83,7 +83,9 @@
                                        AppendMultipleFiles>
                             <ActivatorContent>
                                 <MudPaper Class="@_dragClass" Style="width:260px;height:70px;">
-                                    <MudLoadingButton Loading="@_uploading" Disabled="@_uploading" Variant="Variant.Text" Class="align-self-center" Style="text-transform:none"
+                                    <MudLoadingButton Loading="@_uploading" Disabled="@_uploading"
+                                                      Variant="Variant.Text" Class="align-self-center"
+                                                      Style="text-transform:none"
                                                       StartIcon="@Icons.Material.Filled.CloudUpload">
                                         @L["choose image or pdf"]
                                     </MudLoadingButton>
@@ -95,14 +97,22 @@
                         {
                             <MudSimpleTable Hover Dense Elevation="0">
                                 <tbody>
-                                    @foreach (var dto in _model.Pictures)
-                                    {
-                                        <tr @onclick="()=>OnDownloadFile(dto.Url)" style="cursor:pointer">
-                                            <td><Thumbnail FileName="@dto.Name" FileUrl="@dto.Url"> </Thumbnail></td>
-                                            <td><FileSizeFormatter FileSizeInBytes="@dto.Size"></FileSizeFormatter></td>
-                                            <td style="width:50px"><MudIconButton Icon="@Icons.Material.Outlined.Delete" Color="Color.Error" title="@ConstantString.Delete" OnClick="@(() => DeleteImage(dto))"></MudIconButton></td>
-                                        </tr>
-                                    }
+                                @foreach (var dto in _model.Pictures)
+                                {
+                                    <tr @onclick="()=>OnDownloadFile(dto.Url)" style="cursor:pointer">
+                                        <td>
+                                            <Thumbnail FileName="@dto.Name" FileUrl="@dto.Url"></Thumbnail>
+                                        </td>
+                                        <td>
+                                            <FileSizeFormatter FileSizeInBytes="@dto.Size"></FileSizeFormatter>
+                                        </td>
+                                        <td style="width:50px">
+                                            <MudIconButton Icon="@Icons.Material.Outlined.Delete" Color="Color.Error"
+                                                           title="@ConstantString.Delete"
+                                                           OnClick="@(() => DeleteImage(dto))"></MudIconButton>
+                                        </td>
+                                    </tr>
+                                }
                                 </tbody>
                             </MudSimpleTable>
                         }
@@ -122,7 +132,7 @@
 @code {
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
 
-    [EditorRequired][Parameter] public AddEditProductCommand _model { get; set; } = default!;
+    [EditorRequired] [Parameter] public AddEditProductCommand _model { get; set; } = default!;
 
     [Parameter] public Action? Refresh { get; set; }
 
@@ -155,11 +165,17 @@
 
     private const string DefaultDragClass = "pa-4 d-flex align-content-center align-center flex-grow-1 mb-2 flex-wrap border-2 border-dashed";
     private string _dragClass = DefaultDragClass;
+
     private void SetDragClass()
-        => _dragClass = $"{DefaultDragClass} mud-border-primary mud-elevation-25 border-4";
+    {
+        _dragClass = $"{DefaultDragClass} mud-border-primary mud-elevation-25 border-4";
+    }
 
     private void ClearDragClass()
-        => _dragClass = DefaultDragClass;
+    {
+        _dragClass = DefaultDragClass;
+    }
+
     private async Task UploadFiles(InputFileChangeEventArgs e)
     {
         try
@@ -185,8 +201,8 @@
                     }
                     else
                     {
-                        var resizedStream = await ImageProcessor.ResizeAndCompressToJpegAsync(attachStream,640,320);
-                        var result = await UploadService.UploadAsync(new UploadRequest(filename, UploadType.Product, resizedStream.ToArray(), overwrite: false, null));
+                        var resizedStream = await ImageProcessor.ResizeAndCompressToJpegAsync(attachStream, 640, 320);
+                        var result = await UploadService.UploadAsync(new UploadRequest(filename, UploadType.Product, resizedStream.ToArray(), false, null));
                         list.Add(new ProductImage { Name = filename, Size = attachStream.Length, Url = result });
                     }
                 }
@@ -221,15 +237,12 @@
 
             var result = await Mediator.Send(_model);
             result.Match(
-            data =>
-            {
-                MudDialog.Close(DialogResult.Ok(true));
-                Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
-            },
-            errors =>
-            {
-                Snackbar.Add(errors, Severity.Error);
-            });
+                data =>
+                {
+                    MudDialog.Close(DialogResult.Ok(true));
+                    Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
+                },
+                errors => { Snackbar.Add(errors, Severity.Error); });
         }
         finally
         {
@@ -247,16 +260,13 @@
                 return;
             var result = await Mediator.Send(_model);
             result.Match(
-            data =>
-            {
-                Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
-                Refresh?.Invoke();
-                _model = new AddEditProductCommand();
-            },
-            errors =>
-            {
-                Snackbar.Add(result.ErrorMessage, Severity.Error);
-            });
+                data =>
+                {
+                    Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
+                    Refresh?.Invoke();
+                    _model = new AddEditProductCommand();
+                },
+                errors => { Snackbar.Add(result.ErrorMessage, Severity.Error); });
         }
         finally
         {
@@ -268,9 +278,11 @@
     {
         MudDialog.Cancel();
     }
+
     private async Task OnDownloadFile(string? str)
     {
         var fileURL = str;
         await new Fancybox(JS).Preview(str ?? string.Empty, []);
     }
+
 }

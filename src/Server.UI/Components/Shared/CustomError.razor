@@ -7,12 +7,15 @@
     </TitleContent>
     <DialogContent>
         <div Class="px-6 rounded-lg d-flex flex-column">
-            <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Class="pb-4" Style="height:100px;width:100px;margin:auto" Color="Color.Warning"/>
+            <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Class="pb-4"
+                     Style="height:100px;width:100px;margin:auto" Color="Color.Warning"/>
 
             <div class="d-flex align-center gap-4">
                 <MudText Typo="Typo.subtitle2">@Message</MudText>
                 <MudText Typo="Typo.subtitle2">@DateTime.Now</MudText>
-                <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => ShowStackTrace = !ShowStackTrace)">More</MudButton>
+                <MudButton Variant="Variant.Text" Color="Color.Primary"
+                           OnClick="@(() => ShowStackTrace = !ShowStackTrace)">More
+                </MudButton>
             </div>
             <MudText>@Message For more information, contact your system administrator</MudText>
             @if (ShowStackTrace)

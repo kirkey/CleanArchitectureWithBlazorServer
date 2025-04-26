@@ -187,8 +187,6 @@ public static partial class Permissions
         [Description("Allows viewing dashboard data.")]
         public const string View = "Permissions.Dashboards.View";
     }
-
-
 }
 
 public class PicklistSetsAccessRights
@@ -201,6 +199,7 @@ public class PicklistSetsAccessRights
     public bool Export { get; set; }
     public bool Import { get; set; }
 }
+
 public class LogsAccessRights
 {
     public bool View { get; set; }
@@ -221,6 +220,7 @@ public class RolesAccessRights
     public bool ManagePermissions { get; set; }
     public bool ManageNavigation { get; set; }
 }
+
 public class UsersAccessRights
 {
     public bool View { get; set; }
@@ -253,6 +253,7 @@ public class TenantsAccessRights
     public bool Delete { get; set; }
     public bool Search { get; set; }
 }
+
 public class DashboardsAccessRights
 {
     public bool View { get; set; }

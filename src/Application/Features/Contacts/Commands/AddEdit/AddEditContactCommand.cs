@@ -15,26 +15,22 @@
 
 using CleanArchitecture.Blazor.Application.Features.Contacts.Caching;
 using CleanArchitecture.Blazor.Application.Features.Contacts.DTOs;
+
 namespace CleanArchitecture.Blazor.Application.Features.Contacts.Commands.AddEdit;
 
 public class AddEditContactCommand : ICacheInvalidatorRequest<Result<int>>
 {
-    [Description("Id")]
-    public int Id { get; set; }
-    [Description("Name")]
-    public string Name { get; set; }
-    [Description("Description")]
-    public string? Description { get; set; }
-    [Description("Email")]
-    public string? Email { get; set; }
-    [Description("Phone number")]
-    public string? PhoneNumber { get; set; }
-    [Description("Country")]
-    public string? Country { get; set; }
+    [Description("Id")] public int Id { get; set; }
+    [Description("Name")] public string Name { get; set; }
+    [Description("Description")] public string? Description { get; set; }
+    [Description("Email")] public string? Email { get; set; }
+    [Description("Phone number")] public string? PhoneNumber { get; set; }
+    [Description("Country")] public string? Country { get; set; }
 
 
     public string CacheKey => ContactCacheKey.GetAllCacheKey;
     public IEnumerable<string>? Tags => ContactCacheKey.Tags;
+
     private class Mapping : Profile
     {
         public Mapping()
@@ -54,10 +50,7 @@ public class AddEditContactCommandHandler(
         if (request.Id > 0)
         {
             var item = await context.Contacts.FindAsync(request.Id, cancellationToken);
-            if (item == null)
-            {
-                return await Result<int>.FailureAsync($"Contact with id: [{request.Id}] not found.");
-            }
+            if (item == null) return await Result<int>.FailureAsync($"Contact with id: [{request.Id}] not found.");
             item = mapper.Map(request, item);
             // raise a update domain event
             item.AddDomainEvent(new ContactUpdatedEvent(item));
@@ -73,7 +66,5 @@ public class AddEditContactCommandHandler(
             await context.SaveChangesAsync(cancellationToken);
             return await Result<int>.SuccessAsync(item.Id);
         }
-
     }
 }
-

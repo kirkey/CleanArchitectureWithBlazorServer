@@ -14,7 +14,10 @@
 @if (EmailConfirmationLink is not null)
 {
     <p>
-        L["This app does not currently have a real email sender registered, see"] <a href="https://aka.ms/aspaccountconf">@L["these docs"]</a> @L["how to configure a real email sender. Normally this would be emailed:"] <a class="mud-button-root mud-button mud-button-text mud-button-text-default mud-button-text-size-medium mud-ripple" href="@EmailConfirmationLink">@L["here to confirm your account"]</a>
+        L["This app does not currently have a real email sender registered, see"] <a
+            href="https://aka.ms/aspaccountconf">@L["these docs"]</a> @L["how to configure a real email sender. Normally this would be emailed:"] <a
+            class="mud-button-root mud-button mud-button-text mud-button-text-default mud-button-text-size-medium mud-ripple"
+            href="@EmailConfirmationLink">@L["here to confirm your account"]</a>
     </p>
 }
 else

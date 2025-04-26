@@ -9,21 +9,18 @@ public sealed class HubClient : IAsyncDisposable
 {
     private readonly HubConnection _hubConnection;
     private bool _started;
+
     public HubClient(NavigationManager navigationManager, IHttpContextAccessor httpContextAccessor)
     {
         var uri = new UriBuilder(navigationManager.Uri);
         var container = new CookieContainer();
         if (httpContextAccessor.HttpContext != null)
-        {
             foreach (var c in httpContextAccessor.HttpContext.Request.Cookies)
-            {
                 container.Add(new Cookie(c.Key, c.Value)
                 {
                     Domain = uri.Host,
                     Path = "/"
                 });
-            }
-        }
 
         var hubUrl = navigationManager.BaseUri.TrimEnd('/') + ISignalRHub.Url;
         _hubConnection = new HubConnectionBuilder()
@@ -47,63 +44,55 @@ public sealed class HubClient : IAsyncDisposable
 
         _hubConnection.On<string>(nameof(ISignalRHub.SendNotification), OnNotificationReceivedEventAsync);
 
-        _hubConnection.On<string, string>(nameof(ISignalRHub.SendMessage),OnMessageReceivedEventAsync);
+        _hubConnection.On<string, string>(nameof(ISignalRHub.SendMessage), OnMessageReceivedEventAsync);
 
         _hubConnection.On<string, string, string>(nameof(ISignalRHub.SendPrivateMessage),
             async (from, to, message) => await OnMessageReceivedEventAsync(from, message).ConfigureAwait(false));
-
-   
     }
 
     // Handle the result of async event invocations
     private async Task OnLoginEventAsync(string connectionId, string userName)
     {
         if (LoginEvent != null)
-        {
-            await Task.Run(() => LoginEvent?.Invoke(this, new UserStateChangeEventArgs(connectionId, userName))).ConfigureAwait(false);
-        }
+            await Task.Run(() => LoginEvent?.Invoke(this, new UserStateChangeEventArgs(connectionId, userName)))
+                .ConfigureAwait(false);
     }
 
     private async Task OnLogoutEventAsync(string connectionId, string userName)
     {
         if (LogoutEvent != null)
-        {
-            await Task.Run(() => LogoutEvent?.Invoke(this, new UserStateChangeEventArgs(connectionId, userName))).ConfigureAwait(false);
-        }
+            await Task.Run(() => LogoutEvent?.Invoke(this, new UserStateChangeEventArgs(connectionId, userName)))
+                .ConfigureAwait(false);
     }
 
-    private async Task OnJobStartedEventAsync( int id, string message)
+    private async Task OnJobStartedEventAsync(int id, string message)
     {
         if (JobStartedEvent != null)
-        {
-            await Task.Run(() => JobStartedEvent?.Invoke(this, new JobStartedEventArgs(id, message))).ConfigureAwait(false);
-        }
+            await Task.Run(() => JobStartedEvent?.Invoke(this, new JobStartedEventArgs(id, message)))
+                .ConfigureAwait(false);
     }
 
-    private async Task OnJobCompletedEventAsync( int id, string message)
+    private async Task OnJobCompletedEventAsync(int id, string message)
     {
         if (JobCompletedEvent != null)
-        {
-            await Task.Run(() => JobCompletedEvent?.Invoke(this, new JobCompletedEventArgs(id, message))).ConfigureAwait(false);
-        }
+            await Task.Run(() => JobCompletedEvent?.Invoke(this, new JobCompletedEventArgs(id, message)))
+                .ConfigureAwait(false);
     }
 
-    private async Task OnNotificationReceivedEventAsync( string message)
+    private async Task OnNotificationReceivedEventAsync(string message)
     {
         if (NotificationReceivedEvent != null)
-        {
-            await Task.Run(() => NotificationReceivedEvent?.Invoke(this, new NotificationReceivedEventArgs(message))).ConfigureAwait(false);
-        }
+            await Task.Run(() => NotificationReceivedEvent?.Invoke(this, new NotificationReceivedEventArgs(message)))
+                .ConfigureAwait(false);
     }
 
-    private async Task OnMessageReceivedEventAsync( string from,string message)
+    private async Task OnMessageReceivedEventAsync(string from, string message)
     {
         if (MessageReceivedEvent != null)
-        {
-            await Task.Run(() => MessageReceivedEvent?.Invoke(this, new MessageReceivedEventArgs(from, message))).ConfigureAwait(false);
-        }
+            await Task.Run(() => MessageReceivedEvent?.Invoke(this, new MessageReceivedEventArgs(from, message)))
+                .ConfigureAwait(false);
     }
-    
+
     public async ValueTask DisposeAsync()
     {
         try
@@ -115,7 +104,7 @@ public sealed class HubClient : IAsyncDisposable
             await _hubConnection.DisposeAsync().ConfigureAwait(false);
         }
     }
-    
+
     // Event handlers
     public event EventHandler<UserStateChangeEventArgs>? LoginEvent;
     public event EventHandler<UserStateChangeEventArgs>? LogoutEvent;
@@ -159,11 +148,13 @@ public class JobStartedEventArgs(int id, string message) : EventArgs
     public string Message { get; } = message;
     public int Id { get; } = id;
 }
+
 public class JobCompletedEventArgs(int id, string message) : EventArgs
 {
     public string Message { get; } = message;
     public int Id { get; } = id;
 }
+
 public class NotificationReceivedEventArgs(string message) : EventArgs
 {
     public string Message { get; set; } = message;

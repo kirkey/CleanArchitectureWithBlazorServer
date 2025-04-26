@@ -1,10 +1,12 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
+
 #nullable disable warnings
 using CleanArchitecture.Blazor.Domain.Identity;
 using CleanArchitecture.Blazor.Infrastructure.Constants.ClaimTypes;
 
 namespace CleanArchitecture.Blazor.Infrastructure.Services.MultiTenant;
+
 /// <summary>
 /// UserClaimsPrincipalFactory implementation for multi-tenant applications.
 /// </summary>
@@ -36,34 +38,24 @@ public class MultiTenantUserClaimsPrincipalFactory(
     private void AddTenantClaims(ApplicationUser user, ClaimsIdentity identity)
     {
         if (!string.IsNullOrEmpty(user.TenantId))
-        {
             identity.AddClaim(new Claim(ApplicationClaimTypes.TenantId, user.TenantId));
-        }
 
         if (user.Tenant is not null)
-        {
-            identity.AddClaim(new Claim(ApplicationClaimTypes.TenantName, user.Tenant.Name??""));
-        }
+            identity.AddClaim(new Claim(ApplicationClaimTypes.TenantName, user.Tenant.Name ?? ""));
     }
 
     private void AddSuperiorClaims(ApplicationUser user, ClaimsIdentity identity)
     {
         if (!string.IsNullOrEmpty(user.SuperiorId))
-        {
             identity.AddClaim(new Claim(ApplicationClaimTypes.SuperiorId, user.SuperiorId));
-        }
     }
 
     private void AddUserClaim(ApplicationUser user, ClaimsIdentity identity)
     {
         if (!string.IsNullOrEmpty(user.DisplayName))
-        {
             identity.AddClaim(new Claim(ClaimTypes.GivenName, user.DisplayName));
-        }
         if (!string.IsNullOrEmpty(user.ProfilePictureDataUrl))
-        {
             identity.AddClaim(new Claim(ApplicationClaimTypes.ProfilePictureDataUrl, user.ProfilePictureDataUrl));
-        }
     }
 
     private async Task AddAssignedRolesClaim(ApplicationUser user, ClaimsIdentity identity)
@@ -97,10 +89,7 @@ public class MultiTenantUserClaimsPrincipalFactory(
     private async Task AddUserRoleClaims(ApplicationUser user, ClaimsIdentity identity)
     {
         var roles = await UserManager.GetRolesAsync(user).ConfigureAwait(false);
-        foreach (var roleName in roles)
-        {
-            identity.AddClaim(new Claim(Options.ClaimsIdentity.RoleClaimType, roleName));
-        }
+        foreach (var roleName in roles) identity.AddClaim(new Claim(Options.ClaimsIdentity.RoleClaimType, roleName));
     }
 
     private async Task AddRoleClaims(ApplicationUser user, ClaimsIdentity identity)
@@ -108,12 +97,11 @@ public class MultiTenantUserClaimsPrincipalFactory(
         if (RoleManager.SupportsRoleClaims)
         {
             var roles = (await UserManager.GetRolesAsync(user).ConfigureAwait(false)).ToList();
-            var tenantRoles = await RoleManager.Roles.Where(x => roles.Contains(x.Name) && x.TenantId == user.TenantId).ToListAsync().ConfigureAwait(false);
+            var tenantRoles = await RoleManager.Roles.Where(x => roles.Contains(x.Name) && x.TenantId == user.TenantId)
+                .ToListAsync().ConfigureAwait(false);
 
             foreach (var role in tenantRoles)
-            {
                 identity.AddClaims(await RoleManager.GetClaimsAsync(role).ConfigureAwait(false));
-            }
         }
     }
 }

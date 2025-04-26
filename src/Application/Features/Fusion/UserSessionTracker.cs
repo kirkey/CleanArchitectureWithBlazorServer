@@ -10,14 +10,14 @@ namespace CleanArchitecture.Blazor.Application.Features.Fusion;
 /// </summary>
 public class UserSessionTracker : IUserSessionTracker
 {
-    private ImmutableDictionary<string, ImmutableHashSet<SessionInfo>> _pageUserSessions = ImmutableDictionary<string, ImmutableHashSet<SessionInfo>>.Empty;
+    private ImmutableDictionary<string, ImmutableHashSet<SessionInfo>> _pageUserSessions =
+        ImmutableDictionary<string, ImmutableHashSet<SessionInfo>>.Empty;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UserSessionTracker"/> class.
     /// </summary>
     public UserSessionTracker()
     {
-
     }
 
     /// <summary>
@@ -25,7 +25,8 @@ public class UserSessionTracker : IUserSessionTracker
     /// </summary>
     /// <param name="pageComponent">The page component.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    public virtual async Task AddUserSession(string pageComponent, SessionInfo sessionInfo, CancellationToken cancellationToken = default)
+    public virtual async Task AddUserSession(string pageComponent, SessionInfo sessionInfo,
+        CancellationToken cancellationToken = default)
     {
         if (Invalidation.IsActive)
             return;
@@ -39,7 +40,6 @@ public class UserSessionTracker : IUserSessionTracker
 
         using var invalidating = Invalidation.Begin();
         _ = await GetUserSessions(pageComponent, cancellationToken).ConfigureAwait(false);
-
     }
 
     /// <summary>
@@ -48,12 +48,10 @@ public class UserSessionTracker : IUserSessionTracker
     /// <param name="pageComponent">The page component.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A list of session information.</returns>
-    public virtual Task<List<SessionInfo>> GetUserSessions(string pageComponent, CancellationToken cancellationToken = default)
+    public virtual Task<List<SessionInfo>> GetUserSessions(string pageComponent,
+        CancellationToken cancellationToken = default)
     {
-        if (_pageUserSessions.TryGetValue(pageComponent, out var sessions))
-        {
-            return Task.FromResult(sessions.ToList());
-        }
+        if (_pageUserSessions.TryGetValue(pageComponent, out var sessions)) return Task.FromResult(sessions.ToList());
 
         return Task.FromResult(new List<SessionInfo>());
     }
@@ -63,7 +61,8 @@ public class UserSessionTracker : IUserSessionTracker
     /// </summary>
     /// <param name="pageComponent">The page component.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
-    public virtual async Task RemoveUserSession(string pageComponent, string userId, CancellationToken cancellationToken = default)
+    public virtual async Task RemoveUserSession(string pageComponent, string userId,
+        CancellationToken cancellationToken = default)
     {
         if (Invalidation.IsActive)
             return;
@@ -75,17 +74,13 @@ public class UserSessionTracker : IUserSessionTracker
 
             // Use atomic update to prevent concurrency issues
             if (updatedUsers.IsEmpty)
-            {
                 ImmutableInterlocked.TryRemove(ref _pageUserSessions, pageComponent, out _);
-            }
             else
-            {
                 ImmutableInterlocked.AddOrUpdate(
                     ref _pageUserSessions,
                     pageComponent,
                     updatedUsers,
                     (key, existingUsers) => updatedUsers);
-            }
             using var invalidating = Invalidation.Begin();
             _ = await GetUserSessions(pageComponent, cancellationToken).ConfigureAwait(false);
         }
@@ -109,23 +104,17 @@ public class UserSessionTracker : IUserSessionTracker
 
                 // Use atomic update to prevent concurrency issues
                 if (updatedUsers.IsEmpty)
-                {
                     ImmutableInterlocked.TryRemove(ref _pageUserSessions, pageComponent, out _);
-                }
                 else
-                {
                     ImmutableInterlocked.AddOrUpdate(
                         ref _pageUserSessions,
                         pageComponent,
                         updatedUsers,
                         (key, existingUsers) => updatedUsers);
-                }
             }
+
             using var invalidating = Invalidation.Begin();
             _ = await GetUserSessions(pageComponent, cancellationToken).ConfigureAwait(false);
         }
-
     }
-
-
 }

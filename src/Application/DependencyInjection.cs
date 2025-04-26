@@ -24,11 +24,11 @@ public static class DependencyInjection
             config.AddOpenBehavior(typeof(PerformanceBehaviour<,>));
             config.AddOpenBehavior(typeof(FusionCacheBehaviour<,>));
             config.AddOpenBehavior(typeof(CacheInvalidationBehaviour<,>));
-
         });
         services.AddScoped<UserProfileStateService>();
         return services;
     }
+
     public static void InitializeCacheFactory(this IHost host)
     {
         FusionCacheFactory.Configure(host.Services);

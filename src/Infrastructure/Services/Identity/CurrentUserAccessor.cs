@@ -21,4 +21,3 @@ public class CurrentUserAccessor : ICurrentUserAccessor
     /// </summary>
     public SessionInfo? SessionInfo => _currentUserContext.SessionInfo;
 }
-

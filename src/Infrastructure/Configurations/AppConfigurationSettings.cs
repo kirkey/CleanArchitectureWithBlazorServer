@@ -12,6 +12,7 @@ public class AppConfigurationSettings : IApplicationSettings
     ///     App configuration key constraint
     /// </summary>
     public const string Key = nameof(AppConfigurationSettings);
+
     /// <summary>
     ///     Undocumented
     /// </summary>

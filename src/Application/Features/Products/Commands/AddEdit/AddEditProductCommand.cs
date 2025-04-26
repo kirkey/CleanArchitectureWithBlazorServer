@@ -21,6 +21,7 @@ public class AddEditProductCommand : ICacheInvalidatorRequest<Result<int>>
     public IReadOnlyList<IBrowserFile>? UploadPictures { get; set; }
     public string CacheKey => ProductCacheKey.GetAllCacheKey;
     public IEnumerable<string>? Tags => ProductCacheKey.Tags;
+
     private class Mapping : Profile
     {
         public Mapping()
@@ -40,10 +41,7 @@ public class AddEditProductCommandHandler(
         if (request.Id > 0)
         {
             var item = await context.Products.SingleOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
-            if (item == null)
-            {
-                return await Result<int>.FailureAsync($"Product with id: [{request.Id}] not found.");
-            }
+            if (item == null) return await Result<int>.FailureAsync($"Product with id: [{request.Id}] not found.");
             item = mapper.Map(request, item);
             item.AddDomainEvent(new UpdatedEvent<Product>(item));
             await context.SaveChangesAsync(cancellationToken);

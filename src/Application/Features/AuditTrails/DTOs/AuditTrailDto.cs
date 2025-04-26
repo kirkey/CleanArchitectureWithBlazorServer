@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 
-
 using CleanArchitecture.Blazor.Application.Features.Identity.DTOs;
 
 namespace CleanArchitecture.Blazor.Application.Features.AuditTrails.DTOs;
@@ -21,12 +20,9 @@ public class AuditTrailDto
     [Description("Primary Key")] public string PrimaryKey { get; set; } = default!;
     [Description("Show Details")] public bool ShowDetails { get; set; }
     [Description("Owner")] public ApplicationUserDto? Owner { get; set; }
-    [Description("Debug View")]
-    public string? DebugView { get; set; }
-    [Description("Error Message")]
-    public string? ErrorMessage { get; set; }
-    [Description("Is Successful")]
-    public bool IsSuccessful=> string.IsNullOrEmpty(ErrorMessage);
+    [Description("Debug View")] public string? DebugView { get; set; }
+    [Description("Error Message")] public string? ErrorMessage { get; set; }
+    [Description("Is Successful")] public bool IsSuccessful => string.IsNullOrEmpty(ErrorMessage);
 
 
     private class Mapping : Profile
@@ -38,5 +34,4 @@ public class AuditTrailDto
                     s => s.MapFrom(y => JsonSerializer.Serialize(y.PrimaryKey, DefaultJsonSerializerOptions.Options)));
         }
     }
-
 }

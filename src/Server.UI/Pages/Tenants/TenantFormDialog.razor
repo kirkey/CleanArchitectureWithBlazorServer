@@ -22,7 +22,8 @@
                     </MudTextField>
                 </MudItem>
                 <MudItem xs="12">
-                    <MudTextField Label="@L[_model.GetMemberDescription(x => x.Description)]" @bind-Value="_model.Description"
+                    <MudTextField Label="@L[_model.GetMemberDescription(x => x.Description)]"
+                                  @bind-Value="_model.Description"
                                   For="@(() => _model.Description)">
                     </MudTextField>
                 </MudItem>
@@ -32,7 +33,8 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
-        <MudLoadingButton Loading="@_saving" Color="Color.Primary" OnClick="Submit">@ConstantString.Save</MudLoadingButton>
+        <MudLoadingButton Loading="@_saving" Color="Color.Primary"
+                          OnClick="Submit">@ConstantString.Save</MudLoadingButton>
     </DialogActions>
 </MudDialog>
 

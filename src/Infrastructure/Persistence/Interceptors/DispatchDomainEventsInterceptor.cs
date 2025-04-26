@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace CleanArchitecture.Blazor.Infrastructure.Persistence.Interceptors;
 
-
 /// <summary>
 /// Interceptor for dispatching domain events when saving changes in the database.
 /// </summary>
@@ -47,10 +46,7 @@ public class DispatchDomainEventsInterceptor : SaveChangesInterceptor
                 var saveResult = await base.SavingChangesAsync(eventData, result, cancellationToken);
 
                 domainEventEntities.ForEach(e => e.ClearDomainEvents());
-                foreach (var domainEvent in domainEvents)
-                {
-                    await _mediator.Publish(domainEvent, cancellationToken);
-                }
+                foreach (var domainEvent in domainEvents) await _mediator.Publish(domainEvent, cancellationToken);
 
                 await transaction.CommitAsync(cancellationToken);
                 return saveResult;
@@ -91,10 +87,7 @@ public class DispatchDomainEventsInterceptor : SaveChangesInterceptor
                 var saveResult = await base.SavedChangesAsync(eventData, result, cancellationToken);
 
                 domainEventEntities.ForEach(e => e.ClearDomainEvents());
-                foreach (var domainEvent in domainEvents)
-                {
-                    await _mediator.Publish(domainEvent, cancellationToken);
-                }
+                foreach (var domainEvent in domainEvents) await _mediator.Publish(domainEvent, cancellationToken);
 
                 await transaction.CommitAsync(cancellationToken);
                 return saveResult;

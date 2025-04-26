@@ -20,9 +20,11 @@
 <PageTitle>@L["External Login"]</PageTitle>
 
 <MudText Typo="Typo.h4" GutterBottom="true">@L["External Login"]</MudText>
-<MudText Typo="Typo.h6" GutterBottom="true">@string.Format(L["Associate your {0} account."], ProviderDisplayName)</MudText>
+<MudText Typo="Typo.h6"
+         GutterBottom="true">@string.Format(L["Associate your {0} account."], ProviderDisplayName)</MudText>
 
-<MudText Typo="Typo.body1"> @string.Format(L["You've successfully authenticated with {0}. Please enter an email address for this site below and click the Register button to finish logging in."], ProviderDisplayName)</MudText>
+<MudText
+    Typo="Typo.body1"> @string.Format(L["You've successfully authenticated with {0}. Please enter an email address for this site below and click the Register button to finish logging in."], ProviderDisplayName)</MudText>
 
 
 <div class="d-flex flex-column gap-y-3">
@@ -32,35 +34,49 @@
             <StatusMessage Message="@message" Error="true"/>
             <div class="mud-input-control mud-input-outlined-with-label my-4">
                 <div class="mud-input-control-input-container">
-                    <div class="mud-input mud-input-outlined mud-input-outlined-with-label mud-shrink mud-typography-subtitle1">
-                        <InputSelect @bind-Value="Input.TenantId" class="mud-input-slot mud-input-root mud-input-root-outlined" style="padding: 18.5px 14px;
+                    <div
+                        class="mud-input mud-input-outlined mud-input-outlined-with-label mud-shrink mud-typography-subtitle1">
+                        <InputSelect @bind-Value="Input.TenantId"
+                                     class="mud-input-slot mud-input-root mud-input-root-outlined" style="padding: 18.5px 14px;
                                                                                                                                        width:100%;
                                                                                                                                        appearance: none;
                                                                                                                                        background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxNiAxNic+PHBhdGggZmlsbD0nbm9uZScgc3Ryb2tlPScjMzQzYTQwJyBzdHJva2UtbGluZWNhcD0ncm91bmQnIHN0cm9rZS1saW5lam9pbj0ncm91bmQnIHN0cm9rZS13aWR0aD0nMicgZD0nTTIgNWw2IDYgNi02Jy8+PC9zdmc+') no-repeat right 10px center;
-                                                                                                                                        background-size: 10px;" aria-required="true">
+                                                                                                                                        background-size: 10px;"
+                                     aria-required="true">
                             @foreach (var tenant in TenantsService.DataSource)
                             {
                                 <option value="@tenant.Id">@tenant.Name</option>
                             }
                         </InputSelect>
-                        <fieldset class="mud-input-outlined-border"><legend>@L["Tenant"]</legend></fieldset>
+                        <fieldset class="mud-input-outlined-border">
+                            <legend>@L["Tenant"]</legend>
+                        </fieldset>
                     </div>
-                    <label class="mud-input-label mud-input-label-animated mud-input-label-outlined mud-input-label-inputcontrol" for="TenantId">@L["Tenant"]</label>
+                    <label
+                        class="mud-input-label mud-input-label-animated mud-input-label-outlined mud-input-label-inputcontrol"
+                        for="TenantId">@L["Tenant"]</label>
                 </div>
                 <div class="mud-input-helper-text mud-input-error">
                     <div class="d-flex">
-                        <ValidationMessage For="() => Input.TenantId" class="mud-input-error" />
+                        <ValidationMessage For="() => Input.TenantId" class="mud-input-error"/>
                     </div>
                 </div>
             </div>
             <div class="mud-input-control mud-input-outlined-with-label my-4">
                 <div class="mud-input-control-input-container">
-                    <div class="mud-input mud-input-outlined mud-input-outlined-with-label mud-shrink mud-typography-subtitle1">
-                        <InputText type="text" @bind-Value="Input.Email" class="mud-input-slot mud-input-root mud-input-root-outlined" aria-required="true" autocomplete="email" placeholder="Please enter your email."/>
+                    <div
+                        class="mud-input mud-input-outlined mud-input-outlined-with-label mud-shrink mud-typography-subtitle1">
+                        <InputText type="text" @bind-Value="Input.Email"
+                                   class="mud-input-slot mud-input-root mud-input-root-outlined" aria-required="true"
+                                   autocomplete="email" placeholder="Please enter your email."/>
                         <div class="mud-input-slot mud-input-root mud-input-root-outlined" style="display:none"></div>
-                        <fieldset class="mud-input-outlined-border"><legend>@L["Email"]</legend></fieldset>
+                        <fieldset class="mud-input-outlined-border">
+                            <legend>@L["Email"]</legend>
+                        </fieldset>
                     </div>
-                    <label class="mud-input-label mud-input-label-animated mud-input-label-outlined mud-input-label-inputcontrol" for="email">@L["Email"]</label>
+                    <label
+                        class="mud-input-label mud-input-label-animated mud-input-label-outlined mud-input-label-inputcontrol"
+                        for="email">@L["Email"]</label>
                 </div>
                 <div class="mud-input-helper-text mud-input-error">
                     <div class="d-flex">
@@ -70,47 +86,61 @@
             </div>
             <div class="mud-input-control mud-input-outlined-with-label my-4">
                 <div class="mud-input-control-input-container">
-                    <div class="mud-input mud-input-outlined mud-input-outlined-with-label mud-shrink mud-typography-subtitle1">
-                        <InputSelect @bind-Value="Input.TimeZoneId" class="mud-input-slot mud-input-root mud-input-root-outlined" style="padding: 18.5px 14px;
+                    <div
+                        class="mud-input mud-input-outlined mud-input-outlined-with-label mud-shrink mud-typography-subtitle1">
+                        <InputSelect @bind-Value="Input.TimeZoneId"
+                                     class="mud-input-slot mud-input-root mud-input-root-outlined" style="padding: 18.5px 14px;
                                                                                                                                        width:100%; 
                                                                                                                                        appearance: none;
                                                                                                                                        background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxNiAxNic+PHBhdGggZmlsbD0nbm9uZScgc3Ryb2tlPScjMzQzYTQwJyBzdHJva2UtbGluZWNhcD0ncm91bmQnIHN0cm9rZS1saW5lam9pbj0ncm91bmQnIHN0cm9rZS13aWR0aD0nMicgZD0nTTIgNWw2IDYgNi02Jy8+PC9zdmc+') no-repeat right 10px center;
-                                                                                                                                       background-size: 10px;" aria-required="true">
+                                                                                                                                       background-size: 10px;"
+                                     aria-required="true">
                             @foreach (var item in TimeZoneInfo.GetSystemTimeZones().ToList())
                             {
                                 <option value="@item.Id">@item.DisplayName</option>
                             }
                         </InputSelect>
-                        <fieldset class="mud-input-outlined-border"><legend>@L["Time Zone"]</legend></fieldset>
+                        <fieldset class="mud-input-outlined-border">
+                            <legend>@L["Time Zone"]</legend>
+                        </fieldset>
                     </div>
-                    <label class="mud-input-label mud-input-label-animated mud-input-label-outlined mud-input-label-inputcontrol" for="TenantId">@L["Time Zone"]</label>
+                    <label
+                        class="mud-input-label mud-input-label-animated mud-input-label-outlined mud-input-label-inputcontrol"
+                        for="TenantId">@L["Time Zone"]</label>
                 </div>
                 <div class="mud-input-helper-text mud-input-error">
                     <div class="d-flex">
-                        <ValidationMessage For="() => Input.TimeZoneId" class="mud-input-error" />
+                        <ValidationMessage For="() => Input.TimeZoneId" class="mud-input-error"/>
                     </div>
                 </div>
             </div>
             <div class="mud-input-control mud-input-outlined-with-label my-4">
                 <div class="mud-input-control-input-container">
-                    <div class="mud-input mud-input-outlined mud-input-outlined-with-label mud-shrink mud-typography-subtitle1">
-                        <InputSelect @bind-Value="Input.LanguageCode" class="mud-input-slot mud-input-root mud-input-root-outlined" style="padding: 18.5px 14px;
+                    <div
+                        class="mud-input mud-input-outlined mud-input-outlined-with-label mud-shrink mud-typography-subtitle1">
+                        <InputSelect @bind-Value="Input.LanguageCode"
+                                     class="mud-input-slot mud-input-root mud-input-root-outlined" style="padding: 18.5px 14px;
                                                                                                                                        width:100%; 
                                                                                                                                        appearance: none;
                                                                                                                                        background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCAxNiAxNic+PHBhdGggZmlsbD0nbm9uZScgc3Ryb2tlPScjMzQzYTQwJyBzdHJva2UtbGluZWNhcD0ncm91bmQnIHN0cm9rZS1saW5lam9pbj0ncm91bmQnIHN0cm9rZS13aWR0aD0nMicgZD0nTTIgNWw2IDYgNi02Jy8+PC9zdmc+') no-repeat right 10px center;
-                                                                                                                                       background-size: 10px;" aria-required="true">
+                                                                                                                                       background-size: 10px;"
+                                     aria-required="true">
                             @foreach (var item in LocalizationConstants.SupportedLanguages.ToList())
                             {
                                 <option value="@item.Code">@item.DisplayName</option>
                             }
                         </InputSelect>
-                        <fieldset class="mud-input-outlined-border"><legend>@L["Language"]</legend></fieldset>
+                        <fieldset class="mud-input-outlined-border">
+                            <legend>@L["Language"]</legend>
+                        </fieldset>
                     </div>
-                    <label class="mud-input-label mud-input-label-animated mud-input-label-outlined mud-input-label-inputcontrol" for="TenantId">@L["Language"]</label>
+                    <label
+                        class="mud-input-label mud-input-label-animated mud-input-label-outlined mud-input-label-inputcontrol"
+                        for="TenantId">@L["Language"]</label>
                 </div>
                 <div class="mud-input-helper-text mud-input-error">
                     <div class="d-flex">
-                        <ValidationMessage For="() => Input.LanguageCode" class="mud-input-error" />
+                        <ValidationMessage For="() => Input.LanguageCode" class="mud-input-error"/>
                     </div>
                 </div>
             </div>
@@ -208,9 +238,9 @@
     {
         var emailStore = GetEmailStore();
         var user = CreateUser();
-        user.TenantId=Input.TenantId;
-        user.TimeZoneId=Input.TimeZoneId;
-        user.LanguageCode=Input.LanguageCode;
+        user.TenantId = Input.TenantId;
+        user.TimeZoneId = Input.TimeZoneId;
+        user.LanguageCode = Input.LanguageCode;
         await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
         await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
         user.Provider = externalLoginInfo.LoginProvider;
@@ -237,8 +267,8 @@
         }
 
         Logger.LogInformation("A new account was created for user '{UserName}' using the external login provider '{LoginProvider}'.",
-                Input.Email,
-                externalLoginInfo.LoginProvider);
+            Input.Email,
+            externalLoginInfo.LoginProvider);
 
         if (UserManager.Options.SignIn.RequireConfirmedEmail)
         {
@@ -292,10 +322,8 @@
     {
         [Required] [EmailAddress] public string Email { get; set; } = "";
         [Required] public string TenantId { get; set; } = "";
-        [Display(Name = "Time Zone")]
-        public string? TimeZoneId { get; set; } = TimeZoneInfo.Local.Id;
-        [Display(Name = "Language")]
-        public string? LanguageCode { get; set; } = CultureInfo.CurrentCulture.Name;
+        [Display(Name = "Time Zone")] public string? TimeZoneId { get; set; } = TimeZoneInfo.Local.Id;
+        [Display(Name = "Language")] public string? LanguageCode { get; set; } = CultureInfo.CurrentCulture.Name;
     }
 
 }

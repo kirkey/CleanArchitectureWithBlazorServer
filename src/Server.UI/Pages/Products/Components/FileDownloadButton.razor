@@ -1,18 +1,21 @@
 ﻿@using CleanArchitecture.Blazor.Server.UI.Services.JsInterop
-<MudButton Variant="Variant.Filled" DropShadow="false" StartIcon="@Icons.Material.Filled.Preview" OnClick="Download">@Label</MudButton>
+<MudButton Variant="Variant.Filled" DropShadow="false" StartIcon="@Icons.Material.Filled.Preview"
+           OnClick="Download">@Label</MudButton>
 @inject IJSRuntime JSRuntime
+
 @code {
-    [Parameter][EditorRequired]
-    public string Url { get; set; } = null!;
-    [Parameter]
-    public string? Label { get; set; } = "Download";
+    [Parameter] [EditorRequired] public string Url { get; set; } = null!;
+    [Parameter] public string? Label { get; set; } = "Download";
+
     private async Task Download()
     {
         var url = Url.Replace('\\', '/');
-        if(!url.StartsWith('/'))
+        if (!url.StartsWith('/'))
         {
             url = '/' + url;
         }
+
         await new Fancybox(JSRuntime).Preview(url, Array.Empty<string>());
     }
+
 }

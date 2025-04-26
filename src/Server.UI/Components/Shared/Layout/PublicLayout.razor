@@ -47,7 +47,7 @@
                 </Authorized>
                 <NotAuthorized>
                     <MudTooltip Text="@L["Login"]">
-                        <MudButton Variant="Variant.Text" OnClick="@(()=>Navigation.NavigateTo(Login.PageUrl,true))"
+                        <MudButton Variant="Variant.Text" OnClick="@(() => Navigation.NavigateTo(Login.PageUrl, true))"
                                    StartIcon="@Icons.Material.Rounded.Login"
                                    Style="text-transform:none">
                             @L["Login"]
@@ -62,7 +62,7 @@
             <AuthorizeView>
                 <Authorized>
                     <form action="@IdentityComponentsEndpointRouteBuilderExtensions.Logout" method="post">
-                        <input type="hidden" name="ReturnUrl" value="/" />
+                        <input type="hidden" name="ReturnUrl" value="/"/>
                         <MudTooltip Text="@L["Logout"]">
                             <MudButton Style="text-transform:none"
                                        ButtonType="ButtonType.Submit"
@@ -75,7 +75,7 @@
                 </Authorized>
                 <NotAuthorized>
                     <MudTooltip Text="@L["Login"]">
-                        <MudButton Variant="Variant.Text" OnClick="@(()=>Navigation.NavigateTo(Login.PageUrl,true))"
+                        <MudButton Variant="Variant.Text" OnClick="@(() => Navigation.NavigateTo(Login.PageUrl, true))"
                                    StartIcon="@Icons.Material.Rounded.Login"
                                    Style="text-transform:none">
                             @L["Login"]
@@ -87,7 +87,8 @@
     </MudAppBar>
     <MudMainContent>
         <MudContainer MaxWidth="MaxWidth.Large" Class="mb-4 mt-4" Style="height:max-content">
-            <MudPaper Class="pa-16 ma-2" Elevation="3" Square Style="height:100dvh;background: url(/img/pattern.svg) no-repeat center bottom; background-size: cover;">
+            <MudPaper Class="pa-16 ma-2" Elevation="3" Square
+                      Style="height:100dvh;background: url(/img/pattern.svg) no-repeat center bottom; background-size: cover;">
                 @Body
             </MudPaper>
         </MudContainer>

@@ -16,7 +16,7 @@
                       Variant="Variant.Text"
                       Adornment="Adornment.End"
                       AdornmentIcon="@Icons.Material.Filled.Search"
-                      AdornmentColor="Color.Secondary" />
+                      AdornmentColor="Color.Secondary"/>
     </MudStack>
     @if (Permissions != null && Permissions.Any())
     {
@@ -38,11 +38,13 @@
                         <MudTooltip Text="@L["Assign / Unassign all permission set"]">
                             @if (Permissions.Any(x => x.Group == group && x.IsInherit))
                             {
-                                <MudIconButton Disabled="true" Icon="@Icons.Material.Filled.AutoFixHigh" Color="Color.Default" />
+                                <MudIconButton Disabled="true" Icon="@Icons.Material.Filled.AutoFixHigh"
+                                               Color="Color.Default"/>
                             }
                             else
                             {
-                                <MudIconButton Disabled="@Waiting" Icon="@Icons.Material.Filled.AutoFixHigh" Color="Color.Default" OnClick="@(() => OnAssignAll(group))" />
+                                <MudIconButton Disabled="@Waiting" Icon="@Icons.Material.Filled.AutoFixHigh"
+                                               Color="Color.Default" OnClick="@(() => OnAssignAll(group))"/>
                             }
 
                         </MudTooltip>
@@ -65,7 +67,7 @@
                                 </MudCheckBox>
                                 <div class="d-flex flex-column">
                                     <MudText Typo="Typo.body2">
-                                       @L[Permissions[x].Name]
+                                        @L[Permissions[x].Name]
                                     </MudText>
                                     @if (!string.IsNullOrEmpty(Permissions[x].HelpText))
                                     {
@@ -75,8 +77,6 @@
                                     }
                                 </div>
                             </div>
-
-
                         }
                     }
                 </MudCardContent>
@@ -86,20 +86,20 @@
     }
     else
     {
-        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7"/>
     }
 </MudDrawer>
 
 @code {
-    [EditorRequired][Parameter] public IList<PermissionModel>? Permissions { get; set; }
+    [EditorRequired] [Parameter] public IList<PermissionModel>? Permissions { get; set; }
 
-    [EditorRequired][Parameter] public bool Open { get; set; } = default!;
+    [EditorRequired] [Parameter] public bool Open { get; set; } = default!;
 
-    [EditorRequired][Parameter] public EventCallback<PermissionModel> OnAssignChanged { get; set; }
+    [EditorRequired] [Parameter] public EventCallback<PermissionModel> OnAssignChanged { get; set; }
 
-    [EditorRequired][Parameter] public EventCallback<List<PermissionModel>> OnAssignAllChanged { get; set; }
+    [EditorRequired] [Parameter] public EventCallback<List<PermissionModel>> OnAssignAllChanged { get; set; }
 
-    [EditorRequired][Parameter] public EventCallback<bool> OnOpenChanged { get; set; }
+    [EditorRequired] [Parameter] public EventCallback<bool> OnOpenChanged { get; set; }
 
     [Parameter] public bool Waiting { get; set; }
 
@@ -113,6 +113,7 @@
             t.Assigned = !t.Assigned;
             list.Add(t);
         }
+
         await OnAssignAllChanged.InvokeAsync(list);
     }
 

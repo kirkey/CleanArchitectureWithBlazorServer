@@ -14,6 +14,7 @@ public class ApplicationRoleDto
     [Description("Tenant Name")] public string? TenantName { get; set; }
     [Description("Normalized Name")] public string? NormalizedName { get; set; }
     [Description("Description")] public string? Description { get; set; }
+
     private class Mapping : Profile
     {
         public Mapping()

@@ -52,10 +52,7 @@ public class DocumentOcrJob(
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadAsStringAsync(cancellationToken);
-                if (result.Length > 4000)
-                {
-                    result = result.Substring(0, 4000);
-                }
+                if (result.Length > 4000) result = result.Substring(0, 4000);
 
                 doc.Status = JobStatus.Done;
                 doc.Description = "Recognition result: success";
@@ -67,7 +64,8 @@ public class DocumentOcrJob(
 
                 _timer.Stop();
                 logger.LogInformation(
-                    "Image recognition completed successfully {@Document}. Id: {Id}, Elapsed Time: {ElapsedMilliseconds}ms", doc,
+                    "Image recognition completed successfully {@Document}. Id: {Id}, Elapsed Time: {ElapsedMilliseconds}ms",
+                    doc,
                     id, _timer.ElapsedMilliseconds);
             }
             else
@@ -91,10 +89,7 @@ public class DocumentOcrJob(
         }
         finally
         {
-            if (_timer.IsRunning)
-            {
-                _timer.Stop();
-            }
+            if (_timer.IsRunning) _timer.Stop();
         }
     }
 

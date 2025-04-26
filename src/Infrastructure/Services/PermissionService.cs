@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 
 namespace CleanArchitecture.Blazor.Infrastructure.Services;
+
 //// <summary>
 /// Implementation of the IPermissionService using reflection to evaluate access rights
 /// based on a naming convention. For example, an access rights model named "ContactsAccessRights"
@@ -43,9 +44,7 @@ public class PermissionService : IPermissionService
         // Ensure the type name ends with "AccessRights" (e.g., "ContactsAccessRights").
         var typeName = typeof(TAccessRights).Name;
         if (!typeName.EndsWith("AccessRights", StringComparison.OrdinalIgnoreCase))
-        {
             throw new ArgumentException("TAccessRights type name must end with 'AccessRights'");
-        }
 
         // Extract the section name from the type name (e.g., "Contacts" from "ContactsAccessRights").
         var sectionName = typeName.Substring(0, typeName.Length - "AccessRights".Length);
@@ -57,7 +56,6 @@ public class PermissionService : IPermissionService
         var tasks = new Dictionary<PropertyInfo, Task<AuthorizationResult>>();
 
         foreach (var prop in properties)
-        {
             // Only process boolean properties that are writable.
             if (prop.PropertyType == typeof(bool) && prop.CanWrite)
             {
@@ -66,7 +64,6 @@ public class PermissionService : IPermissionService
                 // Start the permission check task for the given claim.
                 tasks[prop] = _authService.AuthorizeAsync(user, permissionClaim);
             }
-        }
 
         // Wait for all permission checks to complete concurrently.
         await Task.WhenAll(tasks.Values);

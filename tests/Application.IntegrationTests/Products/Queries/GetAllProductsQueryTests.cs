@@ -7,6 +7,7 @@ using NUnit.Framework;
 namespace CleanArchitecture.Blazor.Application.IntegrationTests.Products.Queries;
 
 using static Testing;
+
 [NonParallelizable]
 internal class GetAllProductsQueryTests : TestBase
 {

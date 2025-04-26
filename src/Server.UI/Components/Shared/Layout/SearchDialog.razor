@@ -12,7 +12,7 @@
                           Placeholder="@L["Search..."]"
                           TextChanged="@(SearchPages)"
                           Immediate="true"/>
-            <MudList T="string" 
+            <MudList T="string"
                      Style="height: 300px; overflow-y: auto">
                 @foreach (var (key, value) in _pagesFiltered)
                 {
@@ -34,7 +34,7 @@
     private HotKeysContext? _hotKeysContext;
     private Dictionary<string, string> _pagesFiltered = new();
     private string _search = string.Empty;
-   
+
     public async ValueTask DisposeAsync()
     {
         if (_hotKeysContext != null)

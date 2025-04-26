@@ -14,6 +14,7 @@ namespace CleanArchitecture.Blazor.Infrastructure.Services;
 public class MemoryCacheTicketStore : ITicketStore
 {
     private const string KeyPrefix = "AuthSessionStore-";
+
     private readonly IFusionCache _cache = new FusionCache(new FusionCacheOptions()
     {
         CacheName = "AuthSessionStore",

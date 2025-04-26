@@ -30,13 +30,10 @@ internal sealed class IdentityRevalidatingAuthenticationStateProvider(
     private async Task<bool> ValidateSecurityStampAsync(UserManager<ApplicationUser> userManager,
         ClaimsPrincipal principal)
     {
-        var user = await userManager.GetUserAsync(principal).ConfigureAwait(false);  
+        var user = await userManager.GetUserAsync(principal).ConfigureAwait(false);
         if (user is null) return false;
 
-        if (!userManager.SupportsUserSecurityStamp)
-        {
-            return true;
-        }
+        if (!userManager.SupportsUserSecurityStamp) return true;
 
         var principalStamp = principal.FindFirstValue(options.Value.ClaimsIdentity.SecurityStampClaimType);
         var userStamp = await userManager.GetSecurityStampAsync(user).ConfigureAwait(false);

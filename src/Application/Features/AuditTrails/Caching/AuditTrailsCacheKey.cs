@@ -13,9 +13,9 @@ public static class AuditTrailsCacheKey
     }
 
     public static IEnumerable<string>? Tags => new string[] { "audittrail" };
+
     public static void Refresh()
     {
         FusionCacheFactory.RemoveByTags(Tags);
     }
-
 }

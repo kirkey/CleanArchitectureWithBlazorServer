@@ -32,10 +32,11 @@
         <MudStack Row Spacing="0" Class="flex-grow-1" Justify="Justify.SpaceBetween">
             <!-- Left Toolbar: Icon, Title, and Tenant selection -->
             <MudStack Row AlignItems="AlignItems.Start">
-                <MudIcon Icon="@Icons.Material.Filled.Groups" Size="Size.Large" />
+                <MudIcon Icon="@Icons.Material.Filled.Groups" Size="Size.Large"/>
                 <MudStack Spacing="0">
                     <MudText Typo="Typo.subtitle2" Class="mb-2">@_title</MudText>
-                    <MudSelect T="string" Style="min-width:120px" Value="@_selectedTenantId" ValueChanged="OnTenantChanged" Dense="true" Label="@_localizer["List View"]">
+                    <MudSelect T="string" Style="min-width:120px" Value="@_selectedTenantId"
+                               ValueChanged="OnTenantChanged" Dense="true" Label="@_localizer["List View"]">
                         <MudSelectItem T="string" Value="@(" ")">@_localizer["ALL"]</MudSelectItem>
                         @foreach (var tenant in _tenantService.DataSource)
                         {
@@ -59,7 +60,8 @@
                             @ConstantString.New
                         </MudButton>
                     }
-                    <MudMenu TransformOrigin="Origin.BottomRight" AnchorOrigin="Origin.BottomRight" EndIcon="@Icons.Material.Filled.MoreVert" Label="@ConstantString.More">
+                    <MudMenu TransformOrigin="Origin.BottomRight" AnchorOrigin="Origin.BottomRight"
+                             EndIcon="@Icons.Material.Filled.MoreVert" Label="@ConstantString.More">
                         @if (_accessRights.Delete)
                         {
                             <MudMenuItem Disabled="@(!_selectedRoles.Any())" OnClick="OnDeleteChecked">
@@ -89,7 +91,8 @@
                 </MudToolBar>
                 @if (_accessRights.Search)
                 {
-                    <MudTextField T="string" Immediate="false" Value="@_searchString" FullWidth="false" ValueChanged="OnSearch"
+                    <MudTextField T="string" Immediate="false" Value="@_searchString" FullWidth="false"
+                                  ValueChanged="OnSearch"
                                   Placeholder="@_localizer["Search by role name"]" Adornment="Adornment.End"
                                   AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
                     </MudTextField>
@@ -98,7 +101,7 @@
         </MudStack>
     </ToolBarContent>
     <Columns>
-        <SelectColumn ShowInFooter="false" />
+        <SelectColumn ShowInFooter="false"/>
         <TemplateColumn HeaderStyle="width:60px" Title="@ConstantString.Actions" Sortable="false">
             <CellTemplate>
                 @if (_accessRights.Edit || _accessRights.Delete || _accessRights.ManagePermissions)
@@ -116,7 +119,8 @@
                         }
                         @if (_accessRights.ManagePermissions)
                         {
-                            <MudMenuItem OnClick="@(() => OnSetPermissions(context.Item))">@_localizer["Set Permissions"]</MudMenuItem>
+                            <MudMenuItem
+                                OnClick="@(() => OnSetPermissions(context.Item))">@_localizer["Set Permissions"]</MudMenuItem>
                         }
                     </MudMenu>
                 }
@@ -129,7 +133,8 @@
                 }
             </CellTemplate>
         </TemplateColumn>
-        <PropertyColumn Property="x => x.TenantId" Title="@_localizer[_currentDto.GetMemberDescription(x => x.TenantName)]">
+        <PropertyColumn Property="x => x.TenantId"
+                        Title="@_localizer[_currentDto.GetMemberDescription(x => x.TenantName)]">
             <CellTemplate>
                 <MudText>@context.Item.TenantName</MudText>
             </CellTemplate>
@@ -137,8 +142,9 @@
                 @_localizer["Selected"]: @_selectedRoles.Count
             </FooterTemplate>
         </PropertyColumn>
-        <PropertyColumn Property="x => x.Name" Title="@_localizer[_currentDto.GetMemberDescription(x => x.Name)]" />
-        <PropertyColumn Property="x => x.Description" Title="@_localizer[_currentDto.GetMemberDescription(x => x.Description)]">
+        <PropertyColumn Property="x => x.Name" Title="@_localizer[_currentDto.GetMemberDescription(x => x.Name)]"/>
+        <PropertyColumn Property="x => x.Description"
+                        Title="@_localizer[_currentDto.GetMemberDescription(x => x.Description)]">
             <CellTemplate>
                 <div class="d-flex flex-column">
                     <MudText Typo="Typo.body2" Class="mud-text-secondary">@context.Item.Description</MudText>
@@ -147,7 +153,7 @@
         </PropertyColumn>
     </Columns>
     <PagerContent>
-        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50, 100, 500, 1000 })" />
+        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50, 100, 500, 1000 })"/>
     </PagerContent>
 </MudDataGrid>
 
@@ -160,6 +166,7 @@
 </PermissionsDrawer>
 
 @code {
+
     #region Fields and Properties
 
     [CascadingParameter] private Task<AuthenticationState> _authState { get; set; } = default!;
@@ -269,10 +276,7 @@
     private async Task OnCreate()
     {
         var newRoleDto = new ApplicationRoleDto { Name = string.Empty };
-        await ShowRoleDialog(newRoleDto, _localizer["Create a new role"], async role =>
-        {
-            return await _roleManager.CreateAsync(role);
-        });
+        await ShowRoleDialog(newRoleDto, _localizer["Create a new role"], async role => { return await _roleManager.CreateAsync(role); });
     }
 
     // Open dialog to edit an existing role.
@@ -288,6 +292,7 @@
                 existingRole.Name = item.Name;
                 return await _roleManager.UpdateAsync(existingRole);
             }
+
             return IdentityResult.Failed(new IdentityError { Description = "Role not found." });
         });
     }
@@ -350,7 +355,7 @@
         await ProcessPermissionChange(model, async (roleId, claim, assigned) =>
         {
             var role = await _roleManager.FindByIdAsync(roleId)
-                ?? throw new NotFoundException($"Application role {roleId} not found.");
+                       ?? throw new NotFoundException($"Application role {roleId} not found.");
             if (assigned)
             {
                 await _roleManager.AddClaimAsync(role, claim);
@@ -382,6 +387,7 @@
 
             await ProcessPermissionsBatch(roleId, assignedClaims, unassignedClaims);
         }
+
         Snackbar.Add(_localizer["Authorization has been changed"], Severity.Info);
     }
 
@@ -392,16 +398,18 @@
         try
         {
             var role = await _roleManager.FindByIdAsync(roleId)
-                ?? throw new NotFoundException($"Application role {roleId} not found.");
+                       ?? throw new NotFoundException($"Application role {roleId} not found.");
 
             foreach (var claim in assignedClaims)
             {
                 await _roleManager.AddClaimAsync(role, claim);
             }
+
             foreach (var claim in unassignedClaims)
             {
                 await _roleManager.RemoveClaimAsync(role, claim);
             }
+
             _fusionCache.Remove($"get-claims-by-{roleId}");
         }
         finally
@@ -450,6 +458,7 @@
                         return;
                     }
                 }
+
                 Snackbar.Add(ConstantString.DeleteSuccess, Severity.Info);
                 await OnRefresh();
             });
@@ -474,6 +483,7 @@
                         return;
                     }
                 }
+
                 Snackbar.Add(ConstantString.DeleteSuccess, Severity.Info);
                 await OnRefresh();
             });
@@ -502,4 +512,5 @@
     }
 
     #endregion
+
 }

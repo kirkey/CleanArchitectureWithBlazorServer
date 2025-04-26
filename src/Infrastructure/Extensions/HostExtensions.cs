@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 
 namespace CleanArchitecture.Blazor.Infrastructure.Extensions;
+
 public static class HostExtensions
 {
     public static async Task InitializeDatabaseAsync(this IHost host)
@@ -10,9 +11,6 @@ public static class HostExtensions
         await initializer.InitialiseAsync().ConfigureAwait(false);
 
         var env = host.Services.GetRequiredService<IHostEnvironment>();
-        if (env.IsDevelopment())
-        {
-            await initializer.SeedAsync().ConfigureAwait(false);
-        }
+        if (env.IsDevelopment()) await initializer.SeedAsync().ConfigureAwait(false);
     }
 }

@@ -7,7 +7,6 @@ namespace CleanArchitecture.Blazor.Infrastructure.PermissionSet;
 
 public static partial class Permissions
 {
-
     [DisplayName("Contact Permissions")]
     [Description("Set permissions for contact operations.")]
     public static class Contacts
@@ -49,4 +48,3 @@ public class ContactsAccessRights
     public bool Export { get; set; }
     public bool Import { get; set; }
 }
-

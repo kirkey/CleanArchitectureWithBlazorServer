@@ -15,12 +15,12 @@
                         ToggleNavigationMenuDrawer="ToggleNavigationMenuDrawer"
                         RightToLeft="@LayoutService.IsRTL"
                         RightToLeftToggle="LayoutService.ToggleRightToLeft"
-                        OnSettingClick="@(() => themeSettings?.OpenSetting())" />
-            <NavigationMenu DrawerOpen="_navigationMenuDrawerOpen" Roles="@(UserProfile?.AssignedRoles??[])"
+                        OnSettingClick="@(() => themeSettings?.OpenSetting())"/>
+            <NavigationMenu DrawerOpen="_navigationMenuDrawerOpen" Roles="@(UserProfile?.AssignedRoles ?? [])"
                             DrawerOpenChanged="NavigationMenuDrawerOpenChangedHandler"/>
             <ThemesMenu @ref="themeSettings" UserPreferences="@LayoutService.UserPreferences"
                         UserPreferencesChanged="LayoutService.UpdateUserPreferences"/>
-           
+
             <MudMainContent>
                 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mb-4 mt-4">
                     <ErrorBoundary @ref="ErrorBoundary">
@@ -35,8 +35,8 @@
                     </ErrorBoundary>
                 </MudContainer>
             </MudMainContent>
-          
-            <UserLoginState />
+
+            <UserLoginState/>
         </Authorized>
     </AuthorizeView>
 </MudLayout>
@@ -56,25 +56,27 @@
     {
         var state = await AuthState;
         UserProfileStateService.OnChange += UserProfileStateService_OnChange;
-        await UserProfileStateService.InitializeAsync(state.User.Identity?.Name??string.Empty);
+        await UserProfileStateService.InitializeAsync(state.User.Identity?.Name ?? string.Empty);
         UserProfile = UserProfileStateService.UserProfile;
-
     }
-     
+
 
     public void Dispose()
     {
         UserProfileStateService.OnChange -= UserProfileStateService_OnChange;
     }
+
     protected override void OnParametersSet()
     {
         ResetBoundary();
     }
+
     private async Task UserProfileStateService_OnChange()
     {
         UserProfile = UserProfileStateService.UserProfile;
         await InvokeAsync(StateHasChanged);
     }
+
     private void ResetBoundary()
     {
         // On each page navigation, reset any error state
@@ -107,7 +109,7 @@
                 FullWidth = true
             };
 
-            var commandPalette =await DialogService.ShowAsync<SearchDialog>("", options);
+            var commandPalette = await DialogService.ShowAsync<SearchDialog>("", options);
             _commandPaletteOpen = true;
 
             await commandPalette.Result;

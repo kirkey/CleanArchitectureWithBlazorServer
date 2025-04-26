@@ -59,10 +59,7 @@ public class Testing
         // 替换 ICurrentUserAccessor 的注册
         var currentUserServiceDescriptor = services.FirstOrDefault(d =>
             d.ServiceType == typeof(ICurrentUserAccessor));
-        if (currentUserServiceDescriptor != null)
-        {
-            services.Remove(currentUserServiceDescriptor);
-        }
+        if (currentUserServiceDescriptor != null) services.Remove(currentUserServiceDescriptor);
 
         // 使用 Moq 创建 Mock 对象并配置 SessionInfo 属性
         // 注意：为了确保每次获取的 ICurrentUserAccessor 都能读取最新的 _currentUserId，
@@ -72,7 +69,7 @@ public class Testing
             var mockCurrentUserAccessor = new Mock<ICurrentUserAccessor>();
             mockCurrentUserAccessor
                 .Setup(x => x.SessionInfo)
-                .Returns(new SessionInfo(_currentUserId,"admin","admin","","","", UserPresence.Available));
+                .Returns(new SessionInfo(_currentUserId, "admin", "admin", "", "", "", UserPresence.Available));
             return mockCurrentUserAccessor.Object;
         });
 
@@ -84,8 +81,6 @@ public class Testing
             {
                 TablesToIgnore = new Table[] { "__EFMigrationsHistory" }
             });
-
-        
     }
 
     private static void EnsureDatabase()
@@ -122,10 +117,7 @@ public class Testing
         if (roles.Any())
         {
             var roleManager = scope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
-            foreach (var role in roles)
-            {
-                await roleManager.CreateAsync(new IdentityRole(role));
-            }
+            foreach (var role in roles) await roleManager.CreateAsync(new IdentityRole(role));
             await userManager.AddToRolesAsync(user, roles);
         }
 
@@ -152,6 +144,7 @@ public class Testing
         var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
         return await context.FindAsync<TEntity>(keyValues);
     }
+
     public static IApplicationDbContext CreateDbContext()
     {
         var scope = _scopeFactory.CreateScope();

@@ -35,8 +35,8 @@ internal static class IdentityComponentsEndpointRouteBuilderExtensions
         {
             IEnumerable<KeyValuePair<string, StringValues>> query =
             [
-                new KeyValuePair<string, StringValues>("ReturnUrl", returnUrl),
-                new KeyValuePair<string, StringValues>("Action", ExternalLogin.LoginCallbackAction)
+                new("ReturnUrl", returnUrl),
+                new("Action", ExternalLogin.LoginCallbackAction)
             ];
 
             var redirectUrl = UriHelper.BuildRelative(
@@ -45,7 +45,8 @@ internal static class IdentityComponentsEndpointRouteBuilderExtensions
                 QueryString.Create(query));
 
             var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-            logger.LogInformation("Redirecting to external login provider {Provider} with return URL {ReturnUrl}", provider, returnUrl);
+            logger.LogInformation("Redirecting to external login provider {Provider} with return URL {ReturnUrl}",
+                provider, returnUrl);
             return TypedResults.Challenge(properties, [provider]);
         });
 
@@ -77,11 +78,12 @@ internal static class IdentityComponentsEndpointRouteBuilderExtensions
 
             var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl,
                 signInManager.UserManager.GetUserId(context.User));
-            logger.LogInformation("{UserName} is linking external login provider {Provider} with redirect URL {RedirectUrl}", context.User.Identity?.Name, provider, redirectUrl);
+            logger.LogInformation(
+                "{UserName} is linking external login provider {Provider} with redirect URL {RedirectUrl}",
+                context.User.Identity?.Name, provider, redirectUrl);
             return TypedResults.Challenge(properties, [provider]);
         });
 
- 
 
         manageGroup.MapPost("/DownloadPersonalData", async (
             HttpContext context,
@@ -104,7 +106,8 @@ internal static class IdentityComponentsEndpointRouteBuilderExtensions
             var logins = await userManager.GetLoginsAsync(user).ConfigureAwait(false);
             foreach (var l in logins) personalData.Add($"{l.LoginProvider} external login provider key", l.ProviderKey);
 
-            personalData.Add("Authenticator Key", (await userManager.GetAuthenticatorKeyAsync(user).ConfigureAwait(false))!);
+            personalData.Add("Authenticator Key",
+                (await userManager.GetAuthenticatorKeyAsync(user).ConfigureAwait(false))!);
             var fileBytes = JsonSerializer.SerializeToUtf8Bytes(personalData);
 
             context.Response.Headers.TryAdd("Content-Disposition", "attachment; filename=PersonalData.json");

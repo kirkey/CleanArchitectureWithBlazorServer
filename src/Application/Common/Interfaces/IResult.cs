@@ -12,6 +12,7 @@ public interface IResult
 
     bool Succeeded { get; init; }
 }
+
 /// <summary>
 /// Represents the result of an operation that includes data.
 /// </summary>

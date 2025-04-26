@@ -20,7 +20,6 @@ public class MailService(
     {
         try
         {
-
             return fluentEmail
                 .To(to)
                 .Subject(subject)
@@ -38,7 +37,6 @@ public class MailService(
     {
         try
         {
-
             return fluentEmail
                 .To(to)
                 .Subject(subject)

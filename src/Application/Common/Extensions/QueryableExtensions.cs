@@ -127,13 +127,13 @@ public static class QueryableExtensions
     }
 
 
-
     #region OrderBy
+
     public static IOrderedQueryable<T> OrderBy<T>(this IQueryable<T> source, string orderByProperty)
     {
         var parts = orderByProperty.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        string property = parts[0];
-        string direction = parts.Length > 1 && parts[1].Equals("Descending", StringComparison.OrdinalIgnoreCase)
+        var property = parts[0];
+        var direction = parts.Length > 1 && parts[1].Equals("Descending", StringComparison.OrdinalIgnoreCase)
             ? "OrderByDescending"
             : "OrderBy";
 
@@ -158,11 +158,10 @@ public static class QueryableExtensions
     private static IOrderedQueryable<T> ApplyOrder<T>(IQueryable<T> source, string property, string methodName)
     {
         var type = typeof(T);
-        var propertyInfo = type.GetProperty(property, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+        var propertyInfo =
+            type.GetProperty(property, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
         if (propertyInfo == null)
-        {
             throw new ArgumentException($"Property '{property}' does not exist on type '{type.Name}'.");
-        }
 
         var parameter = Expression.Parameter(type, "x");
         var propertyAccess = Expression.MakeMemberAccess(parameter, propertyInfo);
@@ -184,7 +183,6 @@ public static class QueryableExtensions
             ? source.OrderByDescending(orderBy)
             : source.OrderBy(orderBy);
     }
+
     #endregion
-
-
 }

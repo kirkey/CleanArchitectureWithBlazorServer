@@ -17,40 +17,31 @@
 
     [Inject] private HubClient Client { get; set; } = default!;
 
-    [CascadingParameter]
-    private Task<AuthenticationState> AuthState { get; set; } = default!;
+    [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
 
     private bool _canViewOnlineStatus;
 
     protected override async Task OnInitializedAsync()
     {
-
-        AuthenticationState state = await AuthState;
+        var state = await AuthState;
         _canViewOnlineStatus = (await AuthService.AuthorizeAsync(state.User, Permissions.Users.ViewOnlineStatus)).Succeeded;
         Client.LoginEvent += _client_Login;
         Client.LogoutEvent += _client_Logout;
         await Client.StartAsync();
-
     }
+
     private void _client_Login(object? sender, UserStateChangeEventArgs args)
     {
         if (!_canViewOnlineStatus) return;
 
-        InvokeAsync(() =>
-        {
-            Snackbar.Add(string.Format(L["{0} has logged in."], args.UserName), Severity.Info);
-        });
+        InvokeAsync(() => { Snackbar.Add(string.Format(L["{0} has logged in."], args.UserName), Severity.Info); });
     }
 
     private void _client_Logout(object? sender, UserStateChangeEventArgs args)
     {
         if (!_canViewOnlineStatus) return;
 
-        InvokeAsync(() =>
-        {
-            Snackbar.Add(string.Format(L["{0} has logged out."], args.UserName));
-
-        });
+        InvokeAsync(() => { Snackbar.Add(string.Format(L["{0} has logged out."], args.UserName)); });
     }
 
 

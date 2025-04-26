@@ -20,6 +20,7 @@ public class AddEditDocumentCommand : ICacheInvalidatorRequest<Result<int>>
     [Description("Content")] public string? Content { get; set; }
     public UploadRequest? UploadRequest { get; set; }
     public IEnumerable<string>? Tags => DocumentCacheKey.Tags;
+
     private class Mapping : Profile
     {
         public Mapping()
@@ -41,10 +42,7 @@ public class AddEditDocumentCommandHandler(
         if (request.Id > 0)
         {
             var document = await context.Documents.FindAsync(request.Id, cancellationToken);
-            if (document == null)
-            {
-                return await Result<int>.FailureAsync($"Document with id: [{request.Id}] not found.");
-            }
+            if (document == null) return await Result<int>.FailureAsync($"Document with id: [{request.Id}] not found.");
             document.AddDomainEvent(new UpdatedEvent<Document>(document));
             if (request.UploadRequest != null) document.Url = await uploadService.UploadAsync(request.UploadRequest);
             document.Title = request.Title;

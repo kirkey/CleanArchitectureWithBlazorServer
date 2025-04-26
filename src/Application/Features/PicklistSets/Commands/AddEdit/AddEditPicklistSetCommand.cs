@@ -3,6 +3,7 @@
 
 using CleanArchitecture.Blazor.Application.Features.PicklistSets.Caching;
 using CleanArchitecture.Blazor.Application.Features.PicklistSets.DTOs;
+
 namespace CleanArchitecture.Blazor.Application.Features.PicklistSets.Commands.AddEdit;
 
 public class AddEditPicklistSetCommand : ICacheInvalidatorRequest<Result<int>>
@@ -15,6 +16,7 @@ public class AddEditPicklistSetCommand : ICacheInvalidatorRequest<Result<int>>
     public TrackingState TrackingState { get; set; } = TrackingState.Unchanged;
     public string CacheKey => PicklistSetCacheKey.GetAllCacheKey;
     public IEnumerable<string>? Tags => PicklistSetCacheKey.Tags;
+
     private class Mapping : Profile
     {
         public Mapping()
@@ -34,10 +36,7 @@ public class AddEditPicklistSetCommandHandler(
         if (request.Id > 0)
         {
             var item = await context.PicklistSets.FindAsync(request.Id, cancellationToken);
-            if (item == null)
-            {
-                return await Result<int>.FailureAsync($"Picklist with id: [{request.Id}] not found.");
-            }
+            if (item == null) return await Result<int>.FailureAsync($"Picklist with id: [{request.Id}] not found.");
             item = mapper.Map(request, item);
             item.AddDomainEvent(new UpdatedEvent<PicklistSet>(item));
             await context.SaveChangesAsync(cancellationToken);

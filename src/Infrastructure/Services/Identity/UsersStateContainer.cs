@@ -2,7 +2,6 @@
 
 namespace CleanArchitecture.Blazor.Infrastructure.Services.Identity;
 
-
 /// <summary>
 /// Manages the state of users by their connection IDs.
 /// </summary>
@@ -46,10 +45,7 @@ public class UsersStateContainer : IUsersStateContainer
     public void Clear(string userName)
     {
         var keysToRemove = UsersByConnectionId.Where(kvp => kvp.Value == userName).Select(kvp => kvp.Key).ToList();
-        foreach (var key in keysToRemove)
-        {
-            UsersByConnectionId.TryRemove(key, out _);
-        }
+        foreach (var key in keysToRemove) UsersByConnectionId.TryRemove(key, out _);
         NotifyStateChanged();
     }
 

@@ -14,7 +14,7 @@
             <MudProgressCircular Class="me-2"
                                  Size="Size.Small"
                                  Color="@LoadingCircularColor"
-                                 Indeterminate="true" />
+                                 Indeterminate="true"/>
         }
 
         @if (LoadingContent is not null)
@@ -31,7 +31,7 @@
             <MudProgressCircular Class="ms-2"
                                  Size="Size.Small"
                                  Color="@LoadingCircularColor"
-                                 Indeterminate="true" />
+                                 Indeterminate="true"/>
         }
     }
     else
@@ -133,7 +133,7 @@
             Loading = true;
             Disabled = true;
             StateHasChanged();
-            await base.OnClick.InvokeAsync(null);
+            await OnClick.InvokeAsync(null);
         }
         finally
         {
@@ -142,4 +142,5 @@
             StateHasChanged();
         }
     }
+
 }

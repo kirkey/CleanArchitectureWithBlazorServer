@@ -32,7 +32,8 @@ public class InMemoryNotificationService(
         if (message == null) return;
 
         var timestamp = await localStorageService.GetAsync<DateTime>(LocalStorageKey).ConfigureAwait(false);
-        if (timestamp.Success) await localStorageService.SetAsync(LocalStorageKey, message.PublishDate).ConfigureAwait(false);
+        if (timestamp.Success)
+            await localStorageService.SetAsync(LocalStorageKey, message.PublishDate).ConfigureAwait(false);
     }
 
     public Task<NotificationMessage> GetMessageById(string id)

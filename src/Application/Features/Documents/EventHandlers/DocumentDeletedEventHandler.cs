@@ -19,7 +19,6 @@ public class DocumentDeletedEventHandler(ILogger<DocumentDeletedEventHandler> lo
         var deleteFilePath = Path.Combine(Directory.GetCurrentDirectory(), folderName, notification.Entity.Url);
 
         if (File.Exists(deleteFilePath))
-        {
             try
             {
                 File.Delete(deleteFilePath);
@@ -29,11 +28,8 @@ public class DocumentDeletedEventHandler(ILogger<DocumentDeletedEventHandler> lo
             {
                 logger.LogError(ex, "Failed to delete file: {FilePath}", deleteFilePath);
             }
-        }
         else
-        {
             logger.LogWarning("File not found for deletion: {FilePath}", deleteFilePath);
-        }
 
         return Task.CompletedTask;
     }

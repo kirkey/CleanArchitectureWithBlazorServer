@@ -16,12 +16,10 @@ public class BlazorDownloadFileService(IJSRuntime jsRuntime)
     {
         // Load the JavaScript module from wwwroot/js/downloadFile.js if not already loaded
         if (_module == null)
-        {
             _module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/downloadFile.js");
-        }
 
         // Convert the byte array to a Base64 string
-        string base64Data = Convert.ToBase64String(data);
+        var base64Data = Convert.ToBase64String(data);
 
         // Call the JavaScript function to trigger the file download
         await _module.InvokeVoidAsync("downloadFile", fileName, base64Data, contentType);

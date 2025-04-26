@@ -2,6 +2,7 @@
 using CleanArchitecture.Blazor.Domain.Identity;
 
 namespace CleanArchitecture.Blazor.Application.Common.Security;
+
 public class ChangeUserProfileModel
 {
     public string? Provider { get; set; }
@@ -29,7 +30,6 @@ public class ChangeUserProfileModel
         }
     }
 }
-
 
 public class ChangeUserProfileModelValidator : AbstractValidator<ChangeUserProfileModel>
 {

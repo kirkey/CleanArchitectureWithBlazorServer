@@ -4,7 +4,6 @@ namespace CleanArchitecture.Blazor.Infrastructure.PermissionSet;
 
 public static partial class Permissions
 {
-
     [DisplayName("Document Permissions")]
     [Description("Set permissions for document operations.")]
     public static class Documents

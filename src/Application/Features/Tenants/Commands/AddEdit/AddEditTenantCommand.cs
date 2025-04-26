@@ -16,6 +16,7 @@ public class AddEditTenantCommand : ICacheInvalidatorRequest<Result<string>>
     [Description("Description")] public string? Description { get; set; }
     public string CacheKey => TenantCacheKey.GetAllCacheKey;
     public IEnumerable<string>? Tags => TenantCacheKey.Tags;
+
     private class Mapping : Profile
     {
         public Mapping()
@@ -44,6 +45,7 @@ public class AddEditTenantCommandHandler(
         {
             item = mapper.Map(request, item);
         }
+
         await context.SaveChangesAsync(cancellationToken);
         tenantsService.Refresh();
         return await Result<string>.SuccessAsync(item.Id);

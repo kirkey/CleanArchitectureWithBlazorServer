@@ -1,8 +1,7 @@
 ﻿<span>@FormattedSize</span>
 
 @code {
-    [Parameter]
-    public decimal FileSizeInBytes { get; set; }
+    [Parameter] public decimal FileSizeInBytes { get; set; }
 
     private string FormattedSize => FormatFileSize(FileSizeInBytes);
 
@@ -11,8 +10,8 @@
         const int scale = 1024;
         string[] units = { "B", "KB", "MB", "GB", "TB", "PB", "EB" };
 
-        decimal size = fileSizeInBytes;
-        int unitIndex = 0;
+        var size = fileSizeInBytes;
+        var unitIndex = 0;
 
         while (size >= scale && unitIndex < units.Length - 1)
         {
@@ -22,4 +21,5 @@
 
         return $"{size:0.#} {units[unitIndex]}";
     }
+
 }

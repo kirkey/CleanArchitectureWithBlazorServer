@@ -1,4 +1,5 @@
 ﻿namespace CleanArchitecture.Blazor.Application.Common.Interfaces;
+
 /// <summary>
 /// Interface for the permission service that provides a method to retrieve access rights
 /// based on an access rights model type.

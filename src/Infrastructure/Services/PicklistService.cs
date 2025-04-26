@@ -21,7 +21,7 @@ public class PicklistService : IPicklistService
         _fusionCache = fusionCache;
     }
 
-    public event  Func<Task>? OnChange;
+    public event Func<Task>? OnChange;
     public List<PicklistSetDto> DataSource { get; private set; } = new();
 
 

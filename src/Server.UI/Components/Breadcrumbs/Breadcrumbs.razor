@@ -8,7 +8,7 @@
 
         @if (OnSaveButtonClick.HasDelegate)
         {
-            <MudLoadingButton Loading="@Saving"  OnClick="@Save">@ConstantString.Save</MudLoadingButton>
+            <MudLoadingButton Loading="@Saving" OnClick="@Save">@ConstantString.Save</MudLoadingButton>
         }
         @if (OnGoEditClick.HasDelegate)
         {
@@ -33,18 +33,12 @@
 </div>
 
 @code {
-    [Parameter]
-    public List<BreadcrumbItem>? BreadcrumbItems { get; set; }
-    [Parameter]
-    public bool Saving { get; set; }
-    [Parameter]
-    public EventCallback OnSaveButtonClick { get; set; }
-    [Parameter]
-    public EventCallback OnGoEditClick { get; set; }
-    [Parameter]
-    public EventCallback OnDeleteClick { get; set; }
-    [Parameter]
-    public EventCallback OnPrintClick { get; set; }
+    [Parameter] public List<BreadcrumbItem>? BreadcrumbItems { get; set; }
+    [Parameter] public bool Saving { get; set; }
+    [Parameter] public EventCallback OnSaveButtonClick { get; set; }
+    [Parameter] public EventCallback OnGoEditClick { get; set; }
+    [Parameter] public EventCallback OnDeleteClick { get; set; }
+    [Parameter] public EventCallback OnPrintClick { get; set; }
 
     private async Task GoBack()
     {
@@ -58,6 +52,7 @@
             await OnSaveButtonClick.InvokeAsync();
         }
     }
+
     private async Task GoEdit()
     {
         if (OnGoEditClick.HasDelegate)
@@ -65,6 +60,7 @@
             await OnGoEditClick.InvokeAsync();
         }
     }
+
     private async Task Delete()
     {
         if (OnDeleteClick.HasDelegate)
@@ -72,6 +68,7 @@
             await OnDeleteClick.InvokeAsync();
         }
     }
+
     private async Task Print()
     {
         if (OnPrintClick.HasDelegate)
@@ -79,4 +76,5 @@
             await OnPrintClick.InvokeAsync();
         }
     }
+
 }

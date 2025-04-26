@@ -1,6 +1,7 @@
 ﻿namespace CleanArchitecture.Blazor.Application.Common.ExceptionHandlers;
 
-public class GlobalExceptionHandler<TRequest, TResponse, TException> : IRequestExceptionHandler<TRequest, TResponse, TException>
+public class
+    GlobalExceptionHandler<TRequest, TResponse, TException> : IRequestExceptionHandler<TRequest, TResponse, TException>
     where TRequest : IRequest<IResult>
     where TResponse : IResult
     where TException : Exception
@@ -36,7 +37,8 @@ public class GlobalExceptionHandler<TRequest, TResponse, TException> : IRequestE
             // Use reflection to invoke Result<T>.Failure method
             var failureMethod = typeof(Result<>)
                 .MakeGenericType(resultType)
-                .GetMethod("Failure", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(string[]) }, null);
+                .GetMethod("Failure", BindingFlags.Public | BindingFlags.Static, null, new[] { typeof(string[]) },
+                    null);
 
             var failureResultObj = failureMethod?.Invoke(null, new object[] { new[] { exception.Message } });
 

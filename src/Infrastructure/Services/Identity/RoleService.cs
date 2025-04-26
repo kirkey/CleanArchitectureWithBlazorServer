@@ -33,7 +33,8 @@ public class RoleService : IRoleService
     {
         DataSource = _fusionCache.GetOrSet(CACHEKEY,
                          _ => _roleManager.Roles
-                             .ProjectTo<ApplicationRoleDto>(_mapper.ConfigurationProvider).OrderBy(x => x.TenantId).ThenBy(x => x.Name)
+                             .ProjectTo<ApplicationRoleDto>(_mapper.ConfigurationProvider).OrderBy(x => x.TenantId)
+                             .ThenBy(x => x.Name)
                              .ToList())
                      ?? new List<ApplicationRoleDto>();
         OnChange?.Invoke();
@@ -45,7 +46,8 @@ public class RoleService : IRoleService
         _fusionCache.Remove(CACHEKEY);
         DataSource = _fusionCache.GetOrSet(CACHEKEY,
                          _ => _roleManager.Roles
-                             .ProjectTo<ApplicationRoleDto>(_mapper.ConfigurationProvider).OrderBy(x => x.TenantId).ThenBy(x => x.Name)
+                             .ProjectTo<ApplicationRoleDto>(_mapper.ConfigurationProvider).OrderBy(x => x.TenantId)
+                             .ThenBy(x => x.Name)
                              .ToList())
                      ?? new List<ApplicationRoleDto>();
         OnChange?.Invoke();

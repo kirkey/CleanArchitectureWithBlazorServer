@@ -25,14 +25,14 @@ public class CurrentUserContextSetter : ICurrentUserContextSetter
     public void SetCurrentUser(ClaimsPrincipal user)
     {
         _currentUserContext.SessionInfo = new SessionInfo(
-                user.GetUserId(),
-                user.GetUserName(),
-                user.GetDisplayName(),
-                "",
-                user.GetTenantId(),
-                user.GetProfilePictureDataUrl(),
-                UserPresence.Available
-            );
+            user.GetUserId(),
+            user.GetUserName(),
+            user.GetDisplayName(),
+            "",
+            user.GetTenantId(),
+            user.GetProfilePictureDataUrl(),
+            UserPresence.Available
+        );
     }
 
     /// <summary>
@@ -43,4 +43,3 @@ public class CurrentUserContextSetter : ICurrentUserContextSetter
         _currentUserContext.SessionInfo = null;
     }
 }
-

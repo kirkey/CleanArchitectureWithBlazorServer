@@ -33,7 +33,8 @@ public class MultiTenantUserManager : UserManager<ApplicationUser>
         IServiceProvider services,
         RoleManager<ApplicationRole> roleManager,
         ILogger<UserManager<ApplicationUser>> logger)
-        : base(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger)
+        : base(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors,
+            services, logger)
     {
         _roleManager = roleManager;
     }
@@ -63,13 +64,10 @@ public class MultiTenantUserManager : UserManager<ApplicationUser>
             });
         }
 
-        foreach (var role in tenantRoles.Where(x=>!string.IsNullOrEmpty(x.Name)))
+        foreach (var role in tenantRoles.Where(x => !string.IsNullOrEmpty(x.Name)))
         {
             var result = await AddToRoleAsync(user, role.Name ?? string.Empty);
-            if (!result.Succeeded)
-            {
-                return result;
-            }
+            if (!result.Succeeded) return result;
         }
 
         return IdentityResult.Success;
@@ -90,22 +88,18 @@ public class MultiTenantUserManager : UserManager<ApplicationUser>
             .FirstOrDefaultAsync(r => r.NormalizedName == normalizedRoleName && r.TenantId == tenantId);
 
         if (role == null)
-        {
             return IdentityResult.Failed(new IdentityError
             {
                 Code = "RoleNotFound",
                 Description = $"Role '{roleName}' does not exist in the user's tenant."
             });
-        }
 
         if (await IsInRoleAsync(user, role.Name!))
-        {
             return IdentityResult.Failed(new IdentityError
             {
                 Code = "UserAlreadyInRole",
                 Description = $"User is already in role '{roleName}'."
             });
-        }
 
         var userRoleStore = GetUserRoleStore();
         await userRoleStore.AddToRoleAsync(user, role.NormalizedName!, CancellationToken.None);
@@ -122,7 +116,8 @@ public class MultiTenantUserManager : UserManager<ApplicationUser>
     public override async Task<bool> IsInRoleAsync(ApplicationUser user, string roleName)
     {
         if (user == null) throw new ArgumentNullException(nameof(user));
-        if (string.IsNullOrEmpty(roleName)) throw new ArgumentException("Value cannot be null or empty.", nameof(roleName));
+        if (string.IsNullOrEmpty(roleName))
+            throw new ArgumentException("Value cannot be null or empty.", nameof(roleName));
 
         var normalizedRoleName = NormalizeName(roleName);
         return await _roleManager.Roles.AnyAsync(r =>
@@ -130,7 +125,7 @@ public class MultiTenantUserManager : UserManager<ApplicationUser>
             r.TenantId == user.TenantId &&
             Context.UserRoles.Any(ur => ur.UserId == user.Id && ur.RoleId == r.Id));
     }
-    
+
 
     /// <summary>
     /// Removes the specified user from the given role.
@@ -153,5 +148,8 @@ public class MultiTenantUserManager : UserManager<ApplicationUser>
                ?? throw new NotSupportedException("The user store does not implement IUserRoleStore<ApplicationUser>.");
     }
 
-    private ApplicationDbContext Context => (Store as UserStore<ApplicationUser, ApplicationRole, ApplicationDbContext, string, ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin, ApplicationUserToken, ApplicationRoleClaim>)?.Context ?? throw new InvalidOperationException("Context is not available.");
+    private ApplicationDbContext Context =>
+        (Store as UserStore<ApplicationUser, ApplicationRole, ApplicationDbContext, string, ApplicationUserClaim,
+            ApplicationUserRole, ApplicationUserLogin, ApplicationUserToken, ApplicationRoleClaim>)?.Context ??
+        throw new InvalidOperationException("Context is not available.");
 }

@@ -5,7 +5,8 @@
 
 <MudDialog>
     <DialogContent>
-        <UserForm UserProfile="@UserProfile" @ref="@_userForm" Model="Model" OnFormSubmit="OnFormSubmitHandler"></UserForm>
+        <UserForm UserProfile="@UserProfile" @ref="@_userForm" Model="Model"
+                  OnFormSubmit="OnFormSubmitHandler"></UserForm>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
@@ -17,7 +18,7 @@
     [CascadingParameter] private IMudDialogInstance MudDialog { get; set; } = default!;
     [Parameter] public UserProfile? UserProfile { get; set; }
     [Parameter] public ApplicationUserDto Model { get; set; } = default!;
-    
+
 
     private UserForm? _userForm;
 

@@ -13,7 +13,7 @@ public class UserProfileStateService : IDisposable
     private TimeSpan RefreshInterval => TimeSpan.FromSeconds(60);
 
     // Internal user profile state
-    private UserProfile _userProfile = new UserProfile { Email = "", UserId = "", UserName = "" };
+    private UserProfile _userProfile = new() { Email = "", UserId = "", UserName = "" };
 
     // Dependencies
     private readonly UserManager<ApplicationUser> _userManager;
@@ -41,10 +41,10 @@ public class UserProfileStateService : IDisposable
         var result = await _fusionCache.GetOrSetAsync(
             key,
             _ => _userManager.Users
-                        .Where(x => x.UserName == userName)
-                        .Include(x => x.UserRoles).ThenInclude(x => x.Role)
-                        .ProjectTo<ApplicationUserDto>(_mapper.ConfigurationProvider)
-                        .FirstOrDefaultAsync(),
+                .Where(x => x.UserName == userName)
+                .Include(x => x.UserRoles).ThenInclude(x => x.Role)
+                .ProjectTo<ApplicationUserDto>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(),
             RefreshInterval);
 
         if (result is not null)
@@ -79,7 +79,8 @@ public class UserProfileStateService : IDisposable
     /// <summary>
     /// Updates the user profile and clears the cache.
     /// </summary>
-    public void UpdateUserProfile(string userName, string? profilePictureDataUrl, string? fullName, string? phoneNumber, string? timeZoneId, string? languageCode)
+    public void UpdateUserProfile(string userName, string? profilePictureDataUrl, string? fullName, string? phoneNumber,
+        string? timeZoneId, string? languageCode)
     {
         _userProfile.ProfilePictureDataUrl = profilePictureDataUrl;
         _userProfile.DisplayName = fullName;
@@ -92,7 +93,10 @@ public class UserProfileStateService : IDisposable
 
     public event Func<Task>? OnChange;
 
-    private void NotifyStateChanged() => OnChange?.Invoke();
+    private void NotifyStateChanged()
+    {
+        OnChange?.Invoke();
+    }
 
     private string GetApplicationUserCacheKey(string userName)
     {
@@ -104,6 +108,8 @@ public class UserProfileStateService : IDisposable
         _fusionCache.Remove(GetApplicationUserCacheKey(userName));
     }
 
-    public void Dispose() => _scope.Dispose();
+    public void Dispose()
+    {
+        _scope.Dispose();
+    }
 }
-

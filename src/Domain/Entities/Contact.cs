@@ -11,5 +11,4 @@ public class Contact : BaseAuditableEntity
     public string? Email { get; set; }
     public string? PhoneNumber { get; set; }
     public string? Country { get; set; }
-   
 }

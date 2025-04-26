@@ -40,16 +40,20 @@
                     {
                         @if (sectionItem is { IsParent: true, MenuItems: not null })
                         {
-                            <MudNavGroup Icon="@sectionItem.Icon" Title="@L[sectionItem.Title]" Expanded="Expanded(sectionItem)">
+                            <MudNavGroup Icon="@sectionItem.Icon" Title="@L[sectionItem.Title]"
+                                         Expanded="Expanded(sectionItem)">
                                 @foreach (var menuItem in sectionItem.MenuItems.Where(x => x.Roles == null || x.Roles.Any(x => Roles.Contains(x))))
                                 {
-                                    <MudNavLink Disabled="@(menuItem.PageStatus != PageStatus.Completed)" Href="@(menuItem.Href)" Target="@(menuItem.Target)" Match="NavLinkMatch.Prefix">
+                                    <MudNavLink Disabled="@(menuItem.PageStatus != PageStatus.Completed)"
+                                                Href="@(menuItem.Href)" Target="@(menuItem.Target)"
+                                                Match="NavLinkMatch.Prefix">
                                         <div class="d-flex">
                                             @(L[menuItem.Title])
                                             @if (menuItem.PageStatus != PageStatus.Completed)
                                             {
                                                 <MudSpacer/>
-                                                <MudChip T="string" Class="mr-4" Color="@Color.Primary" Size="Size.Small" Variant="Variant.Text">
+                                                <MudChip T="string" Class="mr-4" Color="@Color.Primary"
+                                                         Size="Size.Small" Variant="Variant.Text">
                                                     @(L[menuItem.PageStatus.GetDescription()])
                                                 </MudChip>
                                             }
@@ -60,13 +64,16 @@
                         }
                         else
                         {
-                            <MudNavLink Disabled="@(sectionItem.PageStatus != PageStatus.Completed)" Href="@(sectionItem.Href)" Icon="@(sectionItem.Icon)" Target="@(sectionItem.Target)" Match="NavLinkMatch.All">
+                            <MudNavLink Disabled="@(sectionItem.PageStatus != PageStatus.Completed)"
+                                        Href="@(sectionItem.Href)" Icon="@(sectionItem.Icon)"
+                                        Target="@(sectionItem.Target)" Match="NavLinkMatch.All">
                                 <div class="d-flex">
                                     @(L[sectionItem.Title])
                                     @if (sectionItem.PageStatus != PageStatus.Completed)
                                     {
                                         <MudSpacer/>
-                                        <MudChip T="string" Class="mr-4" Color="@Color.Primary" Size="Size.Small" Variant="Variant.Text">
+                                        <MudChip T="string" Class="mr-4" Color="@Color.Primary" Size="Size.Small"
+                                                 Variant="Variant.Text">
                                             @(L[sectionItem.PageStatus.GetDescription()])
                                         </MudChip>
                                     }
@@ -81,8 +88,10 @@
 
     <MudDivider Class="mt-auto"></MudDivider>
     <MudNavMenu Class="d-flex justify-space-between pa-4">
-        <MudLink Href="#" Style="font-size:0.625rem;line-height:1.125rem;color:#6F6F6F !important">@L[ApplicationSettings.Copyright]</MudLink>
-        <MudText Class="" Style="font-size:0.625rem;line-height:1.125rem;color:#6F6F6F !important">@L["version"] @ApplicationSettings.Version</MudText>
+        <MudLink Href="#"
+                 Style="font-size:0.625rem;line-height:1.125rem;color:#6F6F6F !important">@L[ApplicationSettings.Copyright]</MudLink>
+        <MudText Class=""
+                 Style="font-size:0.625rem;line-height:1.125rem;color:#6F6F6F !important">@L["version"] @ApplicationSettings.Version</MudText>
     </MudNavMenu>
 
 </MudDrawer>

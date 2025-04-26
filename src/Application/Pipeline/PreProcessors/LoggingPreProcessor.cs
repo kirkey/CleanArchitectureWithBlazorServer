@@ -17,7 +17,7 @@ public class LoggingPreProcessor<TRequest>(ILogger<TRequest> logger, ICurrentUse
         var requestName = nameof(TRequest);
         var userName = currentUserAccessor.SessionInfo?.UserName;
         _logger.LogTrace("Processing request of type {RequestName} with details {@Request} by user {UserName}",
-         requestName, request, userName);
+            requestName, request, userName);
         return Task.CompletedTask;
     }
 }

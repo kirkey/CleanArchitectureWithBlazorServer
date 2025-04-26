@@ -33,7 +33,7 @@ public class ProductsWithPaginationQueryHandler(
     {
         var data = await context.Products.OrderBy($"{request.OrderBy} {request.SortDirection}")
             .ProjectToPaginatedDataAsync<Product, ProductDto>(request.Specification, request.PageNumber,
-                 request.PageSize, mapper.ConfigurationProvider, cancellationToken);
+                request.PageSize, mapper.ConfigurationProvider, cancellationToken);
         return data;
     }
 }

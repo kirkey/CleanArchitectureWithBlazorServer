@@ -30,7 +30,8 @@ public class DocumentsQueryHandler(
         CancellationToken cancellationToken)
     {
         var data = await context.Documents.OrderBy($"{request.OrderBy} {request.SortDirection}")
-            .ProjectToPaginatedDataAsync<Document, DocumentDto>(request.Specification, request.PageNumber, request.PageSize, mapper.ConfigurationProvider, cancellationToken);
+            .ProjectToPaginatedDataAsync<Document, DocumentDto>(request.Specification, request.PageNumber,
+                request.PageSize, mapper.ConfigurationProvider, cancellationToken);
 
         return data;
     }

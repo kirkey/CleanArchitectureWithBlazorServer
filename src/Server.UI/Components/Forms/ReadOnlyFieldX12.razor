@@ -1,4 +1,5 @@
-﻿﻿<MudGrid Class="ma-0 pa-0" Spacing="0">
+﻿﻿
+<MudGrid Class="ma-0 pa-0" Spacing="0">
     <MudItem xs="2">
         <MudText Typo="Typo.body2">@Label</MudText>
     </MudItem>
@@ -15,11 +16,8 @@
 </MudGrid>
 
 @code {
-    [Parameter]
-    public string? Label { get; set; }
-    [Parameter]
-    public object? Value { get; set; }
-    [Parameter]
-    public bool CheckBox { get; set; }
-  
+    [Parameter] public string? Label { get; set; }
+    [Parameter] public object? Value { get; set; }
+    [Parameter] public bool CheckBox { get; set; }
+
 }

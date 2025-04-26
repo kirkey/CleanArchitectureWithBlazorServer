@@ -2,7 +2,8 @@
 
 namespace CleanArchitecture.Blazor.Application.Common.ExceptionHandlers;
 
-public class DbExceptionHandler<TRequest, TResponse, TException> : IRequestExceptionHandler<TRequest, TResponse, TException>
+public class
+    DbExceptionHandler<TRequest, TResponse, TException> : IRequestExceptionHandler<TRequest, TResponse, TException>
     where TRequest : IRequest<Result>
     where TResponse : Result
     where TException : DbUpdateException
@@ -12,7 +13,6 @@ public class DbExceptionHandler<TRequest, TResponse, TException> : IRequestExcep
 
     public DbExceptionHandler(ILoggerFactory loggerFactory)
     {
-        
         _loggerFactory = loggerFactory;
         _logger = _loggerFactory.CreateLogger(nameof(DbExceptionHandler<TRequest, TResponse, TException>));
     }
@@ -24,7 +24,7 @@ public class DbExceptionHandler<TRequest, TResponse, TException> : IRequestExcep
         return Task.CompletedTask;
     }
 
-    private  string[] GetErrors(DbUpdateException exception)
+    private string[] GetErrors(DbUpdateException exception)
     {
         return exception switch
         {
@@ -36,9 +36,12 @@ public class DbExceptionHandler<TRequest, TResponse, TException> : IRequestExcep
             _ => new[] { exception.GetBaseException().Message }
         };
     }
-    private  string[] GetUniqueConstraintExceptionErrors(UniqueConstraintException exception)
+
+    private string[] GetUniqueConstraintExceptionErrors(UniqueConstraintException exception)
     {
-        var tableName = string.IsNullOrWhiteSpace(exception.SchemaQualifiedTableName) ? "unknown table" : exception.SchemaQualifiedTableName;
+        var tableName = string.IsNullOrWhiteSpace(exception.SchemaQualifiedTableName)
+            ? "unknown table"
+            : exception.SchemaQualifiedTableName;
         var properties = exception.ConstraintProperties != null && exception.ConstraintProperties.Any()
             ? string.Join(", ", exception.ConstraintProperties)
             : "unknown properties";
@@ -49,35 +52,40 @@ public class DbExceptionHandler<TRequest, TResponse, TException> : IRequestExcep
             $"'{properties}'. Please ensure the values are unique."
         };
     }
-    private  string[] GetCannotInsertNullExceptionErrors(CannotInsertNullException exception)
+
+    private string[] GetCannotInsertNullExceptionErrors(CannotInsertNullException exception)
     {
         return new[]
         {
             "Some required information is missing. Please make sure all required fields are filled out."
         };
     }
-    private  string[] GetMaxLengthExceededExceptionErrors(MaxLengthExceededException exception)
+
+    private string[] GetMaxLengthExceededExceptionErrors(MaxLengthExceededException exception)
     {
         return new[]
         {
             "Some input is too long. Please shorten the data entered in the fields."
         };
     }
-    private  string[] GetNumericOverflowExceptionErrors(NumericOverflowException exception)
+
+    private string[] GetNumericOverflowExceptionErrors(NumericOverflowException exception)
     {
         return new[]
         {
-           "A number you entered is too large or too small. Please enter a number within the allowed range."
+            "A number you entered is too large or too small. Please enter a number within the allowed range."
         };
     }
-    private  string[] GetReferenceConstraintExceptionErrors(ReferenceConstraintException exception)
+
+    private string[] GetReferenceConstraintExceptionErrors(ReferenceConstraintException exception)
     {
-        var tableName = string.IsNullOrWhiteSpace(exception.SchemaQualifiedTableName) ? "unknown table" : exception.SchemaQualifiedTableName;
+        var tableName = string.IsNullOrWhiteSpace(exception.SchemaQualifiedTableName)
+            ? "unknown table"
+            : exception.SchemaQualifiedTableName;
         return new[]
         {
             $"The operation failed because this record is linked to other records in {tableName}. " +
             $"Please remove any related records first"
         };
     }
-
 }

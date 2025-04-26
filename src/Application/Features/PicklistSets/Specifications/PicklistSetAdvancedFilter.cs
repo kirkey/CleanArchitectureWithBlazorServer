@@ -2,15 +2,14 @@
 
 public enum PickListView
 {
-    [Description("All")]
-    All,
-    [Description("My")]
-    My,
-    [Description("CreatedOn Toady")]
-    TODAY,
+    [Description("All")] All,
+    [Description("My")] My,
+    [Description("CreatedOn Toady")] TODAY,
+
     [Description("CreatedOn within the last 30 days")]
     LAST_30_DAYS
 }
+
 public class PicklistSetAdvancedFilter : PaginationFilter
 {
     public PickListView ListView { get; set; } = PickListView.All;

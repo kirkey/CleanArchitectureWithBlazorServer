@@ -51,10 +51,11 @@
     <ToolBarContent>
         <MudStack Row Spacing="0" Class="flex-grow-1" Justify="Justify.SpaceBetween">
             <MudStack Row AlignItems="AlignItems.Start">
-                <MudIcon Icon="@Icons.Material.Filled.SwitchAccount" Size="Size.Large" />
+                <MudIcon Icon="@Icons.Material.Filled.SwitchAccount" Size="Size.Large"/>
                 <MudStack Spacing="0">
                     <MudText Typo="Typo.subtitle2" Class="mb-2">@_title</MudText>
-                    <MudSelect T="string" Style="min-width:120px" ValueChanged="TenantListViewChanged" Value="@_selectedTenantId" Dense="true" Label="@Localizer["List View"]">
+                    <MudSelect T="string" Style="min-width:120px" ValueChanged="TenantListViewChanged"
+                               Value="@_selectedTenantId" Dense="true" Label="@Localizer["List View"]">
                         <MudSelectItem T="string" Value="@string.Empty">@Localizer["ALL"]</MudSelectItem>
                         @foreach (var tenant in TenantService.DataSource)
                         {
@@ -77,7 +78,8 @@
                             @ConstantString.New
                         </MudButton>
                     }
-                    <MudMenu TransformOrigin="Origin.BottomRight" AnchorOrigin="Origin.BottomRight" EndIcon="@Icons.Material.Filled.MoreVert" Label="@ConstantString.More">
+                    <MudMenu TransformOrigin="Origin.BottomRight" AnchorOrigin="Origin.BottomRight"
+                             EndIcon="@Icons.Material.Filled.MoreVert" Label="@ConstantString.More">
                         @if (_accessRights.Delete)
                         {
                             <MudMenuItem Disabled="@(!_selectedUsers.Any())"
@@ -111,13 +113,15 @@
                 <MudStack Row Spacing="1">
                     @if (_accessRights.Search)
                     {
-                        <MudSelect T="string" Placeholder="@Localizer["Search by role name"]" Value="@_searchRole" Clearable="true" ValueChanged="SearchByRole" Style="width:150px">
+                        <MudSelect T="string" Placeholder="@Localizer["Search by role name"]" Value="@_searchRole"
+                                   Clearable="true" ValueChanged="SearchByRole" Style="width:150px">
                             @foreach (var role in _roles.Select(r => r.Name).Distinct())
                             {
                                 <MudSelectItem Value="@role">@role</MudSelectItem>
                             }
                         </MudSelect>
-                        <MudTextField T="string" Immediate="false" ValueChanged="SearchUsers" Value="@_searchString" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
+                        <MudTextField T="string" Immediate="false" ValueChanged="SearchUsers" Value="@_searchString"
+                                      Placeholder="@ConstantString.Search" Adornment="Adornment.End"
                                       AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
                         </MudTextField>
                     }
@@ -126,48 +130,55 @@
         </MudStack>
     </ToolBarContent>
     <Columns>
-        <SelectColumn ShowInFooter="false" />
+        <SelectColumn ShowInFooter="false"/>
         <TemplateColumn HeaderStyle="width:60px" Title="@ConstantString.Actions" Sortable="false">
             <CellTemplate>
                 @if (_accessRights.Edit || _accessRights.Delete || _accessRights.ManageRoles ||
-                                _accessRights.RestPassword || _accessRights.SendRestPasswordMail || _accessRights.ManagePermissions)
+                     _accessRights.RestPassword || _accessRights.SendRestPasswordMail || _accessRights.ManagePermissions)
                 {
                     <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Size="Size.Small"
                              Dense="true"
-                             EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                             EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info"
+                             AnchorOrigin="Origin.CenterLeft">
                         @if (_accessRights.Edit)
                         {
                             <MudMenuItem OnClick="@(() => EditUser(context.Item))">@ConstantString.Edit</MudMenuItem>
                         }
                         @if (_accessRights.Delete)
                         {
-                            <MudMenuItem OnClick="@(() => DeleteUserAsync(context.Item))">@ConstantString.Delete</MudMenuItem>
+                            <MudMenuItem
+                                OnClick="@(() => DeleteUserAsync(context.Item))">@ConstantString.Delete</MudMenuItem>
                         }
                         @if (_accessRights.ManagePermissions)
                         {
-                            <MudMenuItem OnClick="@(() => OpenPermissionsDrawerAsync(context.Item))">@Localizer["Set Permissions"]</MudMenuItem>
+                            <MudMenuItem
+                                OnClick="@(() => OpenPermissionsDrawerAsync(context.Item))">@Localizer["Set Permissions"]</MudMenuItem>
                         }
                         @if (_accessRights.SendRestPasswordMail)
                         {
-                            <MudMenuItem OnClick="@(() => SendResetPasswordEmail(context.Item))">@Localizer["Send Reset Password Email"]</MudMenuItem>
+                            <MudMenuItem
+                                OnClick="@(() => SendResetPasswordEmail(context.Item))">@Localizer["Send Reset Password Email"]</MudMenuItem>
                         }
                         @if (_accessRights.RestPassword)
                         {
-                            <MudMenuItem Disabled="@(!context.Item.IsActive)" OnClick="@(() => ResetPasswordDialog(context.Item))">@Localizer["Reset Password"]</MudMenuItem>
+                            <MudMenuItem Disabled="@(!context.Item.IsActive)"
+                                         OnClick="@(() => ResetPasswordDialog(context.Item))">@Localizer["Reset Password"]</MudMenuItem>
                         }
                     </MudMenu>
                 }
                 else
                 {
                     <MudButton Variant="Variant.Filled"
-                               StartIcon="@Icons.Material.Filled.DoNotTouch" IconColor="Color.Secondary" Size="Size.Small"
+                               StartIcon="@Icons.Material.Filled.DoNotTouch" IconColor="Color.Secondary"
+                               Size="Size.Small"
                                Color="Color.Surface">
                         @ConstantString.NoAllowed
                     </MudButton>
                 }
             </CellTemplate>
         </TemplateColumn>
-        <PropertyColumn Property="x => x.Tenant" Title="@Localizer[_currentUserDto.GetMemberDescription(x => x.Tenant)]">
+        <PropertyColumn Property="x => x.Tenant"
+                        Title="@Localizer[_currentUserDto.GetMemberDescription(x => x.Tenant)]">
             <CellTemplate>
                 <MudText>@context.Item.Tenant?.Name</MudText>
             </CellTemplate>
@@ -175,9 +186,11 @@
                 @Localizer["Selected"]: @_selectedUsers.Count
             </FooterTemplate>
         </PropertyColumn>
-        <PropertyColumn Property="x => x.UserName" Title="@Localizer[_currentUserDto.GetMemberDescription(x => x.UserName)]">
+        <PropertyColumn Property="x => x.UserName"
+                        Title="@Localizer[_currentUserDto.GetMemberDescription(x => x.UserName)]">
             <CellTemplate>
-                <UserCard Item="@context.Item" OnSendVerify="SendVerificationEmail" DisplayOnlineStatus="@_canViewOnlineStatus"></UserCard>
+                <UserCard Item="@context.Item" OnSendVerify="SendVerificationEmail"
+                          DisplayOnlineStatus="@_canViewOnlineStatus"></UserCard>
             </CellTemplate>
         </PropertyColumn>
         <PropertyColumn Property="x => x.Email" Title="@Localizer["Full Name"]">
@@ -187,13 +200,16 @@
                 </div>
             </CellTemplate>
         </PropertyColumn>
-        <PropertyColumn Property="x => x.Superior" Title="@Localizer[_currentUserDto.GetMemberDescription(x => x.Superior)]">
+        <PropertyColumn Property="x => x.Superior"
+                        Title="@Localizer[_currentUserDto.GetMemberDescription(x => x.Superior)]">
             <CellTemplate>
                 @context.Item.Superior?.UserName
             </CellTemplate>
         </PropertyColumn>
-        <PropertyColumn Property="x => x.Provider" Title="@Localizer[_currentUserDto.GetMemberDescription(x => x.Provider)]" />
-        <PropertyColumn Sortable="false" Property="x => x.AssignedRoles" Title="@Localizer[_currentUserDto.GetMemberDescription(x => x.AssignedRoles)]">
+        <PropertyColumn Property="x => x.Provider"
+                        Title="@Localizer[_currentUserDto.GetMemberDescription(x => x.Provider)]"/>
+        <PropertyColumn Sortable="false" Property="x => x.AssignedRoles"
+                        Title="@Localizer[_currentUserDto.GetMemberDescription(x => x.AssignedRoles)]">
             <CellTemplate>
                 @if (context.Item.AssignedRoles is not null)
                 {
@@ -204,39 +220,48 @@
                 }
             </CellTemplate>
         </PropertyColumn>
-        <PropertyColumn Property="x => x.IsActive" Title="@Localizer[_currentUserDto.GetMemberDescription(x => x.IsActive)]">
+        <PropertyColumn Property="x => x.IsActive"
+                        Title="@Localizer[_currentUserDto.GetMemberDescription(x => x.IsActive)]">
             <CellTemplate>
                 <div>
                     @if (!context.Item.IsActive || (context.Item.LockoutEnd is not null && context.Item.LockoutEnd > DateTime.UtcNow))
                     {
                         <MudTooltip Text="@Localizer["Click to change status to active."]" Delay="300">
-                            <MudSwitch T="bool" Value="context.Item.IsActive" ValueChanged="@(() => ToggleUserActiveStatusAsync(context.Item))" ThumbIcon="@Icons.Material.Filled.Close" ThumbIconColor="Color.Error" />
+                            <MudSwitch T="bool" Value="context.Item.IsActive"
+                                       ValueChanged="@(() => ToggleUserActiveStatusAsync(context.Item))"
+                                       ThumbIcon="@Icons.Material.Filled.Close" ThumbIconColor="Color.Error"/>
                         </MudTooltip>
                     }
                     else
                     {
                         <MudTooltip Text="@Localizer["Click to change status to inactive."]" Delay="300">
-                            <MudSwitch T="bool" Value="context.Item.IsActive" ValueChanged="@(() => ToggleUserActiveStatusAsync(context.Item))" ThumbIcon="@Icons.Material.Filled.Done" ThumbIconColor="Color.Success" />
+                            <MudSwitch T="bool" Value="context.Item.IsActive"
+                                       ValueChanged="@(() => ToggleUserActiveStatusAsync(context.Item))"
+                                       ThumbIcon="@Icons.Material.Filled.Done" ThumbIconColor="Color.Success"/>
                         </MudTooltip>
                     }
                 </div>
             </CellTemplate>
         </PropertyColumn>
-        <PropertyColumn Property="x => x.LastModified" Title="@Localizer[_currentUserDto.GetMemberDescription(x => x.LastModified)]">
+        <PropertyColumn Property="x => x.LastModified"
+                        Title="@Localizer[_currentUserDto.GetMemberDescription(x => x.LastModified)]">
             <CellTemplate>
-                <UtcToLocal UTCDateTime="@(context.Item.LastModified ?? context.Item.Created)" Format="yyyy-MM-dd" />
+                <UtcToLocal UTCDateTime="@(context.Item.LastModified ?? context.Item.Created)" Format="yyyy-MM-dd"/>
             </CellTemplate>
         </PropertyColumn>
     </Columns>
 
     <PagerContent>
-        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50, 100, 500, 1000 })" />
+        <MudDataGridPager PageSizeOptions="@(new[] { 10, 15, 30, 50, 100, 500, 1000 })"/>
     </PagerContent>
 </MudDataGrid>
 
-<PermissionsDrawer OnAssignAllChanged="AssignAllPermissionsAsync" Waiting="@_isProcessing" OnOpenChanged="HandlePermissionsDrawerOpenChanged" Open="_showPermissionsDrawer" Permissions="_permissions" OnAssignChanged="HandlePermissionChangedAsync"></PermissionsDrawer>
+<PermissionsDrawer OnAssignAllChanged="AssignAllPermissionsAsync" Waiting="@_isProcessing"
+                   OnOpenChanged="HandlePermissionsDrawerOpenChanged" Open="_showPermissionsDrawer"
+                   Permissions="_permissions" OnAssignChanged="HandlePermissionChangedAsync"></PermissionsDrawer>
 
 @code {
+
     #region Fields and Service Injection
 
     [CascadingParameter] private Task<AuthenticationState> AuthState { get; set; } = default!;
@@ -360,6 +385,7 @@
         {
             _roles = RoleService.DataSource.Where(r => r.TenantId == _selectedTenantId).ToList();
         }
+
         await _dataGrid.ReloadServerData();
     }
 
@@ -453,6 +479,7 @@
             {
                 await _userManager.AddToRolesAsync(user, model.AssignedRoles);
             }
+
             Snackbar.Add(Localizer["User updated successfully."], Severity.Info);
             await RefreshDataGrid();
             UserService.Refresh();
@@ -486,8 +513,10 @@
         await ShowUserDialog(model, Localizer["Create a new user"], CreateUserAsync);
     }
 
-    private async Task EditUser(ApplicationUserDto model) =>
+    private async Task EditUser(ApplicationUserDto model)
+    {
         await ShowUserDialog(model, Localizer["Edit the user"], UpdateUserAsync);
+    }
 
     private async Task ShowDeleteConfirmationAsync(ApplicationUserDto model, Func<Task> onConfirmed)
     {
@@ -503,6 +532,7 @@
             Snackbar.Add(Localizer["You cannot delete your own account!"], Severity.Error);
             return;
         }
+
         await ShowDeleteConfirmationAsync(model, async () =>
         {
             await ProcessUserDeletionAsync(model);
@@ -537,6 +567,7 @@
             Snackbar.Add(Localizer["You cannot delete your own account!"], Severity.Error);
             return;
         }
+
         var message = string.Format(ConstantString.DeleteConfirmation, _selectedUsers.Count);
         await DialogServiceHelper.ShowConfirmationDialogAsync(ConstantString.DeleteConfirmationTitle, message, DeleteSelectedUsersAsync);
     }
@@ -554,8 +585,10 @@
                 Snackbar.Add(string.Join(",", result.Errors.Select(e => e.Description)), Severity.Error);
                 return;
             }
+
             Logger.LogInformation("User deleted: {UserName} (ID: {UserId})", user.UserName, user.Id);
         }
+
         Snackbar.Add(ConstantString.DeleteSuccess, Severity.Info);
         await RefreshDataGrid();
         UserService.Refresh();
@@ -618,6 +651,7 @@
                 user.EmailConfirmed = true;
                 await _userManager.UpdateAsync(user);
             }
+
             Snackbar.Add(Localizer["Reset password successfully."], Severity.Info);
         }
         else
@@ -698,6 +732,7 @@
             {
                 await UpdateUserPermissionAsync(user, model);
             }
+
             Snackbar.Add(Localizer["Authorization has been changed."], Severity.Info);
             await ClearUserClaimsCacheAsync(user.Id);
         }
@@ -753,6 +788,7 @@
                     await _userManager.RemoveClaimAsync(user, existingClaim);
                 Snackbar.Add(Localizer["Permission removed successfully."], Severity.Info);
             }
+
             await ClearUserClaimsCacheAsync(user.Id);
         }
         finally
@@ -795,8 +831,9 @@
         }
     }
 
-    private async Task<byte[]> ExportUsersToExcelAsync(List<ApplicationUserDto> users) =>
-        await ExcelService.ExportAsync(users, new Dictionary<string, Func<ApplicationUserDto, object?>>
+    private async Task<byte[]> ExportUsersToExcelAsync(List<ApplicationUserDto> users)
+    {
+        return await ExcelService.ExportAsync(users, new Dictionary<string, Func<ApplicationUserDto, object?>>
         {
             { Localizer["Id"], item => item.Id },
             { Localizer["User Name"], item => item.UserName },
@@ -808,6 +845,7 @@
             { Localizer["Tenant Id"], item => item.TenantId },
             { Localizer["Superior Id"], item => item.SuperiorId }
         }, Localizer["Users"]);
+    }
 
     private async Task ImportDataAsync(IBrowserFile file)
     {
@@ -824,6 +862,7 @@
                     await ProcessImportedUsersAsync(importResult.Data);
                     await _dataGrid.ReloadServerData();
                 }
+
                 Snackbar.Add(ConstantString.ImportSuccess, Severity.Info);
             }
             else if (importResult?.Errors != null)
@@ -834,11 +873,15 @@
                 }
             }
         }
-        finally { _isUploading = false; }
+        finally
+        {
+            _isUploading = false;
+        }
     }
 
-    private async Task<IResult<IEnumerable<ApplicationUser>>> ImportUsersFromExcelAsync(MemoryStream stream) =>
-        await ExcelService.ImportAsync(stream.ToArray(), new Dictionary<string, Func<DataRow, ApplicationUser, object?>>
+    private async Task<IResult<IEnumerable<ApplicationUser>>> ImportUsersFromExcelAsync(MemoryStream stream)
+    {
+        return await ExcelService.ImportAsync(stream.ToArray(), new Dictionary<string, Func<DataRow, ApplicationUser, object?>>
         {
             { Localizer["User Name"], (row, item) => item.UserName = row[Localizer["User Name"]]?.ToString() },
             { Localizer["Full Name"], (row, item) => item.DisplayName = row[Localizer["Full Name"]]?.ToString() },
@@ -849,6 +892,7 @@
             { Localizer["Tenant Id"], (row, item) => item.TenantId = row[Localizer["Tenant Id"]]?.ToString() },
             { Localizer["Superior Id"], (row, item) => item.SuperiorId = row[Localizer["Superior Id"]]?.ToString() }
         }, Localizer["Users"]);
+    }
 
     private async Task ProcessImportedUsersAsync(IEnumerable<ApplicationUser> users)
     {
@@ -884,4 +928,5 @@
     }
 
     #endregion
+
 }

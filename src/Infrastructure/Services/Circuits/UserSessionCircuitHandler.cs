@@ -7,7 +7,7 @@ namespace CleanArchitecture.Blazor.Infrastructure.Services.Circuits;
 /// <summary>
 /// Handles user session tracking and online user tracking for Blazor server circuits.
 /// </summary>
-public class UserSessionCircuitHandler : CircuitHandler,IDisposable
+public class UserSessionCircuitHandler : CircuitHandler, IDisposable
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ICurrentUserContextSetter _currentUserContextSetter;
@@ -19,12 +19,14 @@ public class UserSessionCircuitHandler : CircuitHandler,IDisposable
     /// <param name="userSessionTracker">The user session tracker service.</param>
     /// <param name="onlineUserTracker">The online user tracker service.</param>
     /// <param name="httpContextAccessor">The HTTP context accessor.</param>
-    public UserSessionCircuitHandler(IServiceProvider serviceProvider, ICurrentUserContextSetter currentUserContextSetter, AuthenticationStateProvider authenticationStateProvider)
+    public UserSessionCircuitHandler(IServiceProvider serviceProvider,
+        ICurrentUserContextSetter currentUserContextSetter, AuthenticationStateProvider authenticationStateProvider)
     {
         _serviceProvider = serviceProvider;
         _currentUserContextSetter = currentUserContextSetter;
         _authenticationStateProvider = authenticationStateProvider;
     }
+
     public override Task OnCircuitOpenedAsync(Circuit circuit,
         CancellationToken cancellationToken)
     {
@@ -50,6 +52,7 @@ public class UserSessionCircuitHandler : CircuitHandler,IDisposable
             }
         }
     }
+
     /// <summary>
     /// Called when a new circuit connection is established.
     /// </summary>
@@ -62,14 +65,12 @@ public class UserSessionCircuitHandler : CircuitHandler,IDisposable
         _currentUserContextSetter.SetCurrentUser(state.User);
         var usersStateContainer = _serviceProvider.GetRequiredService<IUsersStateContainer>();
         var currentUserContextSetter = _serviceProvider.GetRequiredService<ICurrentUserContextSetter>();
-        if (state.User.Identity?.IsAuthenticated??false)
+        if (state.User.Identity?.IsAuthenticated ?? false)
         {
             var userId = state.User.GetUserId();
-            if (!string.IsNullOrEmpty(userId))
-            {
-                usersStateContainer.AddOrUpdate(circuit.Id, userId);
-            }
+            if (!string.IsNullOrEmpty(userId)) usersStateContainer.AddOrUpdate(circuit.Id, userId);
         }
+
         await base.OnConnectionUpAsync(circuit, cancellationToken);
     }
 
@@ -88,7 +89,8 @@ public class UserSessionCircuitHandler : CircuitHandler,IDisposable
         var currentUserContextSetter = _serviceProvider.GetRequiredService<ICurrentUserContextSetter>();
         if (currentUserAccessor.SessionInfo != null)
         {
-            await userSessionTracker.RemoveAllSessions(currentUserAccessor.SessionInfo.UserId??string.Empty, cancellationToken);
+            await userSessionTracker.RemoveAllSessions(currentUserAccessor.SessionInfo.UserId ?? string.Empty,
+                cancellationToken);
             await onlineUserTracker.Clear(currentUserAccessor.SessionInfo.UserId ?? string.Empty, cancellationToken);
             usersStateContainer.Remove(circuit.Id);
         }

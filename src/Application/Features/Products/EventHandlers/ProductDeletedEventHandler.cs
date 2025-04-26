@@ -8,7 +8,8 @@ public class ProductDeletedEventHandler(ILogger<ProductDeletedEventHandler> logg
 {
     public Task Handle(DeletedEvent<Product> notification, CancellationToken cancellationToken)
     {
-        logger.LogInformation("Handled domain event '{EventType}' with notification: {@Notification} ", notification.GetType().Name, notification);
+        logger.LogInformation("Handled domain event '{EventType}' with notification: {@Notification} ",
+            notification.GetType().Name, notification);
         return Task.CompletedTask;
     }
 }

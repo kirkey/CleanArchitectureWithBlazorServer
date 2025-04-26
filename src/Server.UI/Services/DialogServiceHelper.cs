@@ -45,13 +45,8 @@ public class DialogServiceHelper
         var dialog = await _dialogService.ShowAsync<DeleteConfirmation>(title, parameters, options);
         var result = await dialog.Result;
         if (result is not null && !result.Canceled)
-        {
             await onConfirm();
-        }
-        else if (onCancel != null)
-        {
-            await onCancel();
-        }
+        else if (onCancel != null) await onCancel();
     }
 
     /// <summary>
@@ -77,12 +72,7 @@ public class DialogServiceHelper
         var dialog = await _dialogService.ShowAsync<ConfirmationDialog>(title, parameters, options);
         var result = await dialog.Result;
         if (result is not null && !result.Canceled)
-        {
             await onConfirm();
-        }
-        else if (onCancel != null)
-        {
-            await onCancel();
-        }
+        else if (onCancel != null) await onCancel();
     }
 }

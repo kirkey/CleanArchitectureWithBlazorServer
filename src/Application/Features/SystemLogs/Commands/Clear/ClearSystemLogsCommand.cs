@@ -20,7 +20,7 @@ public class ClearSystemLogsCommandHandler(
 {
     public async Task<Result> Handle(ClearSystemLogsCommand request, CancellationToken cancellationToken)
     {
-        await context.SystemLogs.ExecuteDeleteAsync(cancellationToken: cancellationToken);
+        await context.SystemLogs.ExecuteDeleteAsync(cancellationToken);
         logger.LogInformation("Logs have been erased");
         return await Result.SuccessAsync();
     }

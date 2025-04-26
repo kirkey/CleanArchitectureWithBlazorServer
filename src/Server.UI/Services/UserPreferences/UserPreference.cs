@@ -7,8 +7,6 @@ using Color = System.Drawing.Color;
 
 namespace CleanArchitecture.Blazor.Server.UI.Services.UserPreferences;
 
-
-
 public class UserPreference
 {
     // List of available primary colors
@@ -32,10 +30,12 @@ public class UserPreference
         "#ff0080",
         "#666666"
     };
+
     /// <summary>
     /// Indicates whether the dark mode is enabled.
     /// </summary>
     public bool IsDarkMode { get; set; }
+
     /// <summary>
     /// Indicates whether the layout is right-to-left.
     /// </summary>
@@ -85,8 +85,8 @@ public class UserPreference
     /// Calculates the line height based on the default font size.
     /// </summary>
     public double LineHeight => 1.12 * Math.Pow(DefaultFontSize, 2)
-                              - 1.16 * DefaultFontSize
-                              + 1.5875;
+                                - 1.16 * DefaultFontSize
+                                + 1.5875;
 
     /// <summary>
     /// Calculates the letter spacing based on the default font size.
@@ -95,11 +95,11 @@ public class UserPreference
 
     // Heading font sizes (calculated using the default font size and the scale factor)
     public double H6FontSize => DefaultFontSize * 1.15385 * ScaleFactor; // ≈ 1.0rem
-    public double H5FontSize => DefaultFontSize * 1.297 * ScaleFactor;   // ≈ 1.125rem
-    public double H4FontSize => DefaultFontSize * 1.441 * ScaleFactor;   // ≈ 1.25rem
-    public double H3FontSize => DefaultFontSize * 1.73 * ScaleFactor;    // ≈ 1.5rem
-    public double H2FontSize => DefaultFontSize * 2.163 * ScaleFactor;   // ≈ 1.875rem
-    public double H1FontSize => DefaultFontSize * 2.594 * ScaleFactor;   // ≈ 2.25rem
+    public double H5FontSize => DefaultFontSize * 1.297 * ScaleFactor; // ≈ 1.125rem
+    public double H4FontSize => DefaultFontSize * 1.441 * ScaleFactor; // ≈ 1.25rem
+    public double H3FontSize => DefaultFontSize * 1.73 * ScaleFactor; // ≈ 1.5rem
+    public double H2FontSize => DefaultFontSize * 2.163 * ScaleFactor; // ≈ 1.875rem
+    public double H1FontSize => DefaultFontSize * 2.594 * ScaleFactor; // ≈ 2.25rem
 
     // Body text properties
     public double Body1FontSize => DefaultFontSize;
@@ -111,15 +111,17 @@ public class UserPreference
 
     // Button text properties
     public double ButtonFontSize => DefaultFontSize;
+
     public double ButtonLineHeight => 1.12 * Math.Pow(DefaultFontSize, 2)
-                             - 1.16 * DefaultFontSize
-                             + 1.9075;
+                                      - 1.16 * DefaultFontSize
+                                      + 1.9075;
 
     // Caption text properties
     public double CaptionFontSize => DefaultFontSize - 0.1875;
+
     public double CaptionLineHeight => 1.12 * Math.Pow(DefaultFontSize, 2)
-                             - 1.16 * DefaultFontSize
-                             + 1.9075;
+                                       - 1.16 * DefaultFontSize
+                                       + 1.9075;
 
     // Overline text properties
     public double OverlineFontSize => DefaultFontSize - 0.1875;
@@ -149,16 +151,16 @@ public class UserPreference
             throw new ArgumentException("Color code cannot be null or empty.", nameof(hexColor));
 
         // Parse the hex color using ColorTranslator
-        Color color = ColorTranslator.FromHtml(hexColor);
+        var color = ColorTranslator.FromHtml(hexColor);
 
         // Convert RGB to HSL
-        ColorToHsl(color, out double h, out double s, out double l);
+        ColorToHsl(color, out var h, out var s, out var l);
 
         // Adjust lightness
         l = Math.Clamp(l * factor, 0.0, 1.0);
 
         // Convert HSL back to Color
-        Color adjustedColor = HslToColor(h, s, l);
+        var adjustedColor = HslToColor(h, s, l);
 
         // Return the hex representation
         return ColorTranslator.ToHtml(adjustedColor);
@@ -174,12 +176,12 @@ public class UserPreference
     private void ColorToHsl(Color color, out double h, out double s, out double l)
     {
         // Normalize RGB values to the 0-1 range.
-        double r = color.R / 255.0;
-        double g = color.G / 255.0;
-        double b = color.B / 255.0;
+        var r = color.R / 255.0;
+        var g = color.G / 255.0;
+        var b = color.B / 255.0;
 
-        double max = Math.Max(r, Math.Max(g, b));
-        double min = Math.Min(r, Math.Min(g, b));
+        var max = Math.Max(r, Math.Max(g, b));
+        var min = Math.Min(r, Math.Min(g, b));
         l = (max + min) / 2.0;
 
         if (max == min)
@@ -189,7 +191,7 @@ public class UserPreference
         }
         else
         {
-            double delta = max - min;
+            var delta = max - min;
             s = l > 0.5 ? delta / (2.0 - max - min) : delta / (max + min);
 
             if (max == r)
@@ -231,8 +233,8 @@ public class UserPreference
                 return p;
             }
 
-            double q = l < 0.5 ? l * (1.0 + s) : l + s - l * s;
-            double p = 2.0 * l - q;
+            var q = l < 0.5 ? l * (1.0 + s) : l + s - l * s;
+            var p = 2.0 * l - q;
 
             r = HueToRgb(p, q, h + 1.0 / 3.0);
             g = HueToRgb(p, q, h);

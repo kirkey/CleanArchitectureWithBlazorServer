@@ -11,7 +11,7 @@ public class DataProtectionKeyConfiguration : IEntityTypeConfiguration<DataProte
     public void Configure(EntityTypeBuilder<DataProtectionKey> builder)
     {
         builder.ToTable("DataProtectionKeys");
-        
+
         builder.Property(x => x.Xml).HasMaxLength(4000);
     }
 }

@@ -28,6 +28,7 @@ public class CacheInvalidationBehaviour<TRequest, TResponse>(
             await cache.RemoveByTagAsync(tag, token: cancellationToken);
             logger.LogTrace("Cache tag {CacheTag} removed from cache", tag);
         }
+
         return response;
     }
 }

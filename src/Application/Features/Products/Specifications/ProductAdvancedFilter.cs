@@ -7,6 +7,7 @@ public class ProductAdvancedFilter : PaginationFilter
     public string? Unit { get; set; }
     public decimal? MaxPrice { get; set; }
     public decimal? MinPrice { get; set; }
+
     public ProductListView ListView { get; set; } =
         ProductListView.All; //<-- When the user selects a different ListView,
 

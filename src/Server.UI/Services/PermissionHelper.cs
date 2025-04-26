@@ -8,10 +8,9 @@ using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 using ZiggyCreatures.Caching.Fusion;
 using CleanArchitecture.Blazor.Application.Common.ExceptionHandlers;
- 
+
 
 namespace CleanArchitecture.Blazor.Server.UI.Services;
-
 
 /// <summary>
 /// Helper class for managing permissions.
@@ -52,19 +51,22 @@ public class PermissionHelper
 
         foreach (var module in modules)
         {
-            var moduleName = module.GetCustomAttributes<DisplayNameAttribute>().FirstOrDefault()?.DisplayName ?? string.Empty;
-            var moduleDescription = module.GetCustomAttributes<DescriptionAttribute>().FirstOrDefault()?.Description ?? string.Empty;
+            var moduleName = module.GetCustomAttributes<DisplayNameAttribute>().FirstOrDefault()?.DisplayName ??
+                             string.Empty;
+            var moduleDescription = module.GetCustomAttributes<DescriptionAttribute>().FirstOrDefault()?.Description ??
+                                    string.Empty;
             var fields = module.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
 
             allPermissions = allPermissions.Concat(fields.Select(field =>
             {
                 var claimValue = field.GetValue(null)?.ToString();
                 // Convert field name from PascalCase/CamelCase to space-separated words with first letter capitalized
-                var name = System.Text.RegularExpressions.Regex.Replace(field.Name, "(\\B[A-Z])", " $1").Trim().ToLower();
+                var name = System.Text.RegularExpressions.Regex.Replace(field.Name, "(\\B[A-Z])", " $1").Trim()
+                    .ToLower();
                 name = char.ToUpper(name[0]) + name.Substring(1); // Capitalize the first letter
                 var helpText = inheritClaims.Any(x => x.Value.Equals(claimValue))
-                ? "This permission is inherited and cannot be modified."
-                : field.GetCustomAttributes<DescriptionAttribute>().FirstOrDefault()?.Description ?? string.Empty;
+                    ? "This permission is inherited and cannot be modified."
+                    : field.GetCustomAttributes<DescriptionAttribute>().FirstOrDefault()?.Description ?? string.Empty;
 
 
                 return new PermissionModel
@@ -78,7 +80,6 @@ public class PermissionHelper
                     Description = moduleDescription,
                     Assigned = combinedClaims.Any(x => x.Value.Equals(claimValue)),
                     IsInherit = inheritClaims.Any(x => x.Value.Equals(claimValue))
-
                 };
             }).Where(pm => !string.IsNullOrEmpty(pm.ClaimValue))).ToList();
         }
@@ -92,17 +93,19 @@ public class PermissionHelper
         return await _fusionCache.GetOrSetAsync(key, async _ =>
         {
             var user = await _userManager.FindByIdAsync(userId).ConfigureAwait(false)
-                                    ?? throw new NotFoundException($"not found application user: {userId}");
+                       ?? throw new NotFoundException($"not found application user: {userId}");
             var roles = (await _userManager.GetRolesAsync(user)).ToArray();
             var inheritClaims = new List<Claim>();
             if (roles is not null && roles.Any())
             {
-                var assigendRoles = await _roleManager.Roles.Where(x => roles.Contains(x.Name) && x.TenantId == user.TenantId).ToListAsync();
+                var assigendRoles = await _roleManager.Roles
+                    .Where(x => roles.Contains(x.Name) && x.TenantId == user.TenantId).ToListAsync();
                 foreach (var role in assigendRoles)
                 {
                     var claims = await _roleManager.GetClaimsAsync(role).ConfigureAwait(false);
                     inheritClaims.AddRange(claims);
                 }
+
                 inheritClaims = inheritClaims.Distinct(new ClaimComparer()).ToList();
             }
 
@@ -124,7 +127,6 @@ public class PermissionHelper
                        ?? throw new NotFoundException($"not found application user: {userId}");
             var userClaims = await _userManager.GetClaimsAsync(user).ConfigureAwait(false);
             return userClaims;
-
         }, _refreshInterval).ConfigureAwait(false);
     }
 
@@ -141,17 +143,21 @@ public class PermissionHelper
 
         foreach (var module in modules)
         {
-            var moduleName = module.GetCustomAttributes<DisplayNameAttribute>().FirstOrDefault()?.DisplayName ?? string.Empty;
-            var moduleDescription = module.GetCustomAttributes<DescriptionAttribute>().FirstOrDefault()?.Description ?? string.Empty;
+            var moduleName = module.GetCustomAttributes<DisplayNameAttribute>().FirstOrDefault()?.DisplayName ??
+                             string.Empty;
+            var moduleDescription = module.GetCustomAttributes<DescriptionAttribute>().FirstOrDefault()?.Description ??
+                                    string.Empty;
             var fields = module.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
 
             allPermissions = allPermissions.Concat(fields.Select(field =>
             {
                 var claimValue = field.GetValue(null)?.ToString();
                 // Convert field name from PascalCase/CamelCase to space-separated words with first letter capitalized
-                var name = System.Text.RegularExpressions.Regex.Replace(field.Name, "(\\B[A-Z])", " $1").Trim().ToLower();
+                var name = System.Text.RegularExpressions.Regex.Replace(field.Name, "(\\B[A-Z])", " $1").Trim()
+                    .ToLower();
                 name = char.ToUpper(name[0]) + name.Substring(1); // Capitalize the first letter
-                var helpText = field.GetCustomAttributes<DescriptionAttribute>().FirstOrDefault()?.Description ?? string.Empty; // Get the description attribute
+                var helpText = field.GetCustomAttributes<DescriptionAttribute>().FirstOrDefault()?.Description ??
+                               string.Empty; // Get the description attribute
 
                 return new PermissionModel
                 {

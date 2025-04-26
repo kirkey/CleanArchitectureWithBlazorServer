@@ -30,7 +30,8 @@ public class LogsQueryHandler(
         CancellationToken cancellationToken)
     {
         var data = await context.SystemLogs.OrderBy($"{request.OrderBy} {request.SortDirection}")
-            .ProjectToPaginatedDataAsync<SystemLog, SystemLogDto>(request.Specification, request.PageNumber, request.PageSize,
+            .ProjectToPaginatedDataAsync<SystemLog, SystemLogDto>(request.Specification, request.PageNumber,
+                request.PageSize,
                 mapper.ConfigurationProvider, cancellationToken);
         return data;
     }

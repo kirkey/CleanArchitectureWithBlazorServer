@@ -18,6 +18,7 @@ public class ApplicationRole : IdentityRole, IAuditableEntity
         RoleClaims = new HashSet<ApplicationRoleClaim>();
         UserRoles = new HashSet<ApplicationUserRole>();
     }
+
     public string? TenantId { get; set; }
     public virtual Tenant? Tenant { get; set; }
     public string? Description { get; set; }
