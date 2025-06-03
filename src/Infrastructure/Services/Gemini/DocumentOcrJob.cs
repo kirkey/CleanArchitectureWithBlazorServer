@@ -51,7 +51,7 @@ public class DocumentOcrJob : IDocumentOcrJob
                 await _notificationService.JobStarted(id, doc.Title!);
                 CancelCacheToken();
 
-                if (string.IsNullOrEmpty(doc.URL))
+                if (string.IsNullOrEmpty(doc.Url))
                 {
                     _logger.LogWarning("Document URL is null or empty for Id {Id}.", id);
                     return;
@@ -61,7 +61,7 @@ public class DocumentOcrJob : IDocumentOcrJob
                 string? mimeType;
                 using (var imgClient = new HttpClient())
                 {
-                    var imgResponse = await imgClient.GetAsync(doc.URL, cancellationToken);
+                    var imgResponse = await imgClient.GetAsync(doc.Url, cancellationToken);
                     imgResponse.EnsureSuccessStatusCode();
 
                     imageBytes = await imgResponse.Content.ReadAsByteArrayAsync();
