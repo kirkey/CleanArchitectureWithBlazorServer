@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   blazorserverapp:
-    image: blazordevlab/cleanarchitectureblazorserver:1.2.11
+    image: blazordevlab/cleanarchitectureblazorserver:1.2.17
     environment:
       - UseInMemoryDatabase=${USE_IN_MEMORY_DATABASE}
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
@@ -12,6 +12,7 @@ services:
       - AppConfigurationSettings__AppName=${APP_NAME}
       - DatabaseSettings__DBProvider=${DB_PROVIDER}
       - DatabaseSettings__ConnectionString=${DB_CONNECTION_STRING}
+      - AI__GEMINI_API_KEY=${GEMINI_API_KEY}
       - SmtpClientOptions__User=${SMTP_USER}
       - SmtpClientOptions__Port=${SMTP_PORT}
       - SmtpClientOptions__Server=${SMTP_SERVER}

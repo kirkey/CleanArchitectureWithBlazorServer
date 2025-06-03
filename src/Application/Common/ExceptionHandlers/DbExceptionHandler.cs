@@ -2,8 +2,10 @@
 
 namespace CleanArchitecture.Blazor.Application.Common.ExceptionHandlers;
 
-public class
-    DbExceptionHandler<TRequest, TResponse, TException> : IRequestExceptionHandler<TRequest, TResponse, TException>
+/// <summary>
+/// Handles database update exceptions and converts them into Result or Result&lt;T&gt; responses.
+/// </summary>
+public class DbExceptionHandler<TRequest, TResponse, TException> : IRequestExceptionHandler<TRequest, TResponse, TException>
     where TRequest : IRequest<Result>
     where TResponse : Result
     where TException : DbUpdateException
@@ -20,10 +22,36 @@ public class
     public Task Handle(TRequest request, TException exception, RequestExceptionHandlerState<TResponse> state,
         CancellationToken cancellationToken)
     {
-        state.SetHandled((TResponse)Result.Failure(GetErrors(exception)));
+        var errors = GetErrors(exception);
+
+        // If TResponse is a generic Result<T>, create the failure result dynamically.
+        if (typeof(TResponse).IsGenericType && typeof(TResponse).GetGenericTypeDefinition() == typeof(Result<>))
+        {
+            var valueType = typeof(TResponse).GetGenericArguments()[0];
+            var failureMethod = typeof(Result<>).MakeGenericType(valueType).GetMethod("Failure", new[] { typeof(string[]) });
+            if (failureMethod is null)
+            {
+                throw new InvalidOperationException("Could not find the 'Failure' method on Result<>.");
+            }
+            var resultObj = failureMethod.Invoke(null, new object[] { errors });
+            if (resultObj is null)
+            {
+                throw new InvalidOperationException("The 'Failure' method returned null.");
+            }
+            var result = (TResponse)resultObj;
+            state.SetHandled(result);
+        }
+        else
+        {
+            // For non-generic Result
+            state.SetHandled((TResponse)(object)Result.Failure(errors));
+        }
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Maps specific database exceptions to user-friendly error messages.
+    /// </summary>
     private string[] GetErrors(DbUpdateException exception)
     {
         return exception switch
@@ -39,9 +67,7 @@ public class
 
     private string[] GetUniqueConstraintExceptionErrors(UniqueConstraintException exception)
     {
-        var tableName = string.IsNullOrWhiteSpace(exception.SchemaQualifiedTableName)
-            ? "unknown table"
-            : exception.SchemaQualifiedTableName;
+        var tableName = string.IsNullOrWhiteSpace(exception.SchemaQualifiedTableName) ? "unknown table" : exception.SchemaQualifiedTableName;
         var properties = exception.ConstraintProperties != null && exception.ConstraintProperties.Any()
             ? string.Join(", ", exception.ConstraintProperties)
             : "unknown properties";
@@ -73,15 +99,13 @@ public class
     {
         return new[]
         {
-            "A number you entered is too large or too small. Please enter a number within the allowed range."
+           "A number you entered is too large or too small. Please enter a number within the allowed range."
         };
     }
 
     private string[] GetReferenceConstraintExceptionErrors(ReferenceConstraintException exception)
     {
-        var tableName = string.IsNullOrWhiteSpace(exception.SchemaQualifiedTableName)
-            ? "unknown table"
-            : exception.SchemaQualifiedTableName;
+        var tableName = string.IsNullOrWhiteSpace(exception.SchemaQualifiedTableName) ? "unknown table" : exception.SchemaQualifiedTableName;
         return new[]
         {
             $"The operation failed because this record is linked to other records in {tableName}. " +
