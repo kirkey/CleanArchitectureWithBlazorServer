@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AssemblyName>CleanArchitecture.Blazor.Migrators.MySQL</AssemblyName>
+        <RootNamespace>CleanArchitecture.Blazor.Migrators.MySQL</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Folder Include="Migrations\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\src\Application\Application.csproj" />
+      <ProjectReference Include="..\src\Domain\Domain.csproj" />
+      <ProjectReference Include="..\src\Infrastructure\Infrastructure.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="9.0.0-rc.1.efcore.9.0.0" />
+    </ItemGroup>
+
+</Project>
