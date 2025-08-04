@@ -3,21 +3,15 @@ using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 
 namespace CleanArchitecture.Blazor.Server.UI.Services.Notifications;
 
-public class InMemoryNotificationService : INotificationService
+public class InMemoryNotificationService(
+    ProtectedLocalStorage localStorageService,
+    ILogger<InMemoryNotificationService> logger)
+    : INotificationService
 {
     private const string LocalStorageKey = "__notficationTimestamp";
-    private readonly ProtectedLocalStorage _localStorageService;
-    private readonly ILogger<InMemoryNotificationService> _logger;
+    private readonly ILogger<InMemoryNotificationService> _logger = logger;
 
-    private readonly List<NotificationMessage> _messages;
-
-    public InMemoryNotificationService(ProtectedLocalStorage localStorageService,
-        ILogger<InMemoryNotificationService> logger)
-    {
-        _localStorageService = localStorageService;
-        _logger = logger;
-        _messages = new List<NotificationMessage>();
-    }
+    private readonly List<NotificationMessage> _messages = new();
 
     public async Task<bool> AreNewNotificationsAvailable()
     {
@@ -29,7 +23,7 @@ public class InMemoryNotificationService : INotificationService
 
     public async Task MarkNotificationsAsRead()
     {
-        await _localStorageService.SetAsync(LocalStorageKey, DateTime.UtcNow.Date).ConfigureAwait(false);
+        await localStorageService.SetAsync(LocalStorageKey, DateTime.UtcNow.Date).ConfigureAwait(false);
     }
 
     public async Task MarkNotificationsAsRead(string id)
@@ -37,8 +31,8 @@ public class InMemoryNotificationService : INotificationService
         var message = await GetMessageById(id).ConfigureAwait(false);
         if (message == null) return;
 
-        var timestamp = await _localStorageService.GetAsync<DateTime>(LocalStorageKey).ConfigureAwait(false);
-        if (timestamp.Success) await _localStorageService.SetAsync(LocalStorageKey, message.PublishDate).ConfigureAwait(false);
+        var timestamp = await localStorageService.GetAsync<DateTime>(LocalStorageKey).ConfigureAwait(false);
+        if (timestamp.Success) await localStorageService.SetAsync(LocalStorageKey, message.PublishDate).ConfigureAwait(false);
     }
 
     public Task<NotificationMessage> GetMessageById(string id)
@@ -63,15 +57,15 @@ public class InMemoryNotificationService : INotificationService
     {
         try
         {
-            if ((await _localStorageService.GetAsync<DateTime>(LocalStorageKey)).Success == false)
+            if ((await localStorageService.GetAsync<DateTime>(LocalStorageKey)).Success == false)
                 return DateTime.MinValue;
 
-            var timestamp = await _localStorageService.GetAsync<DateTime>(LocalStorageKey).ConfigureAwait(false);
+            var timestamp = await localStorageService.GetAsync<DateTime>(LocalStorageKey).ConfigureAwait(false);
             return timestamp.Value;
         }
         catch (CryptographicException)
         {
-            await _localStorageService.DeleteAsync(LocalStorageKey).ConfigureAwait(false);
+            await localStorageService.DeleteAsync(LocalStorageKey).ConfigureAwait(false);
             return DateTime.MinValue;
         }
     }

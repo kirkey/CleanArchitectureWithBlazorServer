@@ -390,7 +390,7 @@
             SortDirection = _productsGrid.SortDefinitions.Values.FirstOrDefault()?.Descending ?? false
                                 ? SortDirection.Descending.ToString()
                                 : SortDirection.Ascending.ToString(),
-            ExportType = ExportType.PDF
+            ExportType = ExportType.Pdf
         };
         var result = await Mediator.Send(request);
         if (result.Succeeded)

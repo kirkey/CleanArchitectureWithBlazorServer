@@ -5,32 +5,19 @@ using CleanArchitecture.Blazor.Application.Features.Documents.Caching;
 
 namespace CleanArchitecture.Blazor.Application.Features.Documents.Commands.Delete;
 
-public class DeleteDocumentCommand : ICacheInvalidatorRequest<Result>
+public class DeleteDocumentCommand(int[] id) : ICacheInvalidatorRequest<Result>
 {
-    public DeleteDocumentCommand(int[] id)
-    {
-        Id = id;
-    }
-
-    public int[] Id { get; set; }
+    public int[] Id { get; set; } = id;
     public IEnumerable<string>? Tags => DocumentCacheKey.Tags;
 }
 
-public class DeleteDocumentCommandHandler : IRequestHandler<DeleteDocumentCommand, Result>
+public class DeleteDocumentCommandHandler(IApplicationDbContextFactory dbContextFactory)
+    : IRequestHandler<DeleteDocumentCommand, Result>
 
 {
-    private readonly IApplicationDbContextFactory _dbContextFactory;
-
-    public DeleteDocumentCommandHandler(
-        IApplicationDbContextFactory dbContextFactory
-    )
-    {
-        _dbContextFactory = dbContextFactory;
-    }
-
     public async Task<Result> Handle(DeleteDocumentCommand request, CancellationToken cancellationToken)
     {
-        await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
+        await using var db = await dbContextFactory.CreateAsync(cancellationToken);
         var items = await db.Documents.Where(x => request.Id.Contains(x.Id)).ToListAsync(cancellationToken);
         foreach (var item in items)
         {

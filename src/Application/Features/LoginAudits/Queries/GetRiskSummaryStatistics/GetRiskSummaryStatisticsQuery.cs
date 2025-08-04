@@ -13,19 +13,12 @@ public class GetRiskSummaryStatisticsQuery : ICacheableRequest<RiskSummaryStatis
     public IEnumerable<string>? Tags => new[] { "userloginrisksummary", "statistics" };
 }
 
-public class GetRiskSummaryStatisticsQueryHandler : IRequestHandler<GetRiskSummaryStatisticsQuery, RiskSummaryStatisticsDto>
+public class GetRiskSummaryStatisticsQueryHandler(IApplicationDbContextFactory dbContextFactory)
+    : IRequestHandler<GetRiskSummaryStatisticsQuery, RiskSummaryStatisticsDto>
 {
-
-    private readonly IApplicationDbContextFactory _dbContextFactory;
-
-    public GetRiskSummaryStatisticsQueryHandler(IApplicationDbContextFactory dbContextFactory)
-    {
-        _dbContextFactory = dbContextFactory;
-    }
-
     public async Task<RiskSummaryStatisticsDto> Handle(GetRiskSummaryStatisticsQuery request, CancellationToken cancellationToken)
     {
-        await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
+        await using var db = await dbContextFactory.CreateAsync(cancellationToken);
         var summaries = await db.UserLoginRiskSummaries
             .AsNoTracking()
             .ToListAsync(cancellationToken);

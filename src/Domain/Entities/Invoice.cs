@@ -7,7 +7,7 @@ namespace CleanArchitecture.Blazor.Domain.Entities;
 
 public class Invoice : BaseUlidAuditableEntity
 {
-    public string? CustomerID { get; set; }
+    public string? CustomerId { get; set; }
     public DateTime InvoiceDate { get; set; } = DateTime.Now;
     public DateTime DueDate { get; set; }
     public decimal TotalAmount { get; set; }

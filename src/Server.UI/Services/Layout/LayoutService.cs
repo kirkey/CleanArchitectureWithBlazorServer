@@ -3,17 +3,11 @@ using CleanArchitecture.Blazor.Server.UI.Services.UserPreferences;
 
 namespace CleanArchitecture.Blazor.Server.UI.Services.Layout;
 
-public class LayoutService
+public class LayoutService(IUserPreferencesService userPreferencesService)
 {
-    private readonly IUserPreferencesService _userPreferencesService;
     private bool _systemPreferences;
 
     public DarkLightMode DarkModeToggle { get; private set; } = DarkLightMode.System;
-
-    public LayoutService(IUserPreferencesService userPreferencesService)
-    {
-        _userPreferencesService = userPreferencesService;
-    }
 
     public UserPreferences.UserPreference UserPreferences { get; private set; } = new();
     public bool IsRTL { get; private set; }
@@ -34,7 +28,7 @@ public class LayoutService
     /// </summary>
     public async Task ApplyUserPreferences(bool isDarkModeDefaultTheme)
     {
-        UserPreferences = await _userPreferencesService.LoadUserPreferences().ConfigureAwait(false);
+        UserPreferences = await userPreferencesService.LoadUserPreferences().ConfigureAwait(false);
         UpdateLayoutSettings(isDarkModeDefaultTheme);
         UpdateCurrentTheme();
     }
@@ -47,7 +41,7 @@ public class LayoutService
         UserPreferences = preferences;
         UpdateLayoutSettings(_systemPreferences);
         UpdateCurrentTheme();
-        await _userPreferencesService.SaveUserPreferences(UserPreferences).ConfigureAwait(false);
+        await userPreferencesService.SaveUserPreferences(UserPreferences).ConfigureAwait(false);
         await OnMajorUpdateOccurred();
     }
 
@@ -184,7 +178,7 @@ public class LayoutService
                 break;
         }
         UserPreferences.DarkLightTheme = DarkModeToggle;
-        await _userPreferencesService.SaveUserPreferences(UserPreferences).ConfigureAwait(false);
+        await userPreferencesService.SaveUserPreferences(UserPreferences).ConfigureAwait(false);
         await  OnMajorUpdateOccurred();
     }
 
@@ -196,7 +190,7 @@ public class LayoutService
     {
         IsRTL = !IsRTL;
         UserPreferences.RightToLeft = IsRTL;
-        await _userPreferencesService.SaveUserPreferences(UserPreferences).ConfigureAwait(false);
+        await userPreferencesService.SaveUserPreferences(UserPreferences).ConfigureAwait(false);
         await  OnMajorUpdateOccurred();
     }
 
@@ -235,7 +229,7 @@ public class LayoutService
         CurrentTheme.PaletteLight.Secondary = color;
         CurrentTheme.PaletteDark.Secondary = color;
         UserPreferences.SecondaryColor = color;
-        await _userPreferencesService.SaveUserPreferences(UserPreferences).ConfigureAwait(false);
+        await userPreferencesService.SaveUserPreferences(UserPreferences).ConfigureAwait(false);
         await OnMajorUpdateOccurred();
     }
 
@@ -246,7 +240,7 @@ public class LayoutService
     {
         CurrentTheme.LayoutProperties.DefaultBorderRadius = size + "px";
         UserPreferences.BorderRadius = size;
-        await _userPreferencesService.SaveUserPreferences(UserPreferences).ConfigureAwait(false);
+        await userPreferencesService.SaveUserPreferences(UserPreferences).ConfigureAwait(false);
        await  OnMajorUpdateOccurred();
     }
 

@@ -5,37 +5,24 @@ using CleanArchitecture.Blazor.Application.Features.Documents.Caching;
 
 namespace CleanArchitecture.Blazor.Application.Features.Documents.Queries.GetFileStream;
 
-public class GetFileStreamQuery : ICacheableRequest<(string, byte[])>
+public class GetFileStreamQuery(int id) : ICacheableRequest<(string, byte[])>
 {
-    public GetFileStreamQuery(int id)
-    {
-        Id = id;
-    }
-    public int Id { get; set; }
+    public int Id { get; set; } = id;
     public string CacheKey => DocumentCacheKey.GetStreamByIdKey(Id);
     public IEnumerable<string>? Tags => DocumentCacheKey.Tags;
 }
 
-public class GetFileStreamQueryHandler : IRequestHandler<GetFileStreamQuery, (string, byte[])>
+public class GetFileStreamQueryHandler(IApplicationDbContextFactory dbContextFactory)
+    : IRequestHandler<GetFileStreamQuery, (string, byte[])>
 {
-    private readonly IApplicationDbContextFactory _dbContextFactory;
-
-
-    public GetFileStreamQueryHandler(
-        IApplicationDbContextFactory dbContextFactory
-    )
-    {
-        _dbContextFactory = dbContextFactory;
-    }
-
     public async Task<(string, byte[])> Handle(GetFileStreamQuery request, CancellationToken cancellationToken)
     {
-        await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
+        await using var db = await dbContextFactory.CreateAsync(cancellationToken);
         var item = await db.Documents.FindAsync(new object?[] { request.Id }, cancellationToken);
         if (item is null) throw new Exception($"not found document entry by Id:{request.Id}.");
-        if (string.IsNullOrEmpty(item.URL)) return (string.Empty, Array.Empty<byte>());
+        if (string.IsNullOrEmpty(item.Url)) return (string.Empty, Array.Empty<byte>());
 
-        var filepath = Path.Combine(Directory.GetCurrentDirectory(), item.URL);
+        var filepath = Path.Combine(Directory.GetCurrentDirectory(), item.Url);
         if (!File.Exists(filepath)) return (string.Empty, Array.Empty<byte>());
 
         var fileName = new FileInfo(filepath).Name;

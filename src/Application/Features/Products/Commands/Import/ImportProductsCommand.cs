@@ -7,16 +7,10 @@ using CleanArchitecture.Blazor.Application.Features.Products.DTOs;
 
 namespace CleanArchitecture.Blazor.Application.Features.Products.Commands.Import;
 
-public class ImportProductsCommand : ICacheInvalidatorRequest<Result<int>>
+public class ImportProductsCommand(string fileName, byte[] data) : ICacheInvalidatorRequest<Result<int>>
 {
-    public ImportProductsCommand(string fileName, byte[] data)
-    {
-        FileName = fileName;
-        Data = data;
-    }
-
-    public string FileName { get; }
-    public byte[] Data { get; }
+    public string FileName { get; } = fileName;
+    public byte[] Data { get; } = data;
     public string CacheKey => ProductCacheKey.GetAllCacheKey;
     public IEnumerable<string>? Tags => ProductCacheKey.Tags;
 }
@@ -25,72 +19,59 @@ public record CreateProductsTemplateCommand : IRequest<Result<byte[]>>
 {
 }
 
-public class ImportProductsCommandHandler :
-    IRequestHandler<CreateProductsTemplateCommand, Result<byte[]>>,
-    IRequestHandler<ImportProductsCommand, Result<int>>
+public class ImportProductsCommandHandler(
+    IApplicationDbContextFactory dbContextFactory,
+    IMapper mapper,
+    IExcelService excelService,
+    IStringLocalizer<ImportProductsCommandHandler> localizer)
+    :
+        IRequestHandler<CreateProductsTemplateCommand, Result<byte[]>>,
+        IRequestHandler<ImportProductsCommand, Result<int>>
 {
-    private readonly IApplicationDbContextFactory _dbContextFactory;
-    private readonly IMapper _mapper;
-    private readonly IExcelService _excelService;
-    private readonly IStringLocalizer<ImportProductsCommandHandler> _localizer;
-
-    public ImportProductsCommandHandler(
-        IApplicationDbContextFactory dbContextFactory,
-        IMapper mapper,
-        IExcelService excelService,
-        IStringLocalizer<ImportProductsCommandHandler> localizer
-    )
-    {
-        _dbContextFactory = dbContextFactory;
-        _localizer = localizer;
-        _excelService = excelService;
-        _mapper = mapper;
-    }
-
     public async Task<Result<byte[]>> Handle(CreateProductsTemplateCommand request, CancellationToken cancellationToken)
     {
         var fields = new string[]
         {
-            _localizer["Brand Name"],
-            _localizer["Product Name"],
-            _localizer["Description"],
-            _localizer["Unit"],
-            _localizer["Price of unit"],
-            _localizer["Pictures"]
+            localizer["Brand Name"],
+            localizer["Product Name"],
+            localizer["Description"],
+            localizer["Unit"],
+            localizer["Price of unit"],
+            localizer["Pictures"]
         };
-        var result = await _excelService.CreateTemplateAsync(fields, _localizer["Products"]);
+        var result = await excelService.CreateTemplateAsync(fields, localizer["Products"]);
         return await Result<byte[]>.SuccessAsync(result);
     }
 #nullable disable warnings
     public async Task<Result<int>> Handle(ImportProductsCommand request, CancellationToken cancellationToken)
     {
-        await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
-        var result = await _excelService.ImportAsync(request.Data,
+        await using var db = await dbContextFactory.CreateAsync(cancellationToken);
+        var result = await excelService.ImportAsync(request.Data,
             new Dictionary<string, Func<DataRow, ProductDto, object?>>
             {
-                { _localizer["Brand Name"], (row, item) => item.Brand = row[_localizer["Brand Name"]].ToString() },
-                { _localizer["Product Name"], (row, item) => item.Name = row[_localizer["Product Name"]].ToString() },
+                { localizer["Brand Name"], (row, item) => item.Brand = row[localizer["Brand Name"]].ToString() },
+                { localizer["Product Name"], (row, item) => item.Name = row[localizer["Product Name"]].ToString() },
                 {
-                    _localizer["Description"],
-                    (row, item) => item.Description = row[_localizer["Description"]].ToString()
+                    localizer["Description"],
+                    (row, item) => item.Description = row[localizer["Description"]].ToString()
                 },
-                { _localizer["Unit"], (row, item) => item.Unit = row[_localizer["Unit"]].ToString() },
+                { localizer["Unit"], (row, item) => item.Unit = row[localizer["Unit"]].ToString() },
                 {
-                    _localizer["Price of unit"],
-                    (row, item) => item.Price = row.FieldDecimalOrDefault(_localizer["Price of unit"])
+                    localizer["Price of unit"],
+                    (row, item) => item.Price = row.FieldDecimalOrDefault(localizer["Price of unit"])
                 },
                 {
-                    _localizer["Pictures"],
-                    (row, item) => item.Pictures = string.IsNullOrEmpty(row[_localizer["Pictures"]].ToString())
+                    localizer["Pictures"],
+                    (row, item) => item.Pictures = string.IsNullOrEmpty(row[localizer["Pictures"]].ToString())
                         ? new List<ProductImage>()
-                        : JsonSerializer.Deserialize<List<ProductImage>>(row[_localizer["Pictures"]].ToString())
+                        : JsonSerializer.Deserialize<List<ProductImage>>(row[localizer["Pictures"]].ToString())
                 }
-            }, _localizer["Products"]);
+            }, localizer["Products"]);
         if (!result.Succeeded) return await Result<int>.FailureAsync(result.Errors);
         {
             foreach (var dto in result.Data!)
             {
-                var item = _mapper.Map<Product>(dto);
+                var item = mapper.Map<Product>(dto);
                 await db.Products.AddAsync(item, cancellationToken);
             }
 

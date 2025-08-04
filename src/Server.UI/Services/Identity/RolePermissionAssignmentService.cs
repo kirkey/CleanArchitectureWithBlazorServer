@@ -10,40 +10,31 @@ using ZiggyCreatures.Caching.Fusion;
 namespace CleanArchitecture.Blazor.Server.UI.Services.Identity;
 
 /// <inheritdoc />
-public class RolePermissionAssignmentService : IPermissionAssignmentService
+public class RolePermissionAssignmentService(
+    RoleManager<ApplicationRole> roleManager,
+    IPermissionHelper permissionHelper,
+    IFusionCache cache,
+    ILogger<RolePermissionAssignmentService> logger)
+    : IPermissionAssignmentService
 {
-    private readonly RoleManager<ApplicationRole> _roleManager;
-    private readonly IPermissionHelper _permissionHelper;
-    private readonly IFusionCache _cache;
-    private readonly ILogger<RolePermissionAssignmentService> _logger;
+    private readonly ILogger<RolePermissionAssignmentService> _logger = logger;
     private const string CacheKeyPrefix = "get-claims-by-";
-
-    public RolePermissionAssignmentService(RoleManager<ApplicationRole> roleManager,
-        IPermissionHelper permissionHelper,
-        IFusionCache cache,
-        ILogger<RolePermissionAssignmentService> logger)
-    {
-        _roleManager = roleManager;
-        _permissionHelper = permissionHelper;
-        _cache = cache;
-        _logger = logger;
-    }
 
     public async Task<IList<PermissionModel>> LoadAsync(string entityId)
     {
-        return await _permissionHelper.GetAllPermissionsByRoleId(entityId);
+        return await permissionHelper.GetAllPermissionsByRoleId(entityId);
     }
 
     public async Task AssignAsync(PermissionModel model)
     {
         var roleId = model.RoleId ?? throw new ArgumentNullException(nameof(model.RoleId));
-        var role = await _roleManager.FindByIdAsync(roleId) ??
+        var role = await roleManager.FindByIdAsync(roleId) ??
                    throw new NotFoundException($"Role not found: {roleId}");
         var claim = new Claim(model.ClaimType, model.ClaimValue);
         if (model.Assigned)
-            await _roleManager.AddClaimAsync(role, claim);
+            await roleManager.AddClaimAsync(role, claim);
         else
-            await _roleManager.RemoveClaimAsync(role, claim);
+            await roleManager.RemoveClaimAsync(role, claim);
         InvalidateCache(roleId);
     }
 
@@ -52,21 +43,21 @@ public class RolePermissionAssignmentService : IPermissionAssignmentService
         var list = models.ToList();
         if (!list.Any()) return;
         var roleId = list.First().RoleId ?? string.Empty;
-        var role = await _roleManager.FindByIdAsync(roleId) ??
+        var role = await roleManager.FindByIdAsync(roleId) ??
                    throw new NotFoundException($"Role not found: {roleId}");
         foreach (var model in list)
         {
             var claim = new Claim(model.ClaimType, model.ClaimValue);
             if (model.Assigned)
-                await _roleManager.AddClaimAsync(role, claim);
+                await roleManager.AddClaimAsync(role, claim);
             else
-                await _roleManager.RemoveClaimAsync(role, claim);
+                await roleManager.RemoveClaimAsync(role, claim);
         }
         InvalidateCache(roleId);
     }
 
     private void InvalidateCache(string roleId)
     {
-        _cache.Remove($"{CacheKeyPrefix}{roleId}");
+        cache.Remove($"{CacheKeyPrefix}{roleId}");
     }
 } 

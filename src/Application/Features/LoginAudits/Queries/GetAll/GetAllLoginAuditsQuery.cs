@@ -12,26 +12,18 @@ public class GetAllLoginAuditsQuery : ICacheableRequest<IEnumerable<LoginAuditDt
     public IEnumerable<string>? Tags => LoginAuditCacheKey.Tags;
 }
 
-public class GetAllLoginAuditsQueryHandler : IRequestHandler<GetAllLoginAuditsQuery, IEnumerable<LoginAuditDto>>
+public class GetAllLoginAuditsQueryHandler(
+    IApplicationDbContextFactory dbContextFactory,
+    IMapper mapper)
+    : IRequestHandler<GetAllLoginAuditsQuery, IEnumerable<LoginAuditDto>>
 {
-    private readonly IApplicationDbContextFactory _dbContextFactory;
-    private readonly IMapper _mapper;
-
-    public GetAllLoginAuditsQueryHandler(
-        IApplicationDbContextFactory dbContextFactory,
-        IMapper mapper)
-    {
-        _dbContextFactory = dbContextFactory;
-        _mapper = mapper;
-    }
-
     public async Task<IEnumerable<LoginAuditDto>> Handle(GetAllLoginAuditsQuery request, CancellationToken cancellationToken)
     {
-        await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
+        await using var db = await dbContextFactory.CreateAsync(cancellationToken);
         var data = await db.LoginAudits
             .OrderByDescending(x => x.LoginTimeUtc)
             .Take(1000) // Limit to latest 1000 records for performance
-            .ProjectTo<LoginAuditDto>(_mapper.ConfigurationProvider)
+            .ProjectTo<LoginAuditDto>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
         
         return data;

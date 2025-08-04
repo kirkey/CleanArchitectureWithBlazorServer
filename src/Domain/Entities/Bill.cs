@@ -7,7 +7,7 @@ namespace CleanArchitecture.Blazor.Domain.Entities;
 
 public class Bill : BaseUlidAuditableEntity
 {
-    public string? VendorID { get; set; }
+    public string? VendorId { get; set; }
     public DateTime BillDate { get; set; } = DateTime.Now;
     public DateTime DueDate { get; set; }
     public decimal TotalAmount { get; set; }

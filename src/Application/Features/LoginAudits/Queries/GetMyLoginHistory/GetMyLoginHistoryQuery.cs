@@ -28,27 +28,18 @@ public class GetMyLoginHistoryQuery : ICacheableRequest<PaginatedData<LoginAudit
     }
 }
 
-public class GetMyLoginHistoryQueryHandler : IRequestHandler<GetMyLoginHistoryQuery, PaginatedData<LoginAuditDto>>
+public class GetMyLoginHistoryQueryHandler(
+    IApplicationDbContextFactory dbContextFactory,
+    IMapper mapper)
+    : IRequestHandler<GetMyLoginHistoryQuery, PaginatedData<LoginAuditDto>>
 {
-    private readonly IApplicationDbContextFactory _dbContextFactory;
-    private readonly IMapper _mapper;
-
-    public GetMyLoginHistoryQueryHandler(
-        IApplicationDbContextFactory dbContextFactory,
-        IMapper mapper
-    )
-    {
-        _dbContextFactory = dbContextFactory;
-        _mapper = mapper;
-    }
-
     public async Task<PaginatedData<LoginAuditDto>> Handle(GetMyLoginHistoryQuery request,
         CancellationToken cancellationToken)
     {
-        await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
+        await using var db = await dbContextFactory.CreateAsync(cancellationToken);
         var data = await db.LoginAudits.OrderBy($"{request.OrderBy} {request.SortDirection}")
             .ProjectToPaginatedDataAsync<LoginAudit, LoginAuditDto>(request.Specification, request.PageNumber, request.PageSize,
-                _mapper.ConfigurationProvider, cancellationToken);
+                mapper.ConfigurationProvider, cancellationToken);
         return data;
     }
 }

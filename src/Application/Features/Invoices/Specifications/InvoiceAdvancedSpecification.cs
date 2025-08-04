@@ -38,9 +38,9 @@ public class InvoiceAdvancedSpecification : Specification<Invoice>
 {
     public InvoiceAdvancedSpecification(InvoiceAdvancedFilter filter)
     {
-        Query.Where(q => q.CustomerID != null)
+        Query.Where(q => q.CustomerId != null)
              .Where(filter.Keyword, !string.IsNullOrEmpty(filter.Keyword))
-             .Where(q => q.CustomerID == filter.CustomerID, !string.IsNullOrEmpty(filter.CustomerID))
+             .Where(q => q.CustomerId == filter.CustomerID, !string.IsNullOrEmpty(filter.CustomerID))
              .Where(q => q.Status == filter.Status, filter.Status.HasValue)
              .Where(q => q.InvoiceDate >= filter.StartDate, filter.StartDate.HasValue)
              .Where(q => q.InvoiceDate <= filter.EndDate, filter.EndDate.HasValue)

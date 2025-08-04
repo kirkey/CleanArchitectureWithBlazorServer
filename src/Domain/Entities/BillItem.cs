@@ -7,9 +7,10 @@ namespace CleanArchitecture.Blazor.Domain.Entities;
 
 public class BillItem : BaseUlidAuditableEntity
 {
-    public string? BillID { get; set; }
+    public string? BillId { get; set; }
     public string? ItemName { get; set; }
     public int Quantity { get; set; }
     public decimal UnitPrice { get; set; }
     public decimal LineTotal { get; set; }
 }
+

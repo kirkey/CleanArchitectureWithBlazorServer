@@ -14,3 +14,4 @@ public class JournalEntry : BaseUlidAuditableEntity
     public bool IsPosted { get; set; } = false;
     public List<GeneralLedger>? LedgerLines { get; set; }
 }
+

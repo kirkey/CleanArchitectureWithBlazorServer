@@ -4,38 +4,28 @@ using ZiggyCreatures.Caching.Fusion;
 
 namespace CleanArchitecture.Blazor.Infrastructure.Services.Identity;
 
-public class UserService : IUserService, IDisposable
+public class UserService(
+    IMapper mapper,
+    IFusionCache fusionCache,
+    IServiceScopeFactory scopeFactory)
+    : IUserService, IDisposable
 {
     private const string CACHEKEY = "ALL-ApplicationUserDto";
-    private readonly IMapper _mapper;
-    private readonly IFusionCache _fusionCache;
-    private readonly IServiceScopeFactory _scopeFactory;
 
-    public UserService(
-        IMapper mapper,
-        IFusionCache fusionCache,
-        IServiceScopeFactory scopeFactory)
-    {
-        _mapper = mapper;
-        _fusionCache = fusionCache;
-        _scopeFactory = scopeFactory;
-        DataSource = new List<ApplicationUserDto>();
-    }
-
-    public List<ApplicationUserDto> DataSource { get; private set; }
+    public List<ApplicationUserDto> DataSource { get; private set; } = new();
 
     public event Func<Task>? OnChange;
 
     public async Task InitializeAsync()
     {
-        DataSource = await _fusionCache.GetOrSetAsync(CACHEKEY,
+        DataSource = await fusionCache.GetOrSetAsync(CACHEKEY,
                          async _ =>
                          {
-                             using var scope = _scopeFactory.CreateScope();
+                             using var scope = scopeFactory.CreateScope();
                              var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                              return await userManager.Users
                                  .Include(x => x.UserRoles).ThenInclude(x => x.Role)
-                                 .ProjectTo<ApplicationUserDto>(_mapper.ConfigurationProvider)
+                                 .ProjectTo<ApplicationUserDto>(mapper.ConfigurationProvider)
                                  .OrderBy(x => x.UserName)
                                  .ToListAsync();
                          })
@@ -46,15 +36,15 @@ public class UserService : IUserService, IDisposable
 
     public async Task RefreshAsync()
     {
-        _fusionCache.Remove(CACHEKEY);
-        DataSource = await _fusionCache.GetOrSetAsync(CACHEKEY,
+        fusionCache.Remove(CACHEKEY);
+        DataSource = await fusionCache.GetOrSetAsync(CACHEKEY,
                          async _ =>
                          {
-                             using var scope = _scopeFactory.CreateScope();
+                             using var scope = scopeFactory.CreateScope();
                              var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                              return await userManager.Users
                                  .Include(x => x.UserRoles).ThenInclude(x => x.Role)
-                                 .ProjectTo<ApplicationUserDto>(_mapper.ConfigurationProvider)
+                                 .ProjectTo<ApplicationUserDto>(mapper.ConfigurationProvider)
                                  .OrderBy(x => x.UserName)
                                  .ToListAsync();
                          })

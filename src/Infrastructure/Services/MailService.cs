@@ -7,30 +7,21 @@ using FluentEmail.Core.Models;
 
 namespace CleanArchitecture.Blazor.Infrastructure.Services;
 
-public class MailService : IMailService
+public class MailService(
+    IApplicationSettings appConfig,
+    IFluentEmail fluentEmail,
+    ILogger<MailService> logger)
+    : IMailService
 {
     private const string TemplatePath = "CleanArchitecture.Blazor.Server.UI.Resources.EmailTemplates.{0}.cshtml";
-    private readonly IApplicationSettings _appConfig;
-    private readonly IFluentEmail _fluentEmail;
-    private readonly ILogger<MailService> _logger;
-
-    public MailService(
-        IApplicationSettings appConfig,
-        IFluentEmail fluentEmail,
-        ILogger<MailService> logger)
-    {
-        _appConfig = appConfig;
-        _fluentEmail = fluentEmail;
-        _logger = logger;
-
-    }
+    private readonly IApplicationSettings _appConfig = appConfig;
 
     public Task<SendResponse> SendAsync(string to, string subject, string body)
     {
         try
         {
 
-            return _fluentEmail
+            return fluentEmail
                 .To(to)
                 .Subject(subject)
                 .Body(body, true)
@@ -38,7 +29,7 @@ public class MailService : IMailService
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed to send email. Subject: {EmailSubject}. An exception occurred.", subject);
+            logger.LogError(e, "Failed to send email. Subject: {EmailSubject}. An exception occurred.", subject);
             throw;
         }
     }
@@ -48,7 +39,7 @@ public class MailService : IMailService
         try
         {
 
-            return _fluentEmail
+            return fluentEmail
                 .To(to)
                 .Subject(subject)
                 .UsingTemplateFromEmbedded(string.Format(TemplatePath, template), model, Assembly.GetEntryAssembly())
@@ -56,7 +47,7 @@ public class MailService : IMailService
         }
         catch (Exception e)
         {
-            _logger.LogError(e,
+            logger.LogError(e,
                 "Failed to send templated email. Subject: {EmailSubject}, Template: {EmailTemplate}. An exception occurred.",
                 subject, template);
             throw;

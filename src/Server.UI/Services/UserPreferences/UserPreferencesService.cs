@@ -22,32 +22,26 @@ public interface IUserPreferencesService
     public Task<UserPreference> LoadUserPreferences();
 }
 
-public class UserPreferencesService : IUserPreferencesService
+public class UserPreferencesService(ProtectedLocalStorage localStorage) : IUserPreferencesService
 {
     private const string Key = "userPreferences";
-    private readonly ProtectedLocalStorage _localStorage;
-
-    public UserPreferencesService(ProtectedLocalStorage localStorage)
-    {
-        _localStorage = localStorage;
-    }
 
     public async Task SaveUserPreferences(UserPreference userPreferences)
     {
-        await _localStorage.SetAsync(Key, userPreferences).ConfigureAwait(false);
+        await localStorage.SetAsync(Key, userPreferences).ConfigureAwait(false);
     }
 
     public async Task<UserPreference> LoadUserPreferences()
     {
         try
         {
-            var result = await _localStorage.GetAsync<UserPreference>(Key).ConfigureAwait(false);
+            var result = await localStorage.GetAsync<UserPreference>(Key).ConfigureAwait(false);
             if (result.Success && result.Value is not null) return result.Value;
             return new UserPreference();
         }
         catch (CryptographicException)
         {
-            await _localStorage.DeleteAsync(Key).ConfigureAwait(false);
+            await localStorage.DeleteAsync(Key).ConfigureAwait(false);
             return new UserPreference();
         }
         catch (Exception)

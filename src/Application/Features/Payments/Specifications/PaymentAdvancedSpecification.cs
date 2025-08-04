@@ -38,9 +38,9 @@ public class PaymentAdvancedSpecification : Specification<Payment>
 {
     public PaymentAdvancedSpecification(PaymentAdvancedFilter filter)
     {
-        Query.Where(q => q.CustomerID != null)
+        Query.Where(q => q.CustomerId != null)
              .Where(filter.Keyword, !string.IsNullOrEmpty(filter.Keyword))
-             .Where(q => q.CustomerID == filter.CustomerID, !string.IsNullOrEmpty(filter.CustomerID))
+             .Where(q => q.CustomerId == filter.CustomerID, !string.IsNullOrEmpty(filter.CustomerID))
              .Where(q => q.PaymentMethod == filter.PaymentMethod, filter.PaymentMethod.HasValue)
              .Where(q => q.PaymentDate >= filter.StartDate, filter.StartDate.HasValue)
              .Where(q => q.PaymentDate <= filter.EndDate, filter.EndDate.HasValue)

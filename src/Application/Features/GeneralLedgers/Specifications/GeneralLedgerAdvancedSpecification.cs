@@ -40,10 +40,10 @@ public class GeneralLedgerAdvancedSpecification : Specification<GeneralLedger>
 {
     public GeneralLedgerAdvancedSpecification(GeneralLedgerAdvancedFilter filter)
     {
-        Query.Where(q => q.EntryID != null)
+        Query.Where(q => q.EntryId != null)
              .Where(filter.Keyword, !string.IsNullOrEmpty(filter.Keyword))
-             .Where(q => q.EntryID == filter.EntryID, !string.IsNullOrEmpty(filter.EntryID))
-             .Where(q => q.AccountID == filter.AccountID, !string.IsNullOrEmpty(filter.AccountID))
+             .Where(q => q.EntryId == filter.EntryID, !string.IsNullOrEmpty(filter.EntryID))
+             .Where(q => q.AccountId == filter.AccountID, !string.IsNullOrEmpty(filter.AccountID))
              .Where(q => q.Debit >= filter.MinDebit, filter.MinDebit.HasValue)
              .Where(q => q.Debit <= filter.MaxDebit, filter.MaxDebit.HasValue)
              .Where(q => q.Credit >= filter.MinCredit, filter.MinCredit.HasValue)

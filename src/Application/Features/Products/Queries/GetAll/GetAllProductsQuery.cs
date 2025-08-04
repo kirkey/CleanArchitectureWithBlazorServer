@@ -20,37 +20,28 @@ public class GetProductQuery : ICacheableRequest<ProductDto?>
     public IEnumerable<string>? Tags => ProductCacheKey.Tags;
 }
 
-public class GetAllProductsQueryHandler :
-    IRequestHandler<GetAllProductsQuery, IEnumerable<ProductDto>>,
-    IRequestHandler<GetProductQuery, ProductDto?>
+public class GetAllProductsQueryHandler(
+    IMapper mapper,
+    IApplicationDbContextFactory dbContextFactory)
+    :
+        IRequestHandler<GetAllProductsQuery, IEnumerable<ProductDto>>,
+        IRequestHandler<GetProductQuery, ProductDto?>
 
 {
-    private readonly IMapper _mapper;
-    private readonly IApplicationDbContextFactory _dbContextFactory;
-
-    public GetAllProductsQueryHandler(
-        IMapper mapper,
-        IApplicationDbContextFactory dbContextFactory
-    )
-    {
-        _mapper = mapper;
-        _dbContextFactory = dbContextFactory;
-    }
-
     public async Task<IEnumerable<ProductDto>> Handle(GetAllProductsQuery request, CancellationToken cancellationToken)
     {
-        await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
+        await using var db = await dbContextFactory.CreateAsync(cancellationToken);
         var data = await db.Products
-            .ProjectTo<ProductDto>(_mapper.ConfigurationProvider)
+            .ProjectTo<ProductDto>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
         return data;
     }
 
     public async Task<ProductDto?> Handle(GetProductQuery request, CancellationToken cancellationToken)
     {
-        await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
+        await using var db = await dbContextFactory.CreateAsync(cancellationToken);
         var data = await db.Products.Where(x => x.Id == request.Id)
-                       .ProjectTo<ProductDto>(_mapper.ConfigurationProvider)
+                       .ProjectTo<ProductDto>(mapper.ConfigurationProvider)
                        .FirstOrDefaultAsync(cancellationToken);
         return data;
     }

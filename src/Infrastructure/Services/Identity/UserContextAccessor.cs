@@ -34,20 +34,11 @@ public class UserContextAccessor : IUserContextAccessor
         return new Pop(this, node.Parent);
     }
 
-    private sealed class Pop : IDisposable
+    private sealed class Pop(UserContextAccessor owner, Node? restore) : IDisposable
     {
-        private readonly UserContextAccessor _owner;
-        private readonly Node? _restore;
-
-        public Pop(UserContextAccessor owner, Node? restore)
-        {
-            _owner = owner;
-            _restore = restore;
-        }
-
         public void Dispose()
         {
-            _owner._current.Value = _restore;
+            owner._current.Value = restore;
         }
     }
 

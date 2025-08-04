@@ -8,11 +8,21 @@
 //     Created Date: 2025-08-04
 //     Last Modified: 2025-08-04
 //     Description: 
-//       Represents a domain event that occurs when a chart of account is updated.
+//       Domain events for ChartOfAccount entity.
 // </auto-generated>
 //------------------------------------------------------------------------------
 
 namespace CleanArchitecture.Blazor.Domain.Events;
+
+public class ChartOfAccountCreatedEvent : DomainEvent
+{
+    public ChartOfAccountCreatedEvent(ChartOfAccount item)
+    {
+        Item = item;
+    }
+
+    public ChartOfAccount Item { get; }
+}
 
 public class ChartOfAccountUpdatedEvent : DomainEvent
 {

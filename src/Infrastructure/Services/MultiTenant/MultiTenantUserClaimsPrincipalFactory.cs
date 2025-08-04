@@ -8,14 +8,12 @@ namespace CleanArchitecture.Blazor.Infrastructure.Services.MultiTenant;
 /// <summary>
 /// UserClaimsPrincipalFactory implementation for multi-tenant applications.
 /// </summary>
-public class MultiTenantUserClaimsPrincipalFactory : UserClaimsPrincipalFactory<ApplicationUser, ApplicationRole>
+public class MultiTenantUserClaimsPrincipalFactory(
+    UserManager<ApplicationUser> userManager,
+    RoleManager<ApplicationRole> roleManager,
+    IOptions<IdentityOptions> optionsAccessor)
+    : UserClaimsPrincipalFactory<ApplicationUser, ApplicationRole>(userManager, roleManager, optionsAccessor)
 {
-    public MultiTenantUserClaimsPrincipalFactory(UserManager<ApplicationUser> userManager,
-        RoleManager<ApplicationRole> roleManager,
-        IOptions<IdentityOptions> optionsAccessor) : base(userManager, roleManager, optionsAccessor)
-    {
-    }
-
     /// <summary>
     /// Creates a ClaimsPrincipal for the specified user.
     /// </summary>

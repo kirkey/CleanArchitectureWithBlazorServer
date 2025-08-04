@@ -177,18 +177,11 @@
     }
 
     // Helper class to hold grouped permission data
-    private class PermissionGroupData
+    private class PermissionGroupData(string key, List<PermissionModel> items, string description)
     {
-        public string Key { get; }
-        public List<PermissionModel> Items { get; }
+        public string Key { get; } = key;
+        public List<PermissionModel> Items { get; } = items;
         public PermissionModel FirstItem => Items.First();
-        public string Description { get; }
-        
-        public PermissionGroupData(string key, List<PermissionModel> items, string description)
-        {
-            Key = key;
-            Items = items;
-            Description = description;
-        }
+        public string Description { get; } = description;
     }
 }

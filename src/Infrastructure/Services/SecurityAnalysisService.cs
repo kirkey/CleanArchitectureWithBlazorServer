@@ -9,34 +9,23 @@ using ZiggyCreatures.Caching.Fusion;
 
 namespace CleanArchitecture.Blazor.Infrastructure.Services;
 
-public class SecurityAnalysisService : ISecurityAnalysisService
+public class SecurityAnalysisService(
+    ILogger<SecurityAnalysisService> logger,
+    IFusionCache fusionCache,
+    IOptions<SecurityAnalysisOptions> options,
+    IApplicationDbContextFactory dbContextFactory)
+    : ISecurityAnalysisService
 {
-   
-    private readonly ILogger<SecurityAnalysisService> _logger;
-    private readonly IFusionCache _fusionCache;
-    private readonly SecurityAnalysisOptions _options;
-    private readonly IApplicationDbContextFactory _dbContextFactory;
-    
+    private readonly SecurityAnalysisOptions _options = options.Value;
+
     // Cache for IP-based analysis to reduce database queries
     private static readonly ConcurrentDictionary<string, DateTime> _lastIpAnalysis = new();
-
-    public SecurityAnalysisService(
-        ILogger<SecurityAnalysisService> logger,
-        IFusionCache fusionCache,
-        IOptions<SecurityAnalysisOptions> options,
-        IApplicationDbContextFactory dbContextFactory)
-    {
-        _logger = logger;
-        _fusionCache = fusionCache;
-        _options = options.Value;
-        _dbContextFactory = dbContextFactory;
-    }
 
     public async Task AnalyzeUserSecurityAsync(LoginAudit loginAudit, CancellationToken cancellationToken = default)
     {
         try
         {
-            await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
+            await using var db = await dbContextFactory.CreateAsync(cancellationToken);
             var analysisResult = await PerformSecurityAnalysisAsync(db, loginAudit, cancellationToken);
             
             await CreateOrUpdateRiskSummaryAsync(db, loginAudit.UserId, loginAudit.UserName, 
@@ -45,15 +34,15 @@ public class SecurityAnalysisService : ISecurityAnalysisService
             // Invalidate cache for the user's risk summary
             foreach(var tag in LoginAuditCacheKey.Tags)
             {
-                await _fusionCache.RemoveByTagAsync(tag, token: cancellationToken);
+                await fusionCache.RemoveByTagAsync(tag, token: cancellationToken);
             }
             
-            _logger.LogInformation("Security analysis completed for user {UserId}. Risk Level: {RiskLevel}, Score: {RiskScore}, Factors: {FactorCount}", 
+            logger.LogInformation("Security analysis completed for user {UserId}. Risk Level: {RiskLevel}, Score: {RiskScore}, Factors: {FactorCount}", 
                 loginAudit.UserId, analysisResult.RiskLevel, analysisResult.RiskScore, analysisResult.RiskFactors.Count);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to analyze account security for user {UserId}", loginAudit.UserId);
+            logger.LogError(ex, "Failed to analyze account security for user {UserId}", loginAudit.UserId);
             throw; // Re-throw to ensure calling code is aware of the failure
         }
     }

@@ -10,34 +10,16 @@ namespace CleanArchitecture.Blazor.Infrastructure.Services;
 /// <summary>
 /// Service for managing tenant switching functionality
 /// </summary>
-public class TenantSwitchService : ITenantSwitchService
+public class TenantSwitchService(
+    IApplicationDbContextFactory dbContextFactory,
+    IServiceScopeFactory serviceScopeFactory,
+    IPermissionService permissionService,
+    IUserProfileState userProfileState,
+    IFusionCache fusionCache,
+    IMapper mapper,
+    ILogger<TenantSwitchService> logger)
+    : ITenantSwitchService
 {
-    private readonly IApplicationDbContextFactory _dbContextFactory;
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-    private readonly IPermissionService _permissionService;
-    private readonly IUserProfileState _userProfileState;
-    private readonly IFusionCache _fusionCache;
-    private readonly IMapper _mapper;
-    private readonly ILogger<TenantSwitchService> _logger;
-
-    public TenantSwitchService(
-        IApplicationDbContextFactory dbContextFactory,
-        IServiceScopeFactory serviceScopeFactory,
-        IPermissionService permissionService,
-        IUserProfileState userProfileState,
-        IFusionCache fusionCache,
-        IMapper mapper,
-        ILogger<TenantSwitchService> logger)
-    {
-        _dbContextFactory = dbContextFactory;
-        _serviceScopeFactory = serviceScopeFactory;
-        _permissionService = permissionService;
-        _userProfileState = userProfileState;
-        _fusionCache = fusionCache;
-        _mapper = mapper;
-        _logger = logger;
-    }
-
     /// <summary>
     /// Get list of available tenants for the specified user
     /// </summary>
@@ -46,18 +28,18 @@ public class TenantSwitchService : ITenantSwitchService
         try
         {
             // Check if user has permission to switch to any tenant
-            var canSwitchToAnyTenant = await _permissionService.HasPermissionAsync(Permissions.Users.SwitchToAnyTenant);
+            var canSwitchToAnyTenant = await permissionService.HasPermissionAsync(Permissions.Users.SwitchToAnyTenant);
             
             if (canSwitchToAnyTenant)
             {
                 // User can switch to any tenant - use cached data
-                var allTenants = await _fusionCache.GetOrSetAsync(
+                var allTenants = await fusionCache.GetOrSetAsync(
                     TenantCacheKey.GetAllCacheKey,
                     async _ =>
                     {
-                        await using var db = await _dbContextFactory.CreateAsync();
+                        await using var db = await dbContextFactory.CreateAsync();
                         return await db.Tenants
-                            .ProjectTo<TenantDto>(_mapper.ConfigurationProvider)
+                            .ProjectTo<TenantDto>(mapper.ConfigurationProvider)
                             .OrderBy(x => x.Name)
                             .ToListAsync();
                     },
@@ -73,7 +55,7 @@ public class TenantSwitchService : ITenantSwitchService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to get available tenants");
+            logger.LogError(ex, "Failed to get available tenants");
             return new List<TenantDto>();
         }
     }
@@ -89,10 +71,10 @@ public class TenantSwitchService : ITenantSwitchService
             if (!await CanSwitchToTenantAsync(userId, tenantId))
                 return Result.Failure("Insufficient permissions to switch to this tenant");
 
-            await using var db = await _dbContextFactory.CreateAsync();
+            await using var db = await dbContextFactory.CreateAsync();
             
             // Get user and tenant information
-            using var scope = _serviceScopeFactory.CreateScope();
+            using var scope = serviceScopeFactory.CreateScope();
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
             
@@ -180,7 +162,7 @@ public class TenantSwitchService : ITenantSwitchService
             // If no matching roles found and no roles were cloned, assign default roles
             if (!rolesToAssign.Any())
             {
-                _logger.LogError("No matching roles found and no roles could be cloned for user {UserId} to tenant {TenantId}", userId, tenantId);
+                logger.LogError("No matching roles found and no roles could be cloned for user {UserId} to tenant {TenantId}", userId, tenantId);
             }
 
             // Update user's tenant ID
@@ -196,7 +178,7 @@ public class TenantSwitchService : ITenantSwitchService
             await userManager.UpdateAsync(user);
             
             // Refresh user state and cache
-            await _userProfileState.RefreshAsync();
+            await userProfileState.RefreshAsync();
             
             // Update user claims
             await RefreshUserClaimsAsync(user, userManager);
@@ -208,7 +190,7 @@ public class TenantSwitchService : ITenantSwitchService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to switch user {UserId} to tenant {TenantId}", userId, tenantId);
+            logger.LogError(ex, "Failed to switch user {UserId} to tenant {TenantId}", userId, tenantId);
             return Result.Failure("Failed to switch tenant");
         }
     }
@@ -221,17 +203,17 @@ public class TenantSwitchService : ITenantSwitchService
         try
         {
             // Check if user has permission to switch tenants
-            var hasSwitchPermission = await _permissionService.HasPermissionAsync(Permissions.Users.SwitchTenants);
+            var hasSwitchPermission = await permissionService.HasPermissionAsync(Permissions.Users.SwitchTenants);
             if (!hasSwitchPermission)
                 return false;
 
             // Check if user has permission to switch to any tenant
-            var hasAnyTenantPermission = await _permissionService.HasPermissionAsync(Permissions.Users.SwitchToAnyTenant);
+            var hasAnyTenantPermission = await permissionService.HasPermissionAsync(Permissions.Users.SwitchToAnyTenant);
             if (hasAnyTenantPermission)
                 return true;
 
             // Regular users can only switch to tenants where they have roles
-            using var scope = _serviceScopeFactory.CreateScope();
+            using var scope = serviceScopeFactory.CreateScope();
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
             
@@ -249,7 +231,7 @@ public class TenantSwitchService : ITenantSwitchService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to check tenant switch permission for user {UserId} to tenant {TenantId}", userId, tenantId);
+            logger.LogError(ex, "Failed to check tenant switch permission for user {UserId} to tenant {TenantId}", userId, tenantId);
             return false;
         }
     }
@@ -261,7 +243,7 @@ public class TenantSwitchService : ITenantSwitchService
     {
         try
         {
-            using var scope = _serviceScopeFactory.CreateScope();
+            using var scope = serviceScopeFactory.CreateScope();
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<ApplicationRole>>();
             
@@ -296,7 +278,7 @@ public class TenantSwitchService : ITenantSwitchService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to get role mappings for user {UserId} to tenant {TenantId}", userId, targetTenantId);
+            logger.LogError(ex, "Failed to get role mappings for user {UserId} to tenant {TenantId}", userId, targetTenantId);
             return new List<RoleMappingDto>();
         }
     }
@@ -332,7 +314,7 @@ public class TenantSwitchService : ITenantSwitchService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to refresh claims for user {UserId}", user.Id);
+            logger.LogError(ex, "Failed to refresh claims for user {UserId}", user.Id);
         }
     }
 
@@ -377,7 +359,7 @@ public class TenantSwitchService : ITenantSwitchService
             var createResult = await roleManager.CreateAsync(newRole);
             if (!createResult.Succeeded)
             {
-                _logger.LogError("Failed to create role {RoleName} in target tenant {TargetTenantId}: {Errors}", 
+                logger.LogError("Failed to create role {RoleName} in target tenant {TargetTenantId}: {Errors}", 
                     roleName, targetTenantId, string.Join(", ", createResult.Errors.Select(e => e.Description)));
                 return null;
             }
@@ -392,7 +374,7 @@ public class TenantSwitchService : ITenantSwitchService
                         var addClaimResult = await roleManager.AddClaimAsync(newRole, new Claim(claim.ClaimType, claim.ClaimValue));
                         if (!addClaimResult.Succeeded)
                         {
-                            _logger.LogError("Failed to add claim {ClaimType}:{ClaimValue} to role {RoleName}: {Errors}", 
+                            logger.LogError("Failed to add claim {ClaimType}:{ClaimValue} to role {RoleName}: {Errors}", 
                                 claim.ClaimType, claim.ClaimValue, roleName, string.Join(", ", addClaimResult.Errors.Select(e => e.Description)));
                         }
                     }
@@ -403,7 +385,7 @@ public class TenantSwitchService : ITenantSwitchService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to clone role {RoleName} from tenant {SourceTenantId} to tenant {TargetTenantId}", 
+            logger.LogError(ex, "Failed to clone role {RoleName} from tenant {SourceTenantId} to tenant {TargetTenantId}", 
                 roleName, sourceTenantId, targetTenantId);
             return null;
         }

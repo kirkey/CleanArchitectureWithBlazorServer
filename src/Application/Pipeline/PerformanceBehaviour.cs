@@ -9,20 +9,12 @@ namespace CleanArchitecture.Blazor.Application.Pipeline;
 /// </summary>
 /// <typeparam name="TRequest">Type of the Request</typeparam>
 /// <typeparam name="TResponse">Type of the Response</typeparam>
-public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public class PerformanceBehaviour<TRequest, TResponse>(
+    ILogger<PerformanceBehaviour<TRequest, TResponse>> logger,
+    IUserContextAccessor userContextAccessor)
+    : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
-    private readonly IUserContextAccessor _userContextAccessor;
-    private readonly ILogger<PerformanceBehaviour<TRequest, TResponse>> _logger;
-
-    public PerformanceBehaviour(
-        ILogger<PerformanceBehaviour<TRequest, TResponse>> logger,
-        IUserContextAccessor userContextAccessor)
-    {
-        _logger = logger;
-        _userContextAccessor = userContextAccessor;
-    }
-
     /// <summary>
     ///     Logs warnings if a request takes longer to execute than a specified threshold.
     /// </summary>
@@ -52,10 +44,10 @@ public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequ
         if (elapsedMilliseconds > threshold)
         {
             var requestName = typeof(TRequest).Name;
-            var userName = _userContextAccessor.Current?.UserName;
+            var userName = userContextAccessor.Current?.UserName;
             var phase = isStartupPhase ? "Startup" : "Runtime";
 
-            _logger.LogWarning(
+            logger.LogWarning(
                 "Long-running request [{Phase}]: {RequestName} ({ElapsedMilliseconds}ms) {@Request} by {UserName}",
                 phase, requestName, elapsedMilliseconds, request, userName);
         }

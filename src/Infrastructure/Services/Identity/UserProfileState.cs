@@ -12,7 +12,12 @@ namespace CleanArchitecture.Blazor.Infrastructure.Services.Identity;
 /// Implementation of IUserProfileState following Blazor state management best practices.
 /// Uses immutable UserProfile snapshots with precise event notifications.
 /// </summary>
-public class UserProfileState : IUserProfileState, IDisposable
+public class UserProfileState(
+    IMapper mapper,
+    IServiceScopeFactory scopeFactory,
+    IFusionCache fusionCache,
+    ILogger<UserProfileState> logger)
+    : IUserProfileState, IDisposable
 {
     // Cache refresh interval of 60 seconds
     private TimeSpan RefreshInterval => TimeSpan.FromSeconds(60);
@@ -25,22 +30,6 @@ public class UserProfileState : IUserProfileState, IDisposable
     private readonly SemaphoreSlim _semaphore = new(1, 1);
 
     // Dependencies
-    private readonly IMapper _mapper;
-    private readonly IFusionCache _fusionCache;
-    private readonly IServiceScopeFactory _scopeFactory;
-    private readonly ILogger<UserProfileState> _logger;
-
-    public UserProfileState(
-        IMapper mapper,
-        IServiceScopeFactory scopeFactory,
-        IFusionCache fusionCache,
-        ILogger<UserProfileState> logger)
-    {
-        _scopeFactory = scopeFactory;
-        _mapper = mapper;
-        _fusionCache = fusionCache;
-        _logger = logger;
-    }
 
     /// <summary>
     /// Gets the current user profile snapshot (immutable).
@@ -89,7 +78,7 @@ public class UserProfileState : IUserProfileState, IDisposable
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to initialize user profile for {UserId}", userId);
+            logger.LogError(ex, "Failed to initialize user profile for {UserId}", userId);
             throw;
         }
         finally
@@ -121,7 +110,7 @@ public class UserProfileState : IUserProfileState, IDisposable
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to refresh user profile for {UserId}", _currentUserId);
+            logger.LogError(ex, "Failed to refresh user profile for {UserId}", _currentUserId);
             throw;
         }
         finally
@@ -203,7 +192,7 @@ public class UserProfileState : IUserProfileState, IDisposable
         if (string.IsNullOrWhiteSpace(userId))
             return;
         
-        _fusionCache.Remove(GetApplicationUserCacheKey(userId));
+        fusionCache.Remove(GetApplicationUserCacheKey(userId));
     }
 
     /// <summary>
@@ -212,17 +201,17 @@ public class UserProfileState : IUserProfileState, IDisposable
     private async Task<ApplicationUserDto?> LoadUserProfileFromDatabaseAsync(string userId, CancellationToken cancellationToken = default)
     {
         var key = GetApplicationUserCacheKey(userId);
-        return await _fusionCache.GetOrSetAsync(
+        return await fusionCache.GetOrSetAsync(
             key,
             async _ =>
             {
-                using var scope = _scopeFactory.CreateScope();
+                using var scope = scopeFactory.CreateScope();
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                 
                 return await userManager.Users
                             .Where(x => x.Id == userId)
                             .Include(x => x.UserRoles).ThenInclude(x => x.Role)
-                            .ProjectTo<ApplicationUserDto>(_mapper.ConfigurationProvider)
+                            .ProjectTo<ApplicationUserDto>(mapper.ConfigurationProvider)
                             .FirstOrDefaultAsync(cancellationToken);
             },
             RefreshInterval);

@@ -14,26 +14,24 @@ namespace CleanArchitecture.Blazor.Infrastructure.Services;
 public class MemoryCacheTicketStore : ITicketStore
 {
     private const string KeyPrefix = "AuthSessionStore-";
-    private readonly IFusionCache _cache;
-
-    public MemoryCacheTicketStore()
+    private readonly IFusionCache _cache = new FusionCache(new FusionCacheOptions()
     {
-        _cache = new FusionCache(new FusionCacheOptions()
+        CacheName = "AuthSessionStore",
+        DefaultEntryOptions = new FusionCacheEntryOptions
         {
-            CacheName = "AuthSessionStore",
-            DefaultEntryOptions = new FusionCacheEntryOptions
-            {
-                Duration = TimeSpan.FromDays(15),
-                // FAIL-SAFE OPTIONS
-                IsFailSafeEnabled = true,
-                FailSafeMaxDuration = TimeSpan.FromHours(2),
-                FailSafeThrottleDuration = TimeSpan.FromSeconds(30),
-                // FACTORY TIMEOUTS
-                FactorySoftTimeout = TimeSpan.FromMilliseconds(300),
-                FactoryHardTimeout = TimeSpan.FromMilliseconds(1500)
-            }
-        });
-    }
+            Duration = TimeSpan.FromDays(15),
+            // FAIL-SAFE OPTIONS
+            IsFailSafeEnabled = true,
+            FailSafeMaxDuration = TimeSpan.FromHours(2),
+            FailSafeThrottleDuration = TimeSpan.FromSeconds(30),
+            // FACTORY TIMEOUTS
+            FactorySoftTimeout = TimeSpan.FromMilliseconds(300),
+            FactoryHardTimeout = TimeSpan.FromMilliseconds(1500)
+        }
+    });
+
+    // FAIL-SAFE OPTIONS
+    // FACTORY TIMEOUTS
 
     public async Task<string> StoreAsync(AuthenticationTicket ticket)
     {

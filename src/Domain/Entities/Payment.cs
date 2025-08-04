@@ -7,7 +7,7 @@ namespace CleanArchitecture.Blazor.Domain.Entities;
 
 public class Payment : BaseUlidAuditableEntity
 {
-    public string? CustomerID { get; set; }
+    public string? CustomerId { get; set; }
     public DateTime PaymentDate { get; set; } = DateTime.Now;
     public decimal Amount { get; set; }
     public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.Cash;

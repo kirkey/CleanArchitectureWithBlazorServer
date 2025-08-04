@@ -12,21 +12,13 @@ public class ClearSystemLogsCommand : ICacheInvalidatorRequest<Result>
     public IEnumerable<string>? Tags => SystemLogsCacheKey.Tags;
 }
 
-public class ClearSystemLogsCommandHandler : IRequestHandler<ClearSystemLogsCommand, Result>
+public class ClearSystemLogsCommandHandler(IApplicationDbContextFactory dbContextFactory)
+    : IRequestHandler<ClearSystemLogsCommand, Result>
 
 {
-    private readonly IApplicationDbContextFactory _dbContextFactory;
-
-    public ClearSystemLogsCommandHandler(
-        IApplicationDbContextFactory dbContextFactory
-    )
-    {
-        _dbContextFactory = dbContextFactory;
-    }
-
     public async Task<Result> Handle(ClearSystemLogsCommand request, CancellationToken cancellationToken)
     {
-        await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
+        await using var db = await dbContextFactory.CreateAsync(cancellationToken);
         await db.SystemLogs.ExecuteDeleteAsync(cancellationToken);
         return await Result.SuccessAsync();
     }

@@ -38,9 +38,9 @@ public class BillAdvancedSpecification : Specification<Bill>
 {
     public BillAdvancedSpecification(BillAdvancedFilter filter)
     {
-        Query.Where(q => q.VendorID != null)
+        Query.Where(q => q.VendorId != null)
              .Where(filter.Keyword, !string.IsNullOrEmpty(filter.Keyword))
-             .Where(q => q.VendorID == filter.VendorID, !string.IsNullOrEmpty(filter.VendorID))
+             .Where(q => q.VendorId == filter.VendorID, !string.IsNullOrEmpty(filter.VendorID))
              .Where(q => q.Status == filter.Status, filter.Status.HasValue)
              .Where(q => q.BillDate >= filter.StartDate, filter.StartDate.HasValue)
              .Where(q => q.BillDate <= filter.EndDate, filter.EndDate.HasValue)

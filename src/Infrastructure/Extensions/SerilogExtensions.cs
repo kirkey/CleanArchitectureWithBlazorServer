@@ -204,25 +204,20 @@ internal class UtcTimestampEnricher : ILogEventEnricher
         logEvent.AddOrUpdateProperty(pf.CreateProperty("TimeStamp", logEvent.Timestamp.UtcDateTime));
     }
 }
-internal class UserInfoEnricher : ILogEventEnricher
+internal class UserInfoEnricher(IHttpContextAccessor httpContextAccessor) : ILogEventEnricher
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
     public UserInfoEnricher() : this(new HttpContextAccessor())
     {
     }
     //Dependency injection can be used to retrieve any service required to get a user or any data.
     //Here, I easily get data from HTTPContext
-    public UserInfoEnricher(IHttpContextAccessor httpContextAccessor)
-    {
-        _httpContextAccessor = httpContextAccessor;
-    }
     public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
     {
-        var userName = _httpContextAccessor.HttpContext?.User?.Identity?.Name ?? "";
-        var headers = _httpContextAccessor.HttpContext?.Request?.Headers;
+        var userName = httpContextAccessor.HttpContext?.User?.Identity?.Name ?? "";
+        var headers = httpContextAccessor.HttpContext?.Request?.Headers;
         var clientIp = headers != null && headers.ContainsKey("X-Forwarded-For")
         ? headers["X-Forwarded-For"].ToString().Split(',').First().Trim()
-        : _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString() ?? "";
+        : httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString() ?? "";
         var clientAgent = headers != null && headers.ContainsKey("User-Agent")
             ? headers["User-Agent"].ToString()
             : "";

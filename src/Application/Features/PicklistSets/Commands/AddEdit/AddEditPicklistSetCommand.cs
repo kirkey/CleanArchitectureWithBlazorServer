@@ -25,34 +25,25 @@ public class AddEditPicklistSetCommand : ICacheInvalidatorRequest<Result<int>>
     }
 }
 
-public class AddEditPicklistSetCommandHandler : IRequestHandler<AddEditPicklistSetCommand, Result<int>>
+public class AddEditPicklistSetCommandHandler(
+    IApplicationDbContextFactory dbContextFactory,
+    IMapper mapper)
+    : IRequestHandler<AddEditPicklistSetCommand, Result<int>>
 {
-    private readonly IApplicationDbContextFactory _dbContextFactory;
-    private readonly IMapper _mapper;
-
-    public AddEditPicklistSetCommandHandler(
-        IApplicationDbContextFactory dbContextFactory,
-        IMapper mapper
-    )
-    {
-        _dbContextFactory = dbContextFactory;
-        _mapper = mapper;
-    }
-
     public async Task<Result<int>> Handle(AddEditPicklistSetCommand request, CancellationToken cancellationToken)
     {
-        await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
+        await using var db = await dbContextFactory.CreateAsync(cancellationToken);
         if (request.Id > 0)
         {
             var item = await db.PicklistSets.FindAsync(request.Id, cancellationToken);
             if (item == null) return await Result<int>.FailureAsync($"PicklistSet with id: [{request.Id}] not found.");
-            item = _mapper.Map(request, item);
+            item = mapper.Map(request, item);
             await db.SaveChangesAsync(cancellationToken);
             return await Result<int>.SuccessAsync(item.Id);
         }
         else
         {
-            var keyValue = _mapper.Map<PicklistSet>(request);
+            var keyValue = mapper.Map<PicklistSet>(request);
             db.PicklistSets.Add(keyValue);
             await db.SaveChangesAsync(cancellationToken);
             return await Result<int>.SuccessAsync(keyValue.Id);

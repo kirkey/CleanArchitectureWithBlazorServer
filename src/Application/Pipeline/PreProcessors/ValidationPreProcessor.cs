@@ -1,13 +1,10 @@
 ﻿namespace CleanArchitecture.Blazor.Application.Pipeline.PreProcessors;
 
-public sealed class ValidationPreProcessor<TRequest> : IRequestPreProcessor<TRequest> where TRequest : notnull
+public sealed class ValidationPreProcessor<TRequest>(IEnumerable<IValidator<TRequest>> validators)
+    : IRequestPreProcessor<TRequest>
+    where TRequest : notnull
 {
-    private readonly IReadOnlyCollection<IValidator<TRequest>> _validators;
-
-    public ValidationPreProcessor(IEnumerable<IValidator<TRequest>> validators)
-    {
-        _validators = validators.ToList() ?? throw new ArgumentNullException(nameof(validators));
-    }
+    private readonly IReadOnlyCollection<IValidator<TRequest>> _validators = validators.ToList() ?? throw new ArgumentNullException(nameof(validators));
 
     public async Task Process(TRequest request, CancellationToken cancellationToken)
     {

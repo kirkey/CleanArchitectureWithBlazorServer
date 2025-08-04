@@ -11,10 +11,10 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
     public void Configure(EntityTypeBuilder<Payment> builder)
     {
         builder.Property(t => t.Id).HasMaxLength(36);
-        builder.Property(t => t.CustomerID).HasMaxLength(36);
+        builder.Property(t => t.CustomerId).HasMaxLength(36);
         builder.Property(t => t.Amount).HasPrecision(18, 2);
         builder.Property(t => t.ReferenceNumber).HasMaxLength(100);
-        builder.HasIndex(x => x.CustomerID);
+        builder.HasIndex(x => x.CustomerId);
         builder.HasIndex(x => x.PaymentDate);
         builder.HasIndex(x => x.ReferenceNumber);
         builder.Ignore(e => e.DomainEvents);

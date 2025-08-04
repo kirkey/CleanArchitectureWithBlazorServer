@@ -9,12 +9,8 @@ using CleanArchitecture.Blazor.Domain.Common.Entities;
 
 namespace CleanArchitecture.Blazor.Domain.Common.Events;
 
-public class CreatedEvent<T> : DomainEvent where T : IEntity
+public class CreatedEvent<T>(T entity) : DomainEvent
+    where T : IEntity
 {
-    public CreatedEvent(T entity)
-    {
-        Entity = entity;
-    }
-
-    public T Entity { get; }
+    public T Entity { get; } = entity;
 }

@@ -6,64 +6,46 @@ using CleanArchitecture.Blazor.Application.Features.PicklistSets.Commands.AddEdi
 
 namespace CleanArchitecture.Blazor.Application.Features.PicklistSets.Commands.Import;
 
-public class ImportPicklistSetsCommand : ICacheInvalidatorRequest<Result>
+public class ImportPicklistSetsCommand(string fileName, byte[] data) : ICacheInvalidatorRequest<Result>
 {
-    public ImportPicklistSetsCommand(string fileName, byte[] data)
-    {
-        FileName = fileName;
-        Data = data;
-    }
-    public string FileName { get; set; }
-    public byte[] Data { get; set; }
+    public string FileName { get; set; } = fileName;
+    public byte[] Data { get; set; } = data;
     public IEnumerable<string>? Tags => PicklistSetCacheKey.Tags;
 }
 
  
 
-public class ImportPicklistSetsCommandHandler :
-    IRequestHandler<ImportPicklistSetsCommand, Result>
+public class ImportPicklistSetsCommandHandler(
+    IApplicationDbContextFactory dbContextFactory,
+    IMapper mapper,
+    IExcelService excelService,
+    IStringLocalizer<ImportPicklistSetsCommandHandler> localizer,
+    IValidator<AddEditPicklistSetCommand> addValidator)
+    :
+        IRequestHandler<ImportPicklistSetsCommand, Result>
 {
-    private readonly IValidator<AddEditPicklistSetCommand> _addValidator;
-    private readonly IApplicationDbContextFactory _dbContextFactory;
-    private readonly IMapper _mapper;
-    private readonly IExcelService _excelService;
-    private readonly IStringLocalizer<ImportPicklistSetsCommandHandler> _localizer;
+    private readonly IMapper _mapper = mapper;
 
-    public ImportPicklistSetsCommandHandler(
-        IApplicationDbContextFactory dbContextFactory,
-        IMapper mapper,
-        IExcelService excelService,
-        IStringLocalizer<ImportPicklistSetsCommandHandler> localizer,
-        IValidator<AddEditPicklistSetCommand> addValidator
-    )
-    {
-        _dbContextFactory = dbContextFactory;
-        _mapper = mapper;
-        _excelService = excelService;
-        _localizer = localizer;
-        _addValidator = addValidator;
-    }
 
-     
 #nullable disable warnings
     public async Task<Result> Handle(ImportPicklistSetsCommand request, CancellationToken cancellationToken)
     {
-        await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
-        var result = await _excelService.ImportAsync(request.Data,
+        await using var db = await dbContextFactory.CreateAsync(cancellationToken);
+        var result = await excelService.ImportAsync(request.Data,
             new Dictionary<string, Func<DataRow, PicklistSet, object?>>
             {
                 {
-                    _localizer["Name"],
+                    localizer["Name"],
                     (row, item) =>
-                        item.Name = (Picklist)Enum.Parse(typeof(Picklist), row[_localizer["Name"]].ToString())
+                        item.Name = (Picklist)Enum.Parse(typeof(Picklist), row[localizer["Name"]].ToString())
                 },
-                { _localizer["Value"], (row, item) => item.Value = row[_localizer["Value"]]?.ToString() },
-                { _localizer["Text"], (row, item) => item.Text = row[_localizer["Text"]]?.ToString() },
+                { localizer["Value"], (row, item) => item.Value = row[localizer["Value"]]?.ToString() },
+                { localizer["Text"], (row, item) => item.Text = row[localizer["Text"]]?.ToString() },
                 {
-                    _localizer["Description"],
-                    (row, item) => item.Description = row[_localizer["Description"]]?.ToString()
+                    localizer["Description"],
+                    (row, item) => item.Description = row[localizer["Description"]]?.ToString()
                 }
-            }, _localizer["Data"]);
+            }, localizer["Data"]);
 
         if (result is not { Succeeded: true, Data: not null }) return await Result.FailureAsync(result.Errors);
         {
@@ -72,7 +54,7 @@ public class ImportPicklistSetsCommandHandler :
             var errorsOccurred = false;
             foreach (var item in importItems)
             {
-                var validationResult = await _addValidator.ValidateAsync(
+                var validationResult = await addValidator.ValidateAsync(
                     new AddEditPicklistSetCommand
                         { Name = item.Name, Value = item.Value, Description = item.Description, Text = item.Text },
                     cancellationToken);

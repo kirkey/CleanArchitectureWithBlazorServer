@@ -8,19 +8,38 @@
 //     Created Date: 2025-08-04
 //     Last Modified: 2025-08-04
 //     Description: 
-//       Represents a domain event that occurs when a new chart of account is created.
-//       Used to signal other parts of the system that a new chart of account has been added.
+//       Domain events for GeneralLedger entity.
 // </auto-generated>
 //------------------------------------------------------------------------------
 
 namespace CleanArchitecture.Blazor.Domain.Events;
 
-public class ChartOfAccountCreatedEvent : DomainEvent
+public class GeneralLedgerCreatedEvent : DomainEvent
 {
-    public ChartOfAccountCreatedEvent(ChartOfAccount item)
+    public GeneralLedgerCreatedEvent(GeneralLedger item)
     {
         Item = item;
     }
 
-    public ChartOfAccount Item { get; }
+    public GeneralLedger Item { get; }
+}
+
+public class GeneralLedgerUpdatedEvent : DomainEvent
+{
+    public GeneralLedgerUpdatedEvent(GeneralLedger item)
+    {
+        Item = item;
+    }
+
+    public GeneralLedger Item { get; }
+}
+
+public class GeneralLedgerDeletedEvent : DomainEvent
+{
+    public GeneralLedgerDeletedEvent(GeneralLedger item)
+    {
+        Item = item;
+    }
+
+    public GeneralLedger Item { get; }
 }

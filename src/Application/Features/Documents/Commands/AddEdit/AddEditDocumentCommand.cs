@@ -30,36 +30,25 @@ public class AddEditDocumentCommand : ICacheInvalidatorRequest<Result<int>>
     }
 }
 
-public class AddEditDocumentCommandHandler : IRequestHandler<AddEditDocumentCommand, Result<int>>
+public class AddEditDocumentCommandHandler(
+    IApplicationDbContextFactory dbContextFactory,
+    IMapper mapper,
+    IStringLocalizer<AddEditDocumentCommandHandler> localizer)
+    : IRequestHandler<AddEditDocumentCommand, Result<int>>
 {
-    private readonly IApplicationDbContextFactory _dbContextFactory;
-    private readonly IMapper _mapper;
-    private readonly IStringLocalizer<AddEditDocumentCommandHandler> _localizer;
-
-    public AddEditDocumentCommandHandler(
-        IApplicationDbContextFactory dbContextFactory,
-        IMapper mapper,
-        IStringLocalizer<AddEditDocumentCommandHandler> localizer
-    )
-    {
-        _dbContextFactory = dbContextFactory;
-        _mapper = mapper;
-        _localizer = localizer;
-    }
-
     public async Task<Result<int>> Handle(AddEditDocumentCommand request, CancellationToken cancellationToken)
     {
-        await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
+        await using var db = await dbContextFactory.CreateAsync(cancellationToken);
         Document document;
         if (request.Id > 0)
         {
             document = await db.Documents.FindAsync(request.Id, cancellationToken);
-            if (document == null) return await Result<int>.FailureAsync(_localizer["Document Not Found!"]);
-            document = _mapper.Map(request, document);
+            if (document == null) return await Result<int>.FailureAsync(localizer["Document Not Found!"]);
+            document = mapper.Map(request, document);
         }
         else
         {
-            document = _mapper.Map<Document>(request);
+            document = mapper.Map<Document>(request);
             db.Documents.Add(document);
         }
         await db.SaveChangesAsync(cancellationToken);

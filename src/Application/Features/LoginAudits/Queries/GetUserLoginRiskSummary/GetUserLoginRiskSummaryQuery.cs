@@ -15,26 +15,17 @@ public class GetUserLoginRiskSummaryQuery : ICacheableRequest<UserLoginRiskSumma
     public IEnumerable<string>? Tags => LoginAuditCacheKey.Tags;
 }
 
-public class GetUserLoginRiskSummaryQueryHandler : IRequestHandler<GetUserLoginRiskSummaryQuery, UserLoginRiskSummaryDto?>
+public class GetUserLoginRiskSummaryQueryHandler(
+    IApplicationDbContextFactory dbContextFactory,
+    IMapper mapper)
+    : IRequestHandler<GetUserLoginRiskSummaryQuery, UserLoginRiskSummaryDto?>
 {
-    private readonly IApplicationDbContextFactory _dbContextFactory;
-    private readonly IMapper _mapper;
-
-    public GetUserLoginRiskSummaryQueryHandler(
-        IApplicationDbContextFactory dbContextFactory,
-        IMapper mapper
-    )
-    {
-        _dbContextFactory = dbContextFactory;
-        _mapper = mapper;
-    }
-
     public async Task<UserLoginRiskSummaryDto?> Handle(GetUserLoginRiskSummaryQuery request, CancellationToken cancellationToken)
     {
-        await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
+        await using var db = await dbContextFactory.CreateAsync(cancellationToken);
         var summary = await db.UserLoginRiskSummaries
             .Where(x => x.UserId == request.UserId)
-            .ProjectTo<UserLoginRiskSummaryDto>(_mapper.ConfigurationProvider)
+            .ProjectTo<UserLoginRiskSummaryDto>(mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(cancellationToken);
         return summary;
     }

@@ -11,9 +11,9 @@ public class BillConfiguration : IEntityTypeConfiguration<Bill>
     public void Configure(EntityTypeBuilder<Bill> builder)
     {
         builder.Property(t => t.Id).HasMaxLength(36);
-        builder.Property(t => t.VendorID).HasMaxLength(36);
+        builder.Property(t => t.VendorId).HasMaxLength(36);
         builder.Property(t => t.TotalAmount).HasPrecision(18, 2);
-        builder.HasIndex(x => x.VendorID);
+        builder.HasIndex(x => x.VendorId);
         builder.HasIndex(x => x.BillDate);
         builder.HasIndex(x => x.Status);
         builder.Ignore(e => e.DomainEvents);
@@ -25,7 +25,7 @@ public class BillConfiguration : IEntityTypeConfiguration<Bill>
         // Configure relationship with BillItems
         builder.HasMany(b => b.Items)
             .WithOne()
-            .HasForeignKey(bi => bi.BillID)
+            .HasForeignKey(bi => bi.BillId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

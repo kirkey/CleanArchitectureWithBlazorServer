@@ -7,9 +7,10 @@ namespace CleanArchitecture.Blazor.Domain.Entities;
 
 public class GeneralLedger : BaseUlidAuditableEntity
 {
-    public string? EntryID { get; set; }
-    public string? AccountID { get; set; }
+    public string? EntryId { get; set; }
+    public string? AccountId { get; set; }
     public decimal Debit { get; set; }
     public decimal Credit { get; set; }
     public string? Memo { get; set; }
 }
+

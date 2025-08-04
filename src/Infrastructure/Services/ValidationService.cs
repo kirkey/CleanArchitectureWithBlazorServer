@@ -4,20 +4,14 @@ using FluentValidation.Internal;
 
 namespace CleanArchitecture.Blazor.Infrastructure.Services;
 
-public class ValidationService : IValidationService
+public class ValidationService(IServiceProvider serviceProvider) : IValidationService
 {
-    private readonly IServiceProvider _serviceProvider;
-
     // in order to keep the service as generic as possible 
     // validators are provided by type only when required,
     // an alternative would be creating a IValidationService<TRequest>
     // similar to the ValidationBehaviour<TRequest, TResponse>
     // but that would mean injecting a IValidationService for each
     // type of model to validate in a page
-    public ValidationService(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
 
     public Func<object, string, Task<IEnumerable<string>>> ValidateValue<TRequest>()
     {
@@ -33,7 +27,7 @@ public class ValidationService : IValidationService
     public async Task<IDictionary<string, string[]>> ValidateAsync<TRequest>(TRequest model,
         CancellationToken cancellationToken = default)
     {
-        var validators = _serviceProvider.GetServices<IValidator<TRequest>>();
+        var validators = serviceProvider.GetServices<IValidator<TRequest>>();
 
         var context = new ValidationContext<TRequest>(model);
 
@@ -43,7 +37,7 @@ public class ValidationService : IValidationService
     public async Task<IDictionary<string, string[]>> ValidateAsync<TRequest>(TRequest model,
         Action<ValidationStrategy<TRequest>> options, CancellationToken cancellationToken = default)
     {
-        var validators = _serviceProvider.GetServices<IValidator<TRequest>>();
+        var validators = serviceProvider.GetServices<IValidator<TRequest>>();
 
         var context = ValidationContext<TRequest>
             .CreateWithOptions(model, options);

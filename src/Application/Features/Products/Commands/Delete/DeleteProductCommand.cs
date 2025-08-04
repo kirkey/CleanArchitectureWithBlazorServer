@@ -6,33 +6,19 @@ using CleanArchitecture.Blazor.Application.Features.Products.Caching;
 
 namespace CleanArchitecture.Blazor.Application.Features.Products.Commands.Delete;
 
-public class DeleteProductCommand : ICacheInvalidatorRequest<Result>
+public class DeleteProductCommand(int[] id) : ICacheInvalidatorRequest<Result>
 {
-    public DeleteProductCommand(int[] id)
-    {
-        Id = id;
-    }
-
-    public int[] Id { get; }
+    public int[] Id { get; } = id;
     public string CacheKey => ProductCacheKey.GetAllCacheKey;
     public IEnumerable<string>? Tags => ProductCacheKey.Tags;
 }
 
-public class DeleteProductCommandHandler :
+public class DeleteProductCommandHandler(IApplicationDbContextFactory dbContextFactory) :
     IRequestHandler<DeleteProductCommand, Result>
 {
-    private readonly IApplicationDbContextFactory _dbContextFactory;
-
-    public DeleteProductCommandHandler(
-        IApplicationDbContextFactory dbContextFactory
-    )
-    {
-        _dbContextFactory = dbContextFactory;
-    }
-
     public async Task<Result> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
     {
-        await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
+        await using var db = await dbContextFactory.CreateAsync(cancellationToken);
         var items = await db.Products.Where(x => request.Id.Contains(x.Id)).ToListAsync(cancellationToken);
         foreach (var item in items)
         {

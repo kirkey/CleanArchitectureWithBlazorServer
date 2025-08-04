@@ -7,37 +7,25 @@ using CleanArchitecture.Blazor.Application.Features.PicklistSets.DTOs;
 
 namespace CleanArchitecture.Blazor.Application.Features.PicklistSets.Queries.ByName;
 
-public class PicklistSetsQueryByName : ICacheableRequest<IEnumerable<PicklistSetDto>>
+public class PicklistSetsQueryByName(Picklist name) : ICacheableRequest<IEnumerable<PicklistSetDto>>
 {
-    public PicklistSetsQueryByName(Picklist name)
-    {
-        Name = name;
-    }
-    public Picklist Name { get; set; }
+    public Picklist Name { get; set; } = name;
     public string CacheKey => PicklistSetCacheKey.GetCacheKey(Name.ToString());
     public IEnumerable<string>? Tags => PicklistSetCacheKey.Tags;
 }
 
-public class PicklistSetsQueryByNameHandler : IRequestHandler<PicklistSetsQueryByName, IEnumerable<PicklistSetDto>>
+public class PicklistSetsQueryByNameHandler(
+    IApplicationDbContextFactory dbContextFactory,
+    IMapper mapper)
+    : IRequestHandler<PicklistSetsQueryByName, IEnumerable<PicklistSetDto>>
 {
-    private readonly IApplicationDbContextFactory _dbContextFactory;
-    private readonly IMapper _mapper;
-    public PicklistSetsQueryByNameHandler(
-        IApplicationDbContextFactory dbContextFactory,
-        IMapper mapper
-    )
-    {
-        _dbContextFactory = dbContextFactory;
-        _mapper = mapper;
-    }
-
     public async Task<IEnumerable<PicklistSetDto>> Handle(PicklistSetsQueryByName request,
         CancellationToken cancellationToken)
     {
-        await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
+        await using var db = await dbContextFactory.CreateAsync(cancellationToken);
         var data = await db.PicklistSets.Where(x => x.Name == request.Name)
             .OrderBy(x => x.Text)
-            .ProjectTo<PicklistSetDto>(_mapper.ConfigurationProvider)
+            .ProjectTo<PicklistSetDto>(mapper.ConfigurationProvider)
             .AsNoTracking()
             .ToListAsync(cancellationToken);
         return data;

@@ -7,29 +7,20 @@ using Microsoft.AspNetCore.Http;
 
 namespace CleanArchitecture.Blazor.Infrastructure.Services;
 
-public class AuditSignInManager<TUser> : SignInManager<TUser>
+public class AuditSignInManager<TUser>(
+    UserManager<TUser> userManager,
+    IHttpContextAccessor contextAccessor,
+    IUserClaimsPrincipalFactory<TUser> claimsFactory,
+    IOptions<IdentityOptions> optionsAccessor,
+    ILogger<SignInManager<TUser>> logger,
+    IAuthenticationSchemeProvider schemes,
+    IUserConfirmation<TUser> confirmation,
+    IApplicationDbContextFactory dbContextFactory,
+    ILogger<AuditSignInManager<TUser>> auditLogger)
+    : SignInManager<TUser>(userManager, contextAccessor, claimsFactory, optionsAccessor, logger, schemes, confirmation)
     where TUser : class
 {
-    private readonly IApplicationDbContextFactory _dbContextFactory;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger<AuditSignInManager<TUser>> _logger;
-
-    public AuditSignInManager(
-        UserManager<TUser> userManager,
-        IHttpContextAccessor contextAccessor,
-        IUserClaimsPrincipalFactory<TUser> claimsFactory,
-        IOptions<IdentityOptions> optionsAccessor,
-        ILogger<SignInManager<TUser>> logger,
-        IAuthenticationSchemeProvider schemes,
-        IUserConfirmation<TUser> confirmation,
-        IApplicationDbContextFactory dbContextFactory,
-        ILogger<AuditSignInManager<TUser>> auditLogger)
-        : base(userManager, contextAccessor, claimsFactory, optionsAccessor, logger, schemes, confirmation)
-    {
-        _dbContextFactory = dbContextFactory;
-        _httpContextAccessor = contextAccessor;
-        _logger = auditLogger;
-    }
+    private readonly IHttpContextAccessor _httpContextAccessor = contextAccessor;
 
     public override async Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure)
     {
@@ -100,7 +91,7 @@ public class AuditSignInManager<TUser> : SignInManager<TUser>
             var httpContext = _httpContextAccessor.HttpContext;
             if (httpContext == null)
             {
-                _logger.LogWarning("HttpContext is null, cannot log login audit for user {UserName}", userName);
+                auditLogger.LogWarning("HttpContext is null, cannot log login audit for user {UserName}", userName);
                 return;
             }
 
@@ -121,13 +112,13 @@ public class AuditSignInManager<TUser> : SignInManager<TUser>
                 Success= success};
             loginAudit.AddDomainEvent(new Domain.Events.LoginAuditCreatedEvent(loginAudit));
             // Save to database
-            await using var db = await _dbContextFactory.CreateAsync();
+            await using var db = await dbContextFactory.CreateAsync();
             await db.LoginAudits.AddAsync(loginAudit);
             await db.SaveChangesAsync(CancellationToken.None);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to log login audit for user {UserName}", userName);
+            auditLogger.LogError(ex, "Failed to log login audit for user {UserName}", userName);
             // Don't throw - login audit failure shouldn't break the login process
         }
     }
@@ -164,7 +155,7 @@ public class AuditSignInManager<TUser> : SignInManager<TUser>
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to get client IP address");
+            auditLogger.LogWarning(ex, "Failed to get client IP address");
             return null;
         }
     }
@@ -191,7 +182,7 @@ public class AuditSignInManager<TUser> : SignInManager<TUser>
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Failed to get browser info");
+            auditLogger.LogWarning(ex, "Failed to get browser info");
             return null;
         }
     }

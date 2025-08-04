@@ -9,16 +9,11 @@ using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 namespace CleanArchitecture.Blazor.Infrastructure.Persistence;
 
 #nullable disable
-public class ApplicationDbContext : IdentityDbContext<
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<
     ApplicationUser, ApplicationRole, string,
     ApplicationUserClaim, ApplicationUserRole, ApplicationUserLogin,
-    ApplicationRoleClaim, ApplicationUserToken>, IApplicationDbContext, IDataProtectionKeyContext
+    ApplicationRoleClaim, ApplicationUserToken>(options), IApplicationDbContext, IDataProtectionKeyContext
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-        : base(options)
-    {
-    }
-
     public DbSet<Tenant> Tenants { get; set; }
     public DbSet<SystemLog> SystemLogs { get; set; }
     public DbSet<AuditTrail> AuditTrails { get; set; }

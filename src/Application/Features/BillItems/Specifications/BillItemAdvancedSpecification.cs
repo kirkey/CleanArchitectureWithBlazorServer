@@ -37,7 +37,7 @@ public class BillItemAdvancedSpecification : Specification<BillItem>
     {
         Query.Where(q => q.ItemName != null)
              .Where(filter.Keyword, !string.IsNullOrEmpty(filter.Keyword))
-             .Where(q => q.BillID == filter.BillID, !string.IsNullOrEmpty(filter.BillID))
+             .Where(q => q.BillId == filter.BillID, !string.IsNullOrEmpty(filter.BillID))
              .Where(q => q.UnitPrice >= filter.MinUnitPrice, filter.MinUnitPrice.HasValue)
              .Where(q => q.UnitPrice <= filter.MaxUnitPrice, filter.MaxUnitPrice.HasValue)
              .Where(q => q.Quantity >= filter.MinQuantity, filter.MinQuantity.HasValue)

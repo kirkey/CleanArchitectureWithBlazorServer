@@ -9,6 +9,25 @@
 
 namespace CleanArchitecture.Blazor.Application.Features.ChartOfAccounts.EventHandlers;
 
+public class ChartOfAccountCreatedEventHandler : INotificationHandler<ChartOfAccountCreatedEvent>
+{
+    private readonly ILogger<ChartOfAccountCreatedEventHandler> _logger;
+
+    public ChartOfAccountCreatedEventHandler(
+        ILogger<ChartOfAccountCreatedEventHandler> logger
+    )
+    {
+        _logger = logger;
+    }
+    
+    public Task Handle(ChartOfAccountCreatedEvent notification, CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Handled domain event '{EventType}' with notification: {@Notification} ", notification.GetType().Name, notification);
+        return Task.CompletedTask;
+    }
+}
+
+
 public class ChartOfAccountUpdatedEventHandler : INotificationHandler<ChartOfAccountUpdatedEvent>
 {
     private readonly ILogger<ChartOfAccountUpdatedEventHandler> _logger;

@@ -7,26 +7,14 @@ using CleanArchitecture.Blazor.Domain.Common.Enums;
 
 namespace CleanArchitecture.Blazor.Infrastructure.Services.Gemini;
 
-public class DocumentOcrJob : IDocumentOcrJob
+public class DocumentOcrJob(
+    IApplicationHubWrapper appNotificationService,
+    IApplicationDbContextFactory dbContextFactory,
+    IHttpClientFactory httpClientFactory,
+    ILogger<DocumentOcrJob> logger)
+    : IDocumentOcrJob
 {
-    private readonly IApplicationDbContextFactory _dbContextFactory;
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly ILogger<DocumentOcrJob> _logger;
-    private readonly IApplicationHubWrapper _notificationService;
-    private readonly Stopwatch _timer;
-
-    public DocumentOcrJob(
-        IApplicationHubWrapper appNotificationService,
-        IApplicationDbContextFactory dbContextFactory,
-        IHttpClientFactory httpClientFactory,
-        ILogger<DocumentOcrJob> logger)
-    {
-        _notificationService = appNotificationService;
-        _dbContextFactory = dbContextFactory;
-        _httpClientFactory = httpClientFactory;
-        _logger = logger;
-        _timer = new Stopwatch();
-    }
+    private readonly Stopwatch _timer = new();
 
     public void Do(int id)
     {
@@ -37,24 +25,24 @@ public class DocumentOcrJob : IDocumentOcrJob
     {
         try
         {
-            using (var client = _httpClientFactory.CreateClient("ocr"))
+            using (var client = httpClientFactory.CreateClient("ocr"))
             {
                 _timer.Start();
-                await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
+                await using var db = await dbContextFactory.CreateAsync(cancellationToken);
 
                 var doc = await db.Documents.FindAsync(id);
                 if (doc == null)
                 {
-                    _logger.LogWarning("Document with Id {Id} not found.", id);
+                    logger.LogWarning("Document with Id {Id} not found.", id);
                     return;
                 }
 
-                await _notificationService.JobStarted(id, doc.Title!);
+                await appNotificationService.JobStarted(id, doc.Title!);
                 CancelCacheToken();
 
-                if (string.IsNullOrEmpty(doc.URL))
+                if (string.IsNullOrEmpty(doc.Url))
                 {
-                    _logger.LogWarning("Document URL is null or empty for Id {Id}.", id);
+                    logger.LogWarning("Document URL is null or empty for Id {Id}.", id);
                     return;
                 }
 
@@ -62,7 +50,7 @@ public class DocumentOcrJob : IDocumentOcrJob
                 string? mimeType;
                 using (var imgClient = new HttpClient())
                 {
-                    var imgResponse = await imgClient.GetAsync(doc.URL, cancellationToken);
+                    var imgResponse = await imgClient.GetAsync(doc.Url, cancellationToken);
                     imgResponse.EnsureSuccessStatusCode();
 
                     imageBytes = await imgResponse.Content.ReadAsByteArrayAsync();
@@ -130,11 +118,11 @@ public class DocumentOcrJob : IDocumentOcrJob
                     doc.Content = markdownText;
 
                     await db.SaveChangesAsync(cancellationToken);
-                    await _notificationService.JobCompleted(id, doc.Title!);
+                    await appNotificationService.JobCompleted(id, doc.Title!);
                     CancelCacheToken();
 
                     _timer.Stop();
-                    _logger.LogInformation(
+                    logger.LogInformation(
                         "Image recognition completed successfully {@Document}. Id: {Id}, Elapsed Time: {ElapsedMilliseconds}ms", doc,
                         id, _timer.ElapsedMilliseconds);
                 }
@@ -145,18 +133,18 @@ public class DocumentOcrJob : IDocumentOcrJob
                     doc.Content = result;
 
                     await db.SaveChangesAsync(cancellationToken);
-                    await _notificationService.JobCompleted(id, $"Error: {result}");
+                    await appNotificationService.JobCompleted(id, $"Error: {result}");
                     CancelCacheToken();
 
-                    _logger.LogError("Image recognition failed for Id: {Id}, Status Code: {StatusCode}, Message: {Message}",
+                    logger.LogError("Image recognition failed for Id: {Id}, Status Code: {StatusCode}, Message: {Message}",
                         id, response.StatusCode, result);
                 }
             }
         }
         catch (Exception ex)
         {
-            await _notificationService.JobCompleted(id, $"Error: {ex.Message}");
-            _logger.LogError(ex, "Image recognition error for Id: {Id}, Message: {Message}", id, ex.Message);
+            await appNotificationService.JobCompleted(id, $"Error: {ex.Message}");
+            logger.LogError(ex, "Image recognition error for Id: {Id}, Message: {Message}", id, ex.Message);
         }
         finally
         {

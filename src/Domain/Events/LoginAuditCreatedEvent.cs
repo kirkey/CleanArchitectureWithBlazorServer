@@ -2,13 +2,8 @@
 
 namespace CleanArchitecture.Blazor.Domain.Events;
 
-    public class LoginAuditCreatedEvent : DomainEvent
+    public class LoginAuditCreatedEvent(LoginAudit item) : DomainEvent
     {
-        public LoginAuditCreatedEvent(LoginAudit item)
-        {
-            Item = item;
-        }
-
-        public LoginAudit Item { get; }
+        public LoginAudit Item { get; } = item;
     }
 
