@@ -142,6 +142,7 @@ public static class DependencyInjection
                     {
                         options.MigrationsAssembly(MYSQL_MIGRATIONS_ASSEMBLY);
                         options.SchemaBehavior(MySqlSchemaBehavior.Ignore);
+                        options.EnableStringComparisonTranslations();
                     })
                     .UseCamelCaseNamingConvention();
 
