@@ -17,11 +17,8 @@ public class InvoiceItemDto
     [Description("Id")]
     public string Id { get; set; } = string.Empty;
     
-    [Description("Invoice ID")]
-    public string? InvoiceID { get; set; }
-    
-    [Description("Item Name")]
-    public string? ItemName { get; set; }
+    [Description("Invoice Id")]
+    public string? InvoiceId { get; set; }
     
     [Description("Quantity")]
     public int Quantity { get; set; }
@@ -43,6 +40,12 @@ public class InvoiceItemDto
     
     [Description("Last Modified By")]
     public string? LastModifiedBy { get; set; }
+    [Description("Name")]
+    public string Name { get; set; }
+    [Description("Description")]
+    public string? Description { get; set; }
+    [Description("Notes")]
+    public string? Notes { get; set; }
 
     private class Mapping : Profile
     {

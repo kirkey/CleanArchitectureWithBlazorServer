@@ -12,13 +12,13 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
         builder.Property(t => t.Id)
             .HasMaxLength(36);  // ULID length
 
-        builder.Property(t => t.CustomerName)
+        builder.Property(t => t.Name)
             .HasMaxLength(256);
 
         builder.Property(t => t.BillingAddress)
             .HasMaxLength(500);
 
-        builder.Property(t => t.ContactPerson)
+        builder.Property(t => t.PhoneNumber)
             .HasMaxLength(100);
 
         builder.Property(t => t.Email)

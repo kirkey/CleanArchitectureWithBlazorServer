@@ -32,6 +32,10 @@ public abstract class BaseUlidEntity : IEntity<string>
 
 public abstract class BaseUlidAuditableEntity : BaseUlidEntity, IAuditableEntity
 {
+    public string Name { get; private set; } = string.Empty;
+    public string? Description { get; private set; }
+    public string? Notes { get; private set; }
+    
     public virtual DateTime? Created { get; set; }
 
     public virtual string? CreatedBy { get; set; }

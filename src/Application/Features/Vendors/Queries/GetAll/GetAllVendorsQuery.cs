@@ -44,7 +44,7 @@ public class GetAllVendorsQueryHandler : IRequestHandler<GetAllVendorsQuery, IEn
     {
         await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
         var data = await db.Vendors
-            .OrderBy(x => x.VendorName)
+            .OrderBy(x => x.Name)
             .ToListAsync(cancellationToken);
         return _mapper.Map<List<VendorDto>>(data);
     }

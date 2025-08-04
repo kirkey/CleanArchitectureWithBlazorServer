@@ -1,0 +1,111 @@
+﻿@page "/pages/generalledgers/edit/{id}"
+@using CleanArchitecture.Blazor.Application.Features.GeneralLedgers.Commands.Update
+@using CleanArchitecture.Blazor.Application.Features.GeneralLedgers.Queries.GetById
+@using CleanArchitecture.Blazor.Server.UI.Components.Fusion
+
+@inherits MudComponentBase
+@inject IValidationService Validator
+@inject IStringLocalizer<GeneralLedgers> L
+@attribute [Authorize(Policy = Permissions.GeneralLedgers.Edit)]
+
+<PageTitle>@Title</PageTitle>
+<Breadcrumbs OnSaveButtonClick="OnSubmit" Saving="_saving" BreadcrumbItems="_breadcrumbItems"></Breadcrumbs>
+<MudContainer Class="mt-3" MaxWidth="MaxWidth.Large">
+@if (_model != null)
+{
+    <MudCard Class="pa-2">
+        <MudCardHeader>
+            <CardHeaderContent>
+                 <MudText Typo="Typo.h6">@Title</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+        <ActiveUserSession PageComponent="@($"{nameof(EditGeneralLedger)}/{ _model.Id }")" />
+        <MudForm Model="@_model" @ref="@_form" Validation="@(Validator.ValidateValue(_model))">
+            <MudGrid Spacing="2">
+                <MudItem xs="12" md="6"> 
+                    <MudTextField Label="@L[_model.GetMemberDescription(x=>x.EntryId)]" @bind-Value="_model.EntryId" For="@(() => _model.EntryId)" Required="true" RequiredError="@L["entry id is required!"]"></MudTextField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <MudTextField Label="@L[_model.GetMemberDescription(x=>x.AccountId)]" @bind-Value="_model.AccountId" For="@(() => _model.AccountId)" Required="true" RequiredError="@L["account id is required!"]"></MudTextField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <MudNumericField T="decimal" Label="@L[_model.GetMemberDescription(x=>x.Debit)]" @bind-Value="_model.Debit" For="@(() => _model.Debit)" Format="C"></MudNumericField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <MudNumericField T="decimal" Label="@L[_model.GetMemberDescription(x=>x.Credit)]" @bind-Value="_model.Credit" For="@(() => _model.Credit)" Format="C"></MudNumericField>
+                </MudItem> 
+                <MudItem xs="12" md="12"> 
+                    <MudTextField Label="@L[_model.GetMemberDescription(x=>x.Memo)]" @bind-Value="_model.Memo" For="@(() => _model.Memo)" Lines="3"></MudTextField>
+                </MudItem> 
+            </MudGrid>
+        </MudForm>
+        </MudCardContent>
+        <MudCardActions Class="d-flex justify-end gap-2">
+                    <MudLoadingButton Color="Color.Primary" DropShadow="false" Loading="@_saving" OnClick="OnSubmit">@ConstantString.Save</MudLoadingButton>
+        </MudCardActions>
+        </MudCard>
+    }
+</MudContainer>
+
+@code {
+    public string? Title { get; private set; }
+    [Parameter] public string Id { get; set; } = string.Empty;
+    MudForm _form = new();
+    private bool _saving = false;
+    private List<BreadcrumbItem>? _breadcrumbItems;
+    private UpdateGeneralLedgerCommand? _model;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Title = L["Edit General Ledger"];
+        _breadcrumbItems = new List<BreadcrumbItem>
+        {
+            new(L["Home"], href: "/"),
+            new(L["General Ledgers"], href: "/pages/generalledgers"),
+            new(L["Edit"], href: null, disabled: true)
+        };
+
+        var query = new GetGeneralLedgerByIdQuery() { Id = Id };
+        var result = await Mediator.Send(query);
+        await result.MatchAsync(
+            data =>
+            {
+                _model = Mapper.Map<UpdateGeneralLedgerCommand>(data);
+                return Task.CompletedTask;
+            },
+            errors =>
+            {
+                Snackbar.Add(errors, Severity.Error);
+                return Task.CompletedTask;
+            });
+    }
+
+    async Task OnSubmit()
+    {
+        try
+        {
+            _saving = true;
+            await _form.Validate().ConfigureAwait(false);
+            if (!_form.IsValid || _model == null)
+                return;
+            var result = await Mediator.Send(_model);
+            await result.MatchAsync(
+                data =>
+                {
+                    Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
+                    Navigation.NavigateTo("/pages/generalledgers");
+                    return Task.CompletedTask;
+                },
+                errors =>
+                {
+                    Snackbar.Add(errors, Severity.Error);
+                    return Task.CompletedTask;
+                });
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}

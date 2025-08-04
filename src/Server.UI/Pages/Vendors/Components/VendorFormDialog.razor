@@ -1,0 +1,101 @@
+﻿@using CleanArchitecture.Blazor.Application.Features.Vendors.Commands.AddEdit
+
+@inherits MudComponentBase
+@inject IValidationService Validator
+@inject IStringLocalizer<Vendors> L
+
+<MudDialog>
+    <DialogContent>
+        <MudForm Model="@_model" @ref="@_form" Validation="@(Validator.ValidateValue(_model))">
+            <MudGrid>
+                <MudItem xs="12" md="6"> 
+                    <MudTextField Label="@L[_model.GetMemberDescription(x=>x.Name)]" @bind-Value="_model.Name" For="@(() => _model.Name)" Required="true" RequiredError="@L["name is required!"]"></MudTextField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <MudTextField Label="@L[_model.GetMemberDescription(x=>x.Email)]" @bind-Value="_model.Email" For="@(() => _model.Email)"></MudTextField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <MudTextField Label="@L[_model.GetMemberDescription(x=>x.PhoneNumber)]" @bind-Value="_model.PhoneNumber" For="@(() => _model.PhoneNumber)"></MudTextField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <MudTextField Label="@L[_model.GetMemberDescription(x=>x.Country)]" @bind-Value="_model.Country" For="@(() => _model.Country)"></MudTextField>
+                </MudItem> 
+                <MudItem xs="12" md="12"> 
+                    <MudTextField Label="@L[_model.GetMemberDescription(x=>x.Description)]" @bind-Value="_model.Description" For="@(() => _model.Description)" Lines="3"></MudTextField>
+                </MudItem> 
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@ConstantString.Cancel</MudButton>
+        <MudLoadingButton Loading="@_savingnew" OnClick="OnSaveAndNew">@ConstantString.SaveAndNew</MudLoadingButton>
+        <MudLoadingButton Loading="@_saving" OnClick="OnSubmit">@ConstantString.Save</MudLoadingButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    MudForm _form = new();
+    private bool _saving = false;
+    private bool _savingnew = false;
+    [CascadingParameter]
+    IMudDialogInstance MudDialog { get; set; } = default!;
+    [EditorRequired] [Parameter] public AddEditVendorCommand _model { get; set; } = null!;
+    
+    async Task OnSubmit()
+    {
+        try
+        {
+            _saving = true;
+            await _form.Validate().ConfigureAwait(false);
+            if (!_form.IsValid)
+                return;
+            var result = await Mediator.Send(_model);
+            await result.MatchAsync(
+                data =>
+                {
+                    MudDialog.Close(DialogResult.Ok(true));
+                    Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
+                    return Task.CompletedTask;
+                },
+                errors =>
+                {
+                    Snackbar.Add(errors, Severity.Error);
+                    return Task.CompletedTask;
+                });
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+    
+    async Task OnSaveAndNew()
+    {
+        try
+        {
+            _savingnew = true;
+            await _form.Validate().ConfigureAwait(false);
+            if (!_form.IsValid)
+                return;
+            var result = await Mediator.Send(_model);
+            await result.MatchAsync(
+                data =>
+                {
+                    Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
+                    _model = new AddEditVendorCommand();
+                    return Task.CompletedTask;
+                },
+                errors =>
+                {
+                    Snackbar.Add(errors, Severity.Error);
+                    return Task.CompletedTask;
+                });
+        }
+        finally
+        {
+            _savingnew = false;
+        }
+    }
+    
+    void Cancel() => MudDialog.Cancel();
+}

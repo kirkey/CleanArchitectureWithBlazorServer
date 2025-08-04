@@ -1,0 +1,77 @@
+﻿@page "/pages/ChartOfAccounts/view/{Id}"
+@using CleanArchitecture.Blazor.Application.Features.ChartOfAccounts.Commands.Delete
+@using CleanArchitecture.Blazor.Application.Features.ChartOfAccounts.DTOs
+@using CleanArchitecture.Blazor.Application.Features.ChartOfAccounts.Queries.GetById
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject IStringLocalizer<ViewChartOfAccount> L
+
+<PageTitle>@L["View Chart Of Account"]</PageTitle>
+<MudPaper>
+    <MudBreadcrumb Items="_breadcrumbItems" />
+    <MudText Typo="Typo.h5">@L["Chart Of Account Details"]</MudText>
+    <MudDivider />
+    <MudCard>
+        <MudCardContent>
+            <MudText Typo="Typo.subtitle1">@_model?.Name</MudText>
+            <MudText Typo="Typo.body2">@_model?.Description</MudText>
+            <MudText Typo="Typo.body2">@_model?.AccountType</MudText>
+            <MudText Typo="Typo.body2">@_model?.SubAccountOf</MudText>
+            <MudText Typo="Typo.body2">@_model?.IsActive</MudText>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="GoEdit">@L["Edit"]</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="Delete">@L["Delete"]</MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudPaper>
+
+@code {
+    public string? Title { get; private set; }
+    [Parameter] public string Id { get; set; } = string.Empty;
+    private ChartOfAccountDto? _model;
+    private List<BreadcrumbItem> _breadcrumbItems = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Title = L["Contact"];
+        _breadcrumbItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem(L["Home"], href: "/"),
+            new BreadcrumbItem(L["Contacts"], href: "/pages/contacts")
+        };
+        var result = await Mediator.Send(new GetChartOfAccountByIdQuery() { Id = Id });
+        result.Map(data =>
+        {
+            _model = data;
+            return data;
+        }).Match(data =>
+        {
+            _breadcrumbItems.Add(new BreadcrumbItem(data.Name, null, disabled: true));
+        }, errors =>
+        {
+            Snackbar.Add(errors, MudBlazor.Severity.Error);
+        });
+
+    }
+    void GoEdit()
+    {
+        Navigation.NavigateTo($"/pages/ChartOfAccounts/edit/{Id}");
+    }
+    async Task Delete()
+    {
+        if (_model == null)
+            return;
+        var contentText = string.Format(ConstantString.DeleteConfirmation, _model.Name ?? string.Empty);
+        var command = new DeleteChartOfAccountCommand(new string[] { _model.Id });
+        await DialogServiceHelper.ShowDeleteConfirmationDialogAsync(command, ConstantString.DeleteConfirmationTitle, contentText, async () =>
+        {
+            await InvokeAsync(() =>
+            {
+                Navigation.NavigateTo($"/pages/ChartOfAccounts");
+            });
+        });
+    }
+}
+

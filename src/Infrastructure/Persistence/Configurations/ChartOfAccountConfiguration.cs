@@ -11,10 +11,10 @@ public class ChartOfAccountConfiguration : IEntityTypeConfiguration<ChartOfAccou
     public void Configure(EntityTypeBuilder<ChartOfAccount> builder)
     {
         builder.Property(t => t.Id).HasMaxLength(36);
-        builder.Property(t => t.AccountName).HasMaxLength(256).IsRequired();
+        builder.Property(t => t.Name).HasMaxLength(256).IsRequired();
         builder.Property(t => t.Description).HasMaxLength(500);
         builder.Property(t => t.SubAccountOf).HasMaxLength(36);
-        builder.HasIndex(x => x.AccountName);
+        builder.HasIndex(x => x.Name);
         builder.Ignore(e => e.DomainEvents);
 
         // Configure enum

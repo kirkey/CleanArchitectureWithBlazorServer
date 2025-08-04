@@ -90,14 +90,13 @@ namespace CleanArchitecture.Blazor.Application.Features.Contacts.Commands.Import
         }
         public async Task<Result<byte[]>> Handle(CreateContactsTemplateCommand request, CancellationToken cancellationToken)
         {
-            var fields = new string[] {
-                   _localizer[_dto.GetMemberDescription(x=>x.Name)], 
-_localizer[_dto.GetMemberDescription(x=>x.Description)], 
-_localizer[_dto.GetMemberDescription(x=>x.Email)], 
-_localizer[_dto.GetMemberDescription(x=>x.PhoneNumber)], 
-_localizer[_dto.GetMemberDescription(x=>x.Country)], 
-
-                };
+            var fields = new string[] { 
+                _localizer[_dto.GetMemberDescription(x=>x.Name)], 
+                _localizer[_dto.GetMemberDescription(x=>x.Description)], 
+                _localizer[_dto.GetMemberDescription(x=>x.Email)], 
+                _localizer[_dto.GetMemberDescription(x=>x.PhoneNumber)], 
+                _localizer[_dto.GetMemberDescription(x=>x.Country)], 
+            };
             var result = await _excelService.CreateTemplateAsync(fields, _localizer[_dto.GetClassDescription()]);
             return await Result<byte[]>.SuccessAsync(result);
         }

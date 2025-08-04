@@ -8,7 +8,6 @@ namespace CleanArchitecture.Blazor.Domain.Entities;
 public class InvoiceItem : BaseUlidAuditableEntity
 {
     public string? InvoiceId { get; set; }
-    public string? ItemName { get; set; }
     public int Quantity { get; set; }
     public decimal UnitPrice { get; set; }
     public decimal LineTotal { get; set; }

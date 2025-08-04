@@ -1,0 +1,106 @@
+﻿@page "/pages/journalentries/view/{id}"
+@using CleanArchitecture.Blazor.Application.Features.JournalEntries.Commands.Delete
+@using CleanArchitecture.Blazor.Application.Features.JournalEntries.DTOs
+@using CleanArchitecture.Blazor.Application.Features.JournalEntries.Queries.GetById
+@inherits MudComponentBase
+@inject IStringLocalizer<JournalEntries> L
+@attribute [Authorize(Policy = Permissions.JournalEntries.View)]
+<PageTitle>@Title</PageTitle>
+<Breadcrumbs OnGoEditClick="GoEdit" OnDeleteClick="Delete" BreadcrumbItems="_breadcrumbItems"></Breadcrumbs>
+<MudContainer Class="mt-3" MaxWidth="MaxWidth.Large">
+@if (_model != null)
+{
+    <MudCard Class="pa-2">
+        <MudCardHeader>
+            <CardHeaderContent>
+                 <MudText Typo="Typo.h6">@Title</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudGrid Spacing="3" Class="readonly-grid">
+                <MudItem xs="12" md="6"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.Date)]" Value="_model.Date.ToString("yyyy-MM-dd")"></ReadOnlyField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.ReferenceNumber)]" Value="_model.ReferenceNumber"></ReadOnlyField>
+                </MudItem> 
+                <MudItem xs="12" md="12"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.Description)]" Value="_model.Description"></ReadOnlyField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.Source)]" Value="_model.Source"></ReadOnlyField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.IsPosted)]" Value="@(_model.IsPosted ? "Posted" : "Not Posted")"></ReadOnlyField>
+                </MudItem> 
+            </MudGrid>
+        </MudCardContent>
+        <MudCardActions></MudCardActions>
+    </MudCard>
+ }
+</MudContainer>
+
+@code {
+    public string? Title { get; private set; }
+    [Parameter] public string Id { get; set; } = string.Empty;
+    private List<BreadcrumbItem>? _breadcrumbItems; 
+    private JournalEntryDto? _model;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        Title = L["View Journal Entry"];
+        _breadcrumbItems = new List<BreadcrumbItem>
+        {
+            new(L["Home"], href: "/"),
+            new(L["Journal Entries"], href: "/pages/journalentries"),
+            new(L["View"], href: null, disabled: true)
+        };
+
+        var query = new GetJournalEntryByIdQuery() { Id = Id };
+        var result = await Mediator.Send(query);
+        await result.MatchAsync(
+            data =>
+            {
+                _model = data;
+                return Task.CompletedTask;
+            },
+            errors =>
+            {
+                Snackbar.Add(errors, Severity.Error);
+                return Task.CompletedTask;
+            });
+    }
+
+    void GoEdit()
+    {
+        Navigation.NavigateTo($"/pages/journalentries/edit/{Id}");
+    }
+
+    async Task Delete()
+    {
+        var contentText = string.Format(ConstantString.DeleteConfirmation, _model?.ReferenceNumber);
+        var confirmed = await DialogService.ShowMessageBox(
+            ConstantString.DeleteConfirmationTitle,
+            contentText,
+            yesText: ConstantString.Delete,
+            cancelText: ConstantString.Cancel);
+
+        if (confirmed == true && _model != null)
+        {
+            var command = new DeleteJournalEntryCommand(new[] { _model.Id });
+            var result = await Mediator.Send(command);
+            await result.MatchAsync(
+                data =>
+                {
+                    Snackbar.Add(ConstantString.DeleteSuccess, Severity.Info);
+                    Navigation.NavigateTo("/pages/journalentries");
+                    return Task.CompletedTask;
+                },
+                errors =>
+                {
+                    Snackbar.Add(errors, Severity.Error);
+                    return Task.CompletedTask;
+                });
+        }
+    }
+}

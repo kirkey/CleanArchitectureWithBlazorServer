@@ -9,7 +9,7 @@ public static partial class Permissions
 
     [DisplayName("Accounting")]
     [Description("Set permissions for Accounting")]
-    public static class Accounting
+    public class Accounting
     {
         [Description("Allows viewing accounting data")]
         public const string View = "Permissions.Accounting.View";
@@ -21,6 +21,8 @@ public static partial class Permissions
         public const string Delete = "Permissions.Accounting.Delete";
         [Description("Allows searching accounting data")]
         public const string Search = "Permissions.Accounting.Search";
+        [Description("Allows importing accounting data")]
+        public const string Import = "Permissions.Accounting.Import";
         [Description("Allows exporting accounting data")]
         public const string Export = "Permissions.Accounting.Export";
     }

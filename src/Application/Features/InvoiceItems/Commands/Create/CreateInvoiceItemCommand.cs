@@ -16,7 +16,7 @@ namespace CleanArchitecture.Blazor.Application.Features.InvoiceItems.Commands.Cr
 
 public class CreateInvoiceItemCommand : ICacheInvalidatorRequest<Result<string>>
 {
-    [Description("Invoice ID")]
+    [Description("Invoice Id")]
     public string? InvoiceID { get; set; }
     
     [Description("Item Name")]

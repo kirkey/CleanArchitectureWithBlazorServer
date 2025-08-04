@@ -1,0 +1,97 @@
+﻿@page "/pages/payments/create"
+@using CleanArchitecture.Blazor.Application.Features.Payments.Commands.Create
+
+@inherits MudComponentBase
+@inject IValidationService Validator
+@inject IStringLocalizer<Payments> L
+@attribute [Authorize(Policy = Permissions.Payments.Create)]
+
+<PageTitle>@Title</PageTitle>
+<Breadcrumbs OnSaveButtonClick="OnSubmit" Saving="_saving" BreadcrumbItems="_breadcrumbItems"></Breadcrumbs>
+<MudContainer Class="mt-3" MaxWidth="MaxWidth.Large">
+    <MudCard Class="pa-2">
+        <MudCardHeader>
+            <CardHeaderContent>
+                 <MudText Typo="Typo.h6">@Title</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+        <MudForm Model="@_model" @ref="@_form" Validation="@(Validator.ValidateValue(_model))">
+            <MudGrid Spacing="2">
+                <MudItem xs="12" md="6"> 
+                    <MudTextField Label="@L[_model.GetMemberDescription(x=>x.CustomerId)]" @bind-Value="_model.CustomerId" For="@(() => _model.CustomerId)" Required="true" RequiredError="@L["customer id is required!"]"></MudTextField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <MudDatePicker Label="@L[_model.GetMemberDescription(x=>x.PaymentDate)]" @bind-Date="_model.PaymentDate" For="@(() => _model.PaymentDate)" Required="true"></MudDatePicker>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <MudNumericField T="decimal" Label="@L[_model.GetMemberDescription(x=>x.Amount)]" @bind-Value="_model.Amount" For="@(() => _model.Amount)" Format="C" Required="true"></MudNumericField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <MudSelect T="PaymentMethod" Label="@L[_model.GetMemberDescription(x=>x.PaymentMethod)]" @bind-Value="_model.PaymentMethod" For="@(() => _model.PaymentMethod)" Required="true">
+                        @foreach (PaymentMethod item in Enum.GetValues<PaymentMethod>())
+                        {
+                            <MudSelectItem Value="@item">@item.ToString()</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <MudTextField Label="@L[_model.GetMemberDescription(x=>x.ReferenceNumber)]" @bind-Value="_model.ReferenceNumber" For="@(() => _model.ReferenceNumber)"></MudTextField>
+                </MudItem> 
+            </MudGrid>
+        </MudForm>
+        </MudCardContent>
+         <MudCardActions Class="d-flex justify-end gap-2">
+                    <MudLoadingButton Color="Color.Primary" DropShadow="false" Loading="@_saving" OnClick="OnSubmit">@ConstantString.Save</MudLoadingButton>
+         </MudCardActions>
+        </MudCard>
+</MudContainer>
+
+@code {
+    public string? Title { get; private set; }
+    MudForm _form = new();
+    private bool _saving = false;
+    private List<BreadcrumbItem>? _breadcrumbItems;
+    private CreatePaymentCommand _model = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Title = L["Create Payment"];
+        _breadcrumbItems = new List<BreadcrumbItem>
+        {
+            new(L["Home"], href: "/"),
+            new(L["Payments"], href: "/pages/payments"),
+            new(L["Create"], href: null, disabled: true)
+        };
+        _model.PaymentDate = DateTime.Now;
+        _model.PaymentMethod = PaymentMethod.Cash;
+    }
+
+    async Task OnSubmit()
+    {
+        try
+        {
+            _saving = true;
+            await _form.Validate().ConfigureAwait(false);
+            if (!_form.IsValid)
+                return;
+            var result = await Mediator.Send(_model);
+            await result.MatchAsync(
+                data =>
+                {
+                    Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
+                    Navigation.NavigateTo("/pages/payments");
+                    return Task.CompletedTask;
+                },
+                errors =>
+                {
+                    Snackbar.Add(errors, Severity.Error);
+                    return Task.CompletedTask;
+                });
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}

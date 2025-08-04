@@ -18,13 +18,19 @@ public class VendorDto
     public string Id { get; set; } = string.Empty;
     
     [Description("Vendor Name")]
-    public string? VendorName { get; set; }
+    public string? Name { get; set; }
+    
+    [Description("Description")]
+    public string? Description { get; set; }
+    
+    [Description("Notes")]
+    public string? Notes { get; set; }
     
     [Description("Billing Address")]
     public string? BillingAddress { get; set; }
     
-    [Description("Contact Person")]
-    public string? ContactPerson { get; set; }
+    [Description("Phone Number")]
+    public string? PhoneNumber { get; set; }
     
     [Description("Email")]
     public string? Email { get; set; }

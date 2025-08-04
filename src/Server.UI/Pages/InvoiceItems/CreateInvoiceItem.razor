@@ -1,0 +1,91 @@
+﻿@page "/pages/invoiceitems/create"
+@using CleanArchitecture.Blazor.Application.Features.InvoiceItems.Commands.Create
+
+@inherits MudComponentBase
+@inject IValidationService Validator
+@inject IStringLocalizer<InvoiceItems> L
+@attribute [Authorize(Policy = Permissions.InvoiceItems.Create)]
+
+<PageTitle>@Title</PageTitle>
+<Breadcrumbs OnSaveButtonClick="OnSubmit" Saving="_saving" BreadcrumbItems="_breadcrumbItems"></Breadcrumbs>
+<MudContainer Class="mt-3" MaxWidth="MaxWidth.Large">
+    <MudCard Class="pa-2">
+        <MudCardHeader>
+            <CardHeaderContent>
+                 <MudText Typo="Typo.h6">@Title</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+        <MudForm Model="@_model" @ref="@_form" Validation="@(Validator.ValidateValue(_model))">
+            <MudGrid Spacing="2">
+                <MudItem xs="12" md="6"> 
+                    <MudTextField Label="@L[_model.GetMemberDescription(x=>x.InvoiceId)]" @bind-Value="_model.InvoiceId" For="@(() => _model.InvoiceId)" Required="true" RequiredError="@L["invoice id is required!"]"></MudTextField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <MudTextField Label="@L[_model.GetMemberDescription(x=>x.ProductId)]" @bind-Value="_model.ProductId" For="@(() => _model.ProductId)" Required="true" RequiredError="@L["product id is required!"]"></MudTextField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <MudNumericField T="int" Label="@L[_model.GetMemberDescription(x=>x.Quantity)]" @bind-Value="_model.Quantity" For="@(() => _model.Quantity)" Required="true"></MudNumericField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <MudNumericField T="decimal" Label="@L[_model.GetMemberDescription(x=>x.UnitPrice)]" @bind-Value="_model.UnitPrice" For="@(() => _model.UnitPrice)" Format="C" Required="true"></MudNumericField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <MudNumericField T="decimal" Label="@L[_model.GetMemberDescription(x=>x.TotalPrice)]" @bind-Value="_model.TotalPrice" For="@(() => _model.TotalPrice)" Format="C" Required="true"></MudNumericField>
+                </MudItem> 
+            </MudGrid>
+        </MudForm>
+        </MudCardContent>
+         <MudCardActions Class="d-flex justify-end gap-2">
+                    <MudLoadingButton Color="Color.Primary" DropShadow="false" Loading="@_saving" OnClick="OnSubmit">@ConstantString.Save</MudLoadingButton>
+         </MudCardActions>
+        </MudCard>
+</MudContainer>
+
+@code {
+    public string? Title { get; private set; }
+    MudForm _form = new();
+    private bool _saving = false;
+    private List<BreadcrumbItem>? _breadcrumbItems;
+    private CreateInvoiceItemCommand _model = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Title = L["Create Invoice Item"];
+        _breadcrumbItems = new List<BreadcrumbItem>
+        {
+            new(L["Home"], href: "/"),
+            new(L["Invoice Items"], href: "/pages/invoiceitems"),
+            new(L["Create"], href: null, disabled: true)
+        };
+        _model.Quantity = 1;
+    }
+
+    async Task OnSubmit()
+    {
+        try
+        {
+            _saving = true;
+            await _form.Validate().ConfigureAwait(false);
+            if (!_form.IsValid)
+                return;
+            var result = await Mediator.Send(_model);
+            await result.MatchAsync(
+                data =>
+                {
+                    Snackbar.Add(ConstantString.SaveSuccess, Severity.Info);
+                    Navigation.NavigateTo("/pages/invoiceitems");
+                    return Task.CompletedTask;
+                },
+                errors =>
+                {
+                    Snackbar.Add(errors, Severity.Error);
+                    return Task.CompletedTask;
+                });
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}

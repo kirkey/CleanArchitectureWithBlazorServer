@@ -3,16 +3,12 @@
 // CleanArchitecture.Blazor - MIT Licensed.
 // Author: neozhu
 // Created/Modified: 2025-08-04
-// Query for getting ChartOfAccounts with pagination.
+// Query for retrieving chart of accounts with pagination and filtering options. Cached for performance.
 // </auto-generated>
 //------------------------------------------------------------------------------
-#nullable enable
-#nullable disable warnings
-
 using CleanArchitecture.Blazor.Application.Features.ChartOfAccounts.DTOs;
 using CleanArchitecture.Blazor.Application.Features.ChartOfAccounts.Caching;
 using CleanArchitecture.Blazor.Application.Features.ChartOfAccounts.Specifications;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace CleanArchitecture.Blazor.Application.Features.ChartOfAccounts.Queries.Pagination;
 
@@ -20,29 +16,21 @@ public class ChartOfAccountsWithPaginationQuery : ChartOfAccountAdvancedFilter, 
 {
     public override string ToString()
     {
-        return $"Listview:{ListView}, Search:{Keyword}, {OrderBy}, {SortDirection}, {PageNumber}, {PageSize}";
+        return $"Listview:{ListView}:{CurrentUser?.UserId}, Search:{Keyword}, {OrderBy}, {SortDirection}, {PageNumber}, {PageSize}";
     }
-
     public string CacheKey => ChartOfAccountCacheKey.GetPaginationCacheKey($"{this}");
-    public IEnumerable<string>? Tags { get; }
-
-    public MemoryCacheEntryOptions? Options => new MemoryCacheEntryOptions
-    {
-        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1)
-    };
-    
-    public ChartOfAccountAdvancedSpecification Specification => new(this);
+    public IEnumerable<string>? Tags => ChartOfAccountCacheKey.Tags;
+    public ChartOfAccountAdvancedSpecification Specification => new ChartOfAccountAdvancedSpecification(this);
 }
 
-public class ChartOfAccountsWithPaginationQueryHandler : IRequestHandler<ChartOfAccountsWithPaginationQuery, PaginatedData<ChartOfAccountDto>>
+public class ChartOfAccountsWithPaginationQueryHandler :
+    IRequestHandler<ChartOfAccountsWithPaginationQuery, PaginatedData<ChartOfAccountDto>>
 {
     private readonly IApplicationDbContextFactory _dbContextFactory;
     private readonly IMapper _mapper;
-
     public ChartOfAccountsWithPaginationQueryHandler(
         IApplicationDbContextFactory dbContextFactory,
-        IMapper mapper
-    )
+        IMapper mapper)
     {
         _dbContextFactory = dbContextFactory;
         _mapper = mapper;
@@ -56,3 +44,4 @@ public class ChartOfAccountsWithPaginationQueryHandler : IRequestHandler<ChartOf
         return data;
     }
 }
+

@@ -17,11 +17,11 @@ public class BillItemDto
     [Description("Id")]
     public string Id { get; set; } = string.Empty;
     
-    [Description("Bill ID")]
-    public string? BillID { get; set; }
+    [Description("Bill Id")]
+    public string? BillId { get; set; }
     
     [Description("Item Name")]
-    public string? ItemName { get; set; }
+    public string? Name { get; set; }
     
     [Description("Quantity")]
     public int Quantity { get; set; }
@@ -43,6 +43,12 @@ public class BillItemDto
     
     [Description("Last Modified By")]
     public string? LastModifiedBy { get; set; }
+
+    [Description("Description")]
+    public string? Description { get; set; }
+
+    [Description("Notes")]
+    public string? Notes { get; set; }
 
     private class Mapping : Profile
     {

@@ -12,7 +12,7 @@ public class InvoiceItemConfiguration : IEntityTypeConfiguration<InvoiceItem>
     {
         builder.Property(t => t.Id).HasMaxLength(36);
         builder.Property(t => t.InvoiceId).HasMaxLength(36);
-        builder.Property(t => t.ItemName).HasMaxLength(256);
+        builder.Property(t => t.Name).HasMaxLength(256);
         builder.Property(t => t.UnitPrice).HasPrecision(18, 2);
         builder.Property(t => t.LineTotal).HasPrecision(18, 2);
         builder.HasIndex(x => x.InvoiceId);

@@ -9,7 +9,6 @@ public class JournalEntry : BaseUlidAuditableEntity
 {
     public DateTime Date { get; set; } = DateTime.Now;
     public string? ReferenceNumber { get; set; }
-    public string? Description { get; set; }
     public string? Source { get; set; }
     public bool IsPosted { get; set; } = false;
     public List<GeneralLedger>? LedgerLines { get; set; }

@@ -16,7 +16,7 @@ namespace CleanArchitecture.Blazor.Application.Features.Payments.Commands.Create
 
 public class CreatePaymentCommand : ICacheInvalidatorRequest<Result<string>>
 {
-    [Description("Customer ID")]
+    [Description("Customer Id")]
     public string? CustomerID { get; set; }
     
     [Description("Payment Date")]

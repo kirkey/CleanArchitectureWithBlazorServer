@@ -44,7 +44,7 @@ public class GetAllCustomersQueryHandler : IRequestHandler<GetAllCustomersQuery,
     {
         await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
         var data = await db.Customers
-            .OrderBy(x => x.CustomerName)
+            .OrderBy(x => x.Name)
             .ToListAsync(cancellationToken);
         return _mapper.Map<List<CustomerDto>>(data);
     }

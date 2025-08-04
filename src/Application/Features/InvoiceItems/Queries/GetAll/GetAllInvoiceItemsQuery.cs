@@ -44,7 +44,7 @@ public class GetAllInvoiceItemsQueryHandler : IRequestHandler<GetAllInvoiceItems
     {
         await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
         var data = await db.InvoiceItems
-            .OrderBy(x => x.ItemName)
+            .OrderBy(x => x.Name)
             .ToListAsync(cancellationToken);
         return _mapper.Map<List<InvoiceItemDto>>(data);
     }

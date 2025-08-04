@@ -32,7 +32,7 @@ public class CustomerAdvancedSpecification : Specification<Customer>
 {
     public CustomerAdvancedSpecification(CustomerAdvancedFilter filter)
     {
-        Query.Where(q => q.CustomerName != null)
+        Query.Where(q => q.Name != null)
              .Where(filter.Keyword, !string.IsNullOrEmpty(filter.Keyword))
              .Where(q => q.BillingAddress != null)
              .Where(q => q.Terms == filter.Terms, !string.IsNullOrEmpty(filter.Terms));

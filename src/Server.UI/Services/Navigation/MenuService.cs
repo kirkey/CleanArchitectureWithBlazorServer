@@ -43,6 +43,76 @@ public class MenuService : IMenuService
                 },
                 new()
                 {
+                    Title = "Accounting",
+                    Icon = Icons.Material.Filled.AccountBalance,
+                    PageStatus = PageStatus.Completed,
+                    IsParent = true,
+                    MenuItems = new List<MenuSectionSubItemModel>
+                    {
+                        new()
+                        {
+                            Title = "Chart of Accounts",
+                            Href = "/pages/chartofaccounts",
+                            PageStatus = PageStatus.Completed
+                        },
+                        new()
+                        {
+                            Title = "Journal Entries",
+                            Href = "/pages/journalentries",
+                            PageStatus = PageStatus.Completed
+                        },
+                        new()
+                        {
+                            Title = "General Ledger",
+                            Href = "/pages/generalledgers",
+                            PageStatus = PageStatus.Completed
+                        },
+                        new()
+                        {
+                            Title = "Invoices",
+                            Href = "/pages/invoices",
+                            PageStatus = PageStatus.Completed
+                        },
+                        new()
+                        {
+                            Title = "Invoice Items",
+                            Href = "/pages/invoiceitems",
+                            PageStatus = PageStatus.Completed
+                        },
+                        new()
+                        {
+                            Title = "Bills",
+                            Href = "/pages/bills",
+                            PageStatus = PageStatus.Completed
+                        },
+                        new()
+                        {
+                            Title = "Bill Items",
+                            Href = "/pages/billitems",
+                            PageStatus = PageStatus.Completed
+                        },
+                        new()
+                        {
+                            Title = "Payments",
+                            Href = "/pages/payments",
+                            PageStatus = PageStatus.Completed
+                        },
+                        new()
+                        {
+                            Title = "Customers",
+                            Href = "/pages/customers",
+                            PageStatus = PageStatus.Completed
+                        },
+                        new()
+                        {
+                            Title = "Vendors",
+                            Href = "/pages/vendors",
+                            PageStatus = PageStatus.Completed
+                        }
+                    }
+                },
+                new()
+                {
                     Title = "Analytics",
                     Roles = new[] { RoleName.Admin, RoleName.Users },
                     Icon = Icons.Material.Filled.Analytics,

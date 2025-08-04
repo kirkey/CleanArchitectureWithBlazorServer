@@ -17,8 +17,8 @@ public class PaymentDto
     [Description("Id")]
     public string Id { get; set; } = string.Empty;
     
-    [Description("Customer ID")]
-    public string? CustomerID { get; set; }
+    [Description("Customer Id")]
+    public string? CustomerId { get; set; }
     
     [Description("Payment Date")]
     public DateTime PaymentDate { get; set; }
@@ -43,6 +43,13 @@ public class PaymentDto
     
     [Description("Last Modified By")]
     public string? LastModifiedBy { get; set; }
+
+    [Description("Name")]
+    public string Name { get; set; } = string.Empty;
+    [Description("Description")]
+    public string? Description { get; set; }
+    [Description("Notes")]
+    public string? Notes { get; set; }
 
     private class Mapping : Profile
     {

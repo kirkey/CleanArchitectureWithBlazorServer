@@ -1,0 +1,106 @@
+﻿@page "/pages/generalledgers/view/{id}"
+@using CleanArchitecture.Blazor.Application.Features.GeneralLedgers.Commands.Delete
+@using CleanArchitecture.Blazor.Application.Features.GeneralLedgers.DTOs
+@using CleanArchitecture.Blazor.Application.Features.GeneralLedgers.Queries.GetById
+@inherits MudComponentBase
+@inject IStringLocalizer<GeneralLedgers> L
+@attribute [Authorize(Policy = Permissions.GeneralLedgers.View)]
+<PageTitle>@Title</PageTitle>
+<Breadcrumbs OnGoEditClick="GoEdit" OnDeleteClick="Delete" BreadcrumbItems="_breadcrumbItems"></Breadcrumbs>
+<MudContainer Class="mt-3" MaxWidth="MaxWidth.Large">
+@if (_model != null)
+{
+    <MudCard Class="pa-2">
+        <MudCardHeader>
+            <CardHeaderContent>
+                 <MudText Typo="Typo.h6">@Title</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudGrid Spacing="3" Class="readonly-grid">
+                <MudItem xs="12" md="6"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.EntryId)]" Value="_model.EntryId"></ReadOnlyField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.AccountId)]" Value="_model.AccountId"></ReadOnlyField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.Debit)]" Value="_model.Debit.ToString("C")"></ReadOnlyField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.Credit)]" Value="_model.Credit.ToString("C")"></ReadOnlyField>
+                </MudItem> 
+                <MudItem xs="12" md="12"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.Memo)]" Value="_model.Memo"></ReadOnlyField>
+                </MudItem> 
+            </MudGrid>
+        </MudCardContent>
+        <MudCardActions></MudCardActions>
+    </MudCard>
+ }
+</MudContainer>
+
+@code {
+    public string? Title { get; private set; }
+    [Parameter] public string Id { get; set; } = string.Empty;
+    private List<BreadcrumbItem>? _breadcrumbItems; 
+    private GeneralLedgerDto? _model;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        Title = L["View General Ledger"];
+        _breadcrumbItems = new List<BreadcrumbItem>
+        {
+            new(L["Home"], href: "/"),
+            new(L["General Ledgers"], href: "/pages/generalledgers"),
+            new(L["View"], href: null, disabled: true)
+        };
+
+        var query = new GetGeneralLedgerByIdQuery() { Id = Id };
+        var result = await Mediator.Send(query);
+        await result.MatchAsync(
+            data =>
+            {
+                _model = data;
+                return Task.CompletedTask;
+            },
+            errors =>
+            {
+                Snackbar.Add(errors, Severity.Error);
+                return Task.CompletedTask;
+            });
+    }
+
+    void GoEdit()
+    {
+        Navigation.NavigateTo($"/pages/generalledgers/edit/{Id}");
+    }
+
+    async Task Delete()
+    {
+        var contentText = string.Format(ConstantString.DeleteConfirmation, _model?.Id);
+        var confirmed = await DialogService.ShowMessageBox(
+            ConstantString.DeleteConfirmationTitle,
+            contentText,
+            yesText: ConstantString.Delete,
+            cancelText: ConstantString.Cancel);
+
+        if (confirmed == true && _model != null)
+        {
+            var command = new DeleteGeneralLedgerCommand(new[] { _model.Id });
+            var result = await Mediator.Send(command);
+            await result.MatchAsync(
+                data =>
+                {
+                    Snackbar.Add(ConstantString.DeleteSuccess, Severity.Info);
+                    Navigation.NavigateTo("/pages/generalledgers");
+                    return Task.CompletedTask;
+                },
+                errors =>
+                {
+                    Snackbar.Add(errors, Severity.Error);
+                    return Task.CompletedTask;
+                });
+        }
+    }
+}

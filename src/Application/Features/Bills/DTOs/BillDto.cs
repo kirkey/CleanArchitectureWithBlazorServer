@@ -17,8 +17,8 @@ public class BillDto
     [Description("Id")]
     public string Id { get; set; } = string.Empty;
     
-    [Description("Vendor ID")]
-    public string? VendorID { get; set; }
+    [Description("Vendor Id")]
+    public string? VendorId { get; set; }
     
     [Description("Bill Date")]
     public DateTime BillDate { get; set; }
@@ -43,6 +43,11 @@ public class BillDto
     
     [Description("Last Modified By")]
     public string? LastModifiedBy { get; set; }
+
+    [Description("Description")]
+    public string? Description { get; set; }
+    [Description("Notes")]
+    public string? Notes { get; set; }
 
     private class Mapping : Profile
     {

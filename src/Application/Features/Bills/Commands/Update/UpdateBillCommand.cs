@@ -18,7 +18,7 @@ public class UpdateBillCommand : ICacheInvalidatorRequest<Result<string>>
     [Description("Id")]
     public string Id { get; set; } = string.Empty;
     
-    [Description("Vendor ID")]
+    [Description("Vendor Id")]
     public string? VendorID { get; set; }
     
     [Description("Bill Date")]

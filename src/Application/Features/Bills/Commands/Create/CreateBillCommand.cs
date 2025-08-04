@@ -16,7 +16,7 @@ namespace CleanArchitecture.Blazor.Application.Features.Bills.Commands.Create;
 
 public class CreateBillCommand : ICacheInvalidatorRequest<Result<string>>
 {
-    [Description("Vendor ID")]
+    [Description("Vendor Id")]
     public string? VendorID { get; set; }
     
     [Description("Bill Date")]

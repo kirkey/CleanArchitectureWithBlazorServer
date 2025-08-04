@@ -1,0 +1,106 @@
+﻿@page "/pages/invoiceitems/view/{id}"
+@using CleanArchitecture.Blazor.Application.Features.InvoiceItems.Commands.Delete
+@using CleanArchitecture.Blazor.Application.Features.InvoiceItems.DTOs
+@using CleanArchitecture.Blazor.Application.Features.InvoiceItems.Queries.GetById
+@inherits MudComponentBase
+@inject IStringLocalizer<InvoiceItems> L
+@attribute [Authorize(Policy = Permissions.InvoiceItems.View)]
+<PageTitle>@Title</PageTitle>
+<Breadcrumbs OnGoEditClick="GoEdit" OnDeleteClick="Delete" BreadcrumbItems="_breadcrumbItems"></Breadcrumbs>
+<MudContainer Class="mt-3" MaxWidth="MaxWidth.Large">
+@if (_model != null)
+{
+    <MudCard Class="pa-2">
+        <MudCardHeader>
+            <CardHeaderContent>
+                 <MudText Typo="Typo.h6">@Title</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudGrid Spacing="3" Class="readonly-grid">
+                <MudItem xs="12" md="6"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.InvoiceId)]" Value="_model.InvoiceId"></ReadOnlyField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.ProductId)]" Value="_model.ProductId"></ReadOnlyField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.Quantity)]" Value="_model.Quantity.ToString()"></ReadOnlyField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.UnitPrice)]" Value="_model.UnitPrice.ToString("C")"></ReadOnlyField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.TotalPrice)]" Value="_model.TotalPrice.ToString("C")"></ReadOnlyField>
+                </MudItem> 
+            </MudGrid>
+        </MudCardContent>
+        <MudCardActions></MudCardActions>
+    </MudCard>
+ }
+</MudContainer>
+
+@code {
+    public string? Title { get; private set; }
+    [Parameter] public string Id { get; set; } = string.Empty;
+    private List<BreadcrumbItem>? _breadcrumbItems; 
+    private InvoiceItemDto? _model;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        Title = L["View Invoice Item"];
+        _breadcrumbItems = new List<BreadcrumbItem>
+        {
+            new(L["Home"], href: "/"),
+            new(L["Invoice Items"], href: "/pages/invoiceitems"),
+            new(L["View"], href: null, disabled: true)
+        };
+
+        var query = new GetInvoiceItemByIdQuery() { Id = Id };
+        var result = await Mediator.Send(query);
+        await result.MatchAsync(
+            data =>
+            {
+                _model = data;
+                return Task.CompletedTask;
+            },
+            errors =>
+            {
+                Snackbar.Add(errors, Severity.Error);
+                return Task.CompletedTask;
+            });
+    }
+
+    void GoEdit()
+    {
+        Navigation.NavigateTo($"/pages/invoiceitems/edit/{Id}");
+    }
+
+    async Task Delete()
+    {
+        var contentText = string.Format(ConstantString.DeleteConfirmation, _model?.Id);
+        var confirmed = await DialogService.ShowMessageBox(
+            ConstantString.DeleteConfirmationTitle,
+            contentText,
+            yesText: ConstantString.Delete,
+            cancelText: ConstantString.Cancel);
+
+        if (confirmed == true && _model != null)
+        {
+            var command = new DeleteInvoiceItemCommand(new[] { _model.Id });
+            var result = await Mediator.Send(command);
+            await result.MatchAsync(
+                data =>
+                {
+                    Snackbar.Add(ConstantString.DeleteSuccess, Severity.Info);
+                    Navigation.NavigateTo("/pages/invoiceitems");
+                    return Task.CompletedTask;
+                },
+                errors =>
+                {
+                    Snackbar.Add(errors, Severity.Error);
+                    return Task.CompletedTask;
+                });
+        }
+    }
+}

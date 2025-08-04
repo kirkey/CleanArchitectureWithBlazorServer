@@ -1,0 +1,106 @@
+﻿@page "/pages/customers/view/{id}"
+@using CleanArchitecture.Blazor.Application.Features.Customers.Commands.Delete
+@using CleanArchitecture.Blazor.Application.Features.Customers.DTOs
+@using CleanArchitecture.Blazor.Application.Features.Customers.Queries.GetById
+@inherits MudComponentBase
+@inject IStringLocalizer<Customers> L
+@attribute [Authorize(Policy = Permissions.Customers.View)]
+<PageTitle>@Title</PageTitle>
+<Breadcrumbs OnGoEditClick="GoEdit" OnDeleteClick="Delete" BreadcrumbItems="_breadcrumbItems"></Breadcrumbs>
+<MudContainer Class="mt-3" MaxWidth="MaxWidth.Large">
+@if (_model != null)
+{
+    <MudCard Class="pa-2">
+        <MudCardHeader>
+            <CardHeaderContent>
+                 <MudText Typo="Typo.h6">@Title</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudGrid Spacing="3" Class="readonly-grid">
+                <MudItem xs="12" md="6"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.Name)]" Value="_model.Name"></ReadOnlyField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.Email)]" Value="_model.Email"></ReadOnlyField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.PhoneNumber)]" Value="_model.PhoneNumber"></ReadOnlyField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.Country)]" Value="_model.Country"></ReadOnlyField>
+                </MudItem> 
+                <MudItem xs="12" md="12"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.Description)]" Value="_model.Description"></ReadOnlyField>
+                </MudItem> 
+            </MudGrid>
+        </MudCardContent>
+        <MudCardActions></MudCardActions>
+    </MudCard>
+ }
+</MudContainer>
+
+@code {
+    public string? Title { get; private set; }
+    [Parameter] public string Id { get; set; } = string.Empty;
+    private List<BreadcrumbItem>? _breadcrumbItems; 
+    private CustomerDto? _model;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        Title = L["View Customer"];
+        _breadcrumbItems = new List<BreadcrumbItem>
+        {
+            new(L["Home"], href: "/"),
+            new(L["Customers"], href: "/pages/customers"),
+            new(L["View"], href: null, disabled: true)
+        };
+
+        var query = new GetCustomerByIdQuery() { Id = Id };
+        var result = await Mediator.Send(query);
+        await result.MatchAsync(
+            data =>
+            {
+                _model = data;
+                return Task.CompletedTask;
+            },
+            errors =>
+            {
+                Snackbar.Add(errors, Severity.Error);
+                return Task.CompletedTask;
+            });
+    }
+
+    void GoEdit()
+    {
+        Navigation.NavigateTo($"/pages/customers/edit/{Id}");
+    }
+
+    async Task Delete()
+    {
+        var contentText = string.Format(ConstantString.DeleteConfirmation, _model?.Name);
+        var confirmed = await DialogService.ShowMessageBox(
+            ConstantString.DeleteConfirmationTitle,
+            contentText,
+            yesText: ConstantString.Delete,
+            cancelText: ConstantString.Cancel);
+
+        if (confirmed == true && _model != null)
+        {
+            var command = new DeleteCustomerCommand(new[] { _model.Id });
+            var result = await Mediator.Send(command);
+            await result.MatchAsync(
+                data =>
+                {
+                    Snackbar.Add(ConstantString.DeleteSuccess, Severity.Info);
+                    Navigation.NavigateTo("/pages/customers");
+                    return Task.CompletedTask;
+                },
+                errors =>
+                {
+                    Snackbar.Add(errors, Severity.Error);
+                    return Task.CompletedTask;
+                });
+        }
+    }
+}

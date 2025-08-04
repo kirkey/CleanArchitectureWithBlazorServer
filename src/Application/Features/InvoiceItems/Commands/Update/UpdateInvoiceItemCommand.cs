@@ -18,7 +18,7 @@ public class UpdateInvoiceItemCommand : ICacheInvalidatorRequest<Result<string>>
     [Description("Id")]
     public string Id { get; set; } = string.Empty;
     
-    [Description("Invoice ID")]
+    [Description("Invoice Id")]
     public string? InvoiceID { get; set; }
     
     [Description("Item Name")]

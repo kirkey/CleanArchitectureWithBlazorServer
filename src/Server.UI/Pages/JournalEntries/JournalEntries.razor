@@ -1,0 +1,333 @@
+﻿@page "/pages/journalentries"
+
+@using CleanArchitecture.Blazor.Application.Features.JournalEntries.Caching
+@using CleanArchitecture.Blazor.Application.Features.JournalEntries.Commands.AddEdit
+@using CleanArchitecture.Blazor.Application.Features.JournalEntries.Commands.Delete
+@using CleanArchitecture.Blazor.Application.Features.JournalEntries.Commands.Import
+@using CleanArchitecture.Blazor.Application.Features.JournalEntries.DTOs
+@using CleanArchitecture.Blazor.Application.Features.JournalEntries.Queries.Export
+@using CleanArchitecture.Blazor.Application.Features.JournalEntries.Queries.Pagination
+@using CleanArchitecture.Blazor.Application.Features.JournalEntries.Specifications
+@using CleanArchitecture.Blazor.Server.UI.Pages.JournalEntries.Components
+
+@inject IStringLocalizer<JournalEntries> L
+@inject BlazorDownloadFileService BlazorDownloadFileService
+
+@attribute [Authorize(Policy = Permissions.JournalEntries.View)]
+<PageTitle>@Title</PageTitle>
+
+<MudDataGrid ServerData="@(ServerReload)"
+             FixedHeader="true"
+             FixedFooter="false"
+             Virtualize="false"
+             @bind-RowsPerPage="_defaultPageSize"
+             Loading="@_loading"
+             MultiSelection="true"
+             T="JournalEntryDto"
+             SelectOnRowClick="false"
+             RowClick="@(s=>OnDataGridRowClick(s.Item))"
+             @bind-SelectedItems="_selectedEntries"
+             Hover="true" @ref="_entriesGrid">
+    <ToolBarContent>
+        <MudStack Row Spacing="0" Class="flex-grow-1" Justify="Justify.SpaceBetween">
+            <MudStack Row AlignItems="AlignItems.Start">
+                <MudIcon Icon="@Icons.Material.Filled.Book" Size="Size.Large" />
+                <MudStack Spacing="0">
+                    <MudText Typo="Typo.subtitle2" Class="mb-2">@Title</MudText>
+                </MudStack>
+            </MudStack>
+            <MudStack Spacing="0" AlignItems="AlignItems.End">
+                <MudToolBar Dense WrapContent="true" Class="py-1 px-0">
+                    <MudButton Disabled="@_loading"
+                               OnClick="@(() => OnRefresh())"
+                               StartIcon="@Icons.Material.Outlined.Refresh">
+                        @ConstantString.Refresh
+                    </MudButton>
+                    @if (_accessRights.Create)
+                    {
+                        <MudButton StartIcon="@Icons.Material.Outlined.Add"
+                                   OnClick="OnCreate">
+                            @ConstantString.New
+                        </MudButton>
+                    }
+                    <MudMenu TransformOrigin="Origin.BottomRight" AnchorOrigin="Origin.BottomRight" EndIcon="@Icons.Material.Filled.MoreVert" Label="@ConstantString.More">
+                        @if (_accessRights.Create)
+                        {
+                            <MudMenuItem Disabled="@(_selectedEntries.Count != 1)" OnClick="OnClone">@ConstantString.Clone</MudMenuItem>
+                        }
+                        @if (_accessRights.Delete)
+                        {
+                            <MudMenuItem Disabled="@(!(_selectedEntries.Count > 0))"
+                                         OnClick="OnDeleteSelected">
+                                @ConstantString.Delete
+                            </MudMenuItem>
+                        }
+                        @if (_accessRights.Export)
+                        {
+                            <MudMenuItem Disabled="@_exporting"
+                                         OnClick="OnExport">
+                                @ConstantString.Export
+                            </MudMenuItem>
+                        }
+                        @if (_accessRights.Import)
+                        {
+                            <MudMenuItem>
+                                <MudFileUpload T="IBrowserFile" FilesChanged="OnImportData" Accept=".xlsx">
+                                    <ActivatorContent>
+                                        <MudButton Class="pa-0 ma-0" Style="font-weight:400;text-transform:none;"
+                                                   Variant="Variant.Text"
+                                                   Disabled="@_uploading">
+                                            @ConstantString.Import
+                                        </MudButton>
+                                    </ActivatorContent>
+                                </MudFileUpload>
+                            </MudMenuItem>
+                        }
+                    </MudMenu>
+                </MudToolBar>
+                <MudStack Row Spacing="1">
+                    @if (_accessRights.Search)
+                    {
+                        <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Value="@_query.Keyword" Placeholder="@ConstantString.Search" Adornment="Adornment.End"
+                                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small">
+                        </MudTextField>
+                    }
+                </MudStack>
+            </MudStack>
+        </MudStack>
+    </ToolBarContent>
+    <Columns>
+        <SelectColumn ShowInFooter="false"></SelectColumn>
+        <TemplateColumn HeaderStyle="width:60px" Title="@ConstantString.Actions" Sortable="false">
+            <CellTemplate>
+                @if (_accessRights.Edit || _accessRights.Delete)
+                {
+                    <MudMenu Icon="@Icons.Material.Filled.Edit" Variant="Variant.Outlined" Size="Size.Small"
+                             Dense="true"
+                             EndIcon="@Icons.Material.Filled.KeyboardArrowDown" IconColor="Color.Info" AnchorOrigin="Origin.CenterLeft">
+                        @if (_accessRights.Edit)
+                        {
+                            <MudMenuItem OnClick="@(()=>OnEdit(context.Item))">@ConstantString.Edit</MudMenuItem>
+                        }
+                        @if (_accessRights.Delete)
+                        {
+                            <MudMenuItem OnClick="@(()=>OnDelete(context.Item))">@ConstantString.Delete</MudMenuItem>
+                        }
+                    </MudMenu>
+                }
+                else
+                {
+                    <MudTooltip Text="@ConstantString.NoAllowed" Delay="300">
+                        <MudIconButton Variant="Variant.Outlined"  
+                                       Disabled="true"
+                                       Icon="@Icons.Material.Filled.DoNotTouch"
+                                       Size="Size.Small"
+                                       Color="Color.Surface">
+                        </MudIconButton>
+                    </MudTooltip>
+                }
+            </CellTemplate>
+        </TemplateColumn>
+        <PropertyColumn Property="x => x.Date" Title="@L[_dto.GetMemberDescription(x=>x.Date)]" />
+        <PropertyColumn Property="x => x.ReferenceNumber" Title="@L[_dto.GetMemberDescription(x=>x.ReferenceNumber)]" />
+        <PropertyColumn Property="x => x.Description" Title="@L[_dto.GetMemberDescription(x=>x.Description)]" />
+        <PropertyColumn Property="x => x.Source" Title="@L[_dto.GetMemberDescription(x=>x.Source)]" />
+        <PropertyColumn Property="x => x.IsPosted" Title="@L[_dto.GetMemberDescription(x=>x.IsPosted)]">
+            <CellTemplate>
+                <MudChip Size="Size.Small" Color="@(context.Item.IsPosted ? Color.Success : Color.Warning)">
+                    @(context.Item.IsPosted ? "Posted" : "Not Posted")
+                </MudChip>
+            </CellTemplate>
+        </PropertyColumn>
+    </Columns>
+    <NoRecordsContent>
+        <MudText>@ConstantString.NoRecords</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>@ConstantString.Loading</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudDataGridPager T="JournalEntryDto" />
+    </PagerContent>
+</MudDataGrid>
+
+@code {
+    public string? Title { get; private set; }
+    private int _defaultPageSize = 15;
+    private HashSet<JournalEntryDto> _selectedEntries = new HashSet<JournalEntryDto>();
+    private MudDataGrid<JournalEntryDto> _entriesGrid = default!;
+    private JournalEntryDto _dto = new();
+    private bool _loading;
+    private bool _uploading;
+    private bool _exporting;
+    [CascadingParameter]
+    private UserProfile? UserProfile { get; set; }
+
+    private JournalEntriesWithPaginationQuery _query { get; set; } = new();
+    private JournalEntriesAccessRights _accessRights = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Title = L[_dto.GetClassDescription()];
+        _accessRights = await PermissionService.GetAccessRightsAsync<JournalEntriesAccessRights>(); 
+    }
+     
+    private async Task<GridData<JournalEntryDto>> ServerReload(GridState<JournalEntryDto> state)
+    {
+        try
+        {
+            _loading = true;
+            _query.CurrentUser = UserProfile;
+            var sortDefinition = state.SortDefinitions.FirstOrDefault();
+            _query.OrderBy = sortDefinition?.SortBy ?? "Id";
+            _query.SortDirection = (sortDefinition != null && sortDefinition.Descending)
+                                      ? SortDirection.Descending.ToString()
+                                      : SortDirection.Ascending.ToString();
+            _query.PageNumber = state.Page + 1;
+            _query.PageSize = state.PageSize;
+            var result = await Mediator.Send(_query).ConfigureAwait(false);
+            return new GridData<JournalEntryDto>() { TotalItems = result.TotalItems, Items = result.Items };
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task OnSearch(string text)
+    {
+        _selectedEntries.Clear();
+        _query.Keyword = text;
+        await _entriesGrid.ReloadServerData();
+    }
+
+    private async Task OnRefresh()
+    {
+        JournalEntryCacheKey.Refresh();
+        _selectedEntries.Clear();
+        _query.Keyword = string.Empty;
+        await _entriesGrid.ReloadServerData();
+    }
+
+    private Task ShowEditFormDialog(string title, AddEditJournalEntryCommand command)
+    {
+        return DialogServiceHelper.ShowFormDialogAsync<JournalEntryFormDialog, AddEditJournalEntryCommand>(
+            title,
+            command,
+            async () =>
+            {
+                await _entriesGrid.ReloadServerData();
+                _selectedEntries.Clear();
+            });
+    }
+
+    private void OnDataGridRowClick(JournalEntryDto dto)
+    {
+        Navigation.NavigateTo($"/pages/journalentries/view/{dto.Id}");
+    }
+
+    private Task OnCreate()
+    {
+        var command = new AddEditJournalEntryCommand();
+        return ShowEditFormDialog(L["New Journal Entry"], command);
+    }
+
+    private Task OnClone()
+    {
+        var dto = _selectedEntries.First();
+        var command = new AddEditJournalEntryCommand()
+        {
+            Date = dto.Date,
+            ReferenceNumber = dto.ReferenceNumber,
+            Description = dto.Description,
+            Source = dto.Source,
+            IsPosted = false
+        };
+        return ShowEditFormDialog(L["Clone Journal Entry"], command);
+    }
+
+    private Task OnEdit(JournalEntryDto dto)
+    {
+        Navigation.NavigateTo($"/pages/journalentries/edit/{dto.Id}");
+        return Task.CompletedTask;
+    }
+
+    private Task OnDelete(JournalEntryDto dto)
+    {
+        var contentText = string.Format(ConstantString.DeleteConfirmation, dto.ReferenceNumber);
+        var command = new DeleteJournalEntryCommand(new string[] { dto.Id });
+        return DeleteInternal(command, contentText); 
+    }
+
+    private Task OnDeleteSelected()
+    {
+        var contentText = string.Format(ConstantString.DeleteConfirmWithSelected, _selectedEntries.Count);
+        var command = new DeleteJournalEntryCommand(_selectedEntries.Select(x => x.Id).ToArray());
+        return DeleteInternal(command, contentText);
+    }
+
+    private Task DeleteInternal(DeleteJournalEntryCommand command, string contentText)
+    {
+        return DialogServiceHelper.ShowDeleteConfirmationDialogAsync(
+            command,
+            ConstantString.DeleteConfirmationTitle,
+            contentText,
+            async () =>
+            {
+                await _entriesGrid.ReloadServerData();
+                _selectedEntries.Clear();
+            });
+    }
+
+    private async Task OnExport()
+    {
+        _exporting = true;
+        var request = new ExportJournalEntriesQuery()
+        {
+            Keyword = _query.Keyword,
+            CurrentUser = UserProfile,
+            OrderBy = _entriesGrid.SortDefinitions.Values.FirstOrDefault()?.SortBy ?? "Id",
+            SortDirection = (_entriesGrid.SortDefinitions.Values.FirstOrDefault()?.Descending ?? true) ? SortDirection.Descending.ToString() : SortDirection.Ascending.ToString()
+        };
+        var result = await Mediator.Send(request);
+        await result.MatchAsync(
+            async data =>
+            {
+                if (result.Data != null)
+                {
+                    await BlazorDownloadFileService.DownloadFileAsync($"{L["Journal Entries"]}.xlsx", result.Data, contentType:"application/octet-stream");
+                    Snackbar.Add($"{ConstantString.ExportSuccess}", MudBlazor.Severity.Info);
+                }
+                else
+                {
+                    Snackbar.Add("Export failed", MudBlazor.Severity.Error);
+                }
+            },
+            errors =>
+            {
+                Snackbar.Add($"{errors}", MudBlazor.Severity.Error);
+                return Task.CompletedTask;
+            });
+        _exporting = false;
+    }
+
+    private async Task OnImportData(IBrowserFile file)
+    {
+        _uploading = true;
+        var stream = new MemoryStream();
+        await file.OpenReadStream().CopyToAsync(stream);
+        var command = new ImportJournalEntriesCommand(file.Name, stream.ToArray());
+        var result = await Mediator.Send(command);
+        await result.MatchAsync(
+            async data =>
+            {
+                await _entriesGrid.ReloadServerData();
+                Snackbar.Add($"{ConstantString.ImportSuccess}", MudBlazor.Severity.Info);
+            }, errors =>
+            {
+                Snackbar.Add($"{errors}", MudBlazor.Severity.Error);
+                return Task.CompletedTask;
+            });
+        _uploading = false;
+    }
+}

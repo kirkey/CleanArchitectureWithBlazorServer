@@ -7,10 +7,8 @@ namespace CleanArchitecture.Blazor.Domain.Entities;
 
 public class ChartOfAccount : BaseUlidAuditableEntity
 {
-    public string? AccountName { get; set; }
     public AccountType AccountType { get; set; }
     public string? SubAccountOf { get; set; }
-    public string? Description { get; set; }
     public bool IsActive { get; set; } = true;
 }
 

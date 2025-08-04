@@ -16,7 +16,7 @@ namespace CleanArchitecture.Blazor.Application.Features.BillItems.Commands.Creat
 
 public class CreateBillItemCommand : ICacheInvalidatorRequest<Result<string>>
 {
-    [Description("Bill ID")]
+    [Description("Bill Id")]
     public string? BillID { get; set; }
     
     [Description("Item Name")]

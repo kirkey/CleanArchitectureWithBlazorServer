@@ -41,7 +41,7 @@ public class UpdateCustomerCommand : ICacheInvalidatorRequest<Result<string>>
         public Mapping()
         {
             CreateMap<UpdateCustomerCommand, Customer>(MemberList.None)
-                .ForMember(dest => dest.CustomerName, opt => opt.MapFrom(src => src.Name));
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name));
         }
     }
 }

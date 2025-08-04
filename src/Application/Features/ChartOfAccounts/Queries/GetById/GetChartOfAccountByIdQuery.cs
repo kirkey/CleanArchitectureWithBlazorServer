@@ -3,7 +3,7 @@
 // CleanArchitecture.Blazor - MIT Licensed.
 // Author: neozhu
 // Created/Modified: 2025-08-04
-// Query for getting a single ChartOfAccount by Id.
+// Query to retrieve a ChartOfAccount by its ID. Cached for performance.
 // </auto-generated>
 //------------------------------------------------------------------------------
 #nullable enable
@@ -11,27 +11,22 @@
 
 using CleanArchitecture.Blazor.Application.Features.ChartOfAccounts.DTOs;
 using CleanArchitecture.Blazor.Application.Features.ChartOfAccounts.Caching;
-using Microsoft.Extensions.Caching.Memory;
+using CleanArchitecture.Blazor.Application.Features.ChartOfAccounts.Specifications;
 
 namespace CleanArchitecture.Blazor.Application.Features.ChartOfAccounts.Queries.GetById;
 
-public class GetChartOfAccountByIdQuery : ICacheableRequest<ChartOfAccountDto>
+public class GetChartOfAccountByIdQuery : ICacheableRequest<Result<ChartOfAccountDto>>
 {
-    public required string Id { get; set; }
-    public string CacheKey => ChartOfAccountCacheKey.GetByIdCacheKey(Id);
-    public IEnumerable<string>? Tags { get; }
-
-    public MemoryCacheEntryOptions? Options => new MemoryCacheEntryOptions
-    {
-        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
-    };
+   public required string Id { get; set; }
+   public string CacheKey => ChartOfAccountCacheKey.GetByIdCacheKey(Id);
+   public IEnumerable<string>? Tags => ChartOfAccountCacheKey.Tags;
 }
 
-public class GetChartOfAccountByIdQueryHandler : IRequestHandler<GetChartOfAccountByIdQuery, ChartOfAccountDto>
+public class GetChartOfAccountByIdQueryHandler :
+     IRequestHandler<GetChartOfAccountByIdQuery, Result<ChartOfAccountDto>>
 {
     private readonly IApplicationDbContextFactory _dbContextFactory;
     private readonly IMapper _mapper;
-
     public GetChartOfAccountByIdQueryHandler(
         IApplicationDbContextFactory dbContextFactory,
         IMapper mapper
@@ -41,12 +36,15 @@ public class GetChartOfAccountByIdQueryHandler : IRequestHandler<GetChartOfAccou
         _mapper = mapper;
     }
 
-    public async Task<ChartOfAccountDto> Handle(GetChartOfAccountByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<ChartOfAccountDto>> Handle(GetChartOfAccountByIdQuery request, CancellationToken cancellationToken)
     {
         await using var db = await _dbContextFactory.CreateAsync(cancellationToken);
-        var data = await db.ChartOfAccounts
-            .Where(x => x.Id == request.Id)
-            .FirstAsync(cancellationToken);
-        return _mapper.Map<ChartOfAccountDto>(data);
+        var data = await db.ChartOfAccounts.Where(x => x.Id == request.Id)
+            .ProjectTo<ChartOfAccountDto>(_mapper.ConfigurationProvider)
+            .FirstOrDefaultAsync(cancellationToken);
+        if (data == null)
+            throw new NotFoundException($"ChartOfAccount with id: [{request.Id}] not found.");
+        return await Result<ChartOfAccountDto>.SuccessAsync(data);
     }
 }
+

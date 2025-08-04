@@ -1,0 +1,106 @@
+﻿@page "/pages/bills/view/{id}"
+@using CleanArchitecture.Blazor.Application.Features.Bills.Commands.Delete
+@using CleanArchitecture.Blazor.Application.Features.Bills.DTOs
+@using CleanArchitecture.Blazor.Application.Features.Bills.Queries.GetById
+@inherits MudComponentBase
+@inject IStringLocalizer<Bills> L
+@attribute [Authorize(Policy = Permissions.Bills.View)]
+<PageTitle>@Title</PageTitle>
+<Breadcrumbs OnGoEditClick="GoEdit" OnDeleteClick="Delete" BreadcrumbItems="_breadcrumbItems"></Breadcrumbs>
+<MudContainer Class="mt-3" MaxWidth="MaxWidth.Large">
+@if (_model != null)
+{
+    <MudCard Class="pa-2">
+        <MudCardHeader>
+            <CardHeaderContent>
+                 <MudText Typo="Typo.h6">@Title</MudText>
+            </CardHeaderContent>
+        </MudCardHeader>
+        <MudCardContent>
+            <MudGrid Spacing="3" Class="readonly-grid">
+                <MudItem xs="12" md="6"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.VendorId)]" Value="_model.VendorId"></ReadOnlyField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.BillDate)]" Value="_model.BillDate.ToString("yyyy-MM-dd")"></ReadOnlyField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.DueDate)]" Value="_model.DueDate.ToString("yyyy-MM-dd")"></ReadOnlyField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.TotalAmount)]" Value="_model.TotalAmount.ToString("C")"></ReadOnlyField>
+                </MudItem> 
+                <MudItem xs="12" md="6"> 
+                    <ReadOnlyField Label="@L[_model.GetMemberDescription(x=>x.Status)]" Value="_model.Status.ToString()"></ReadOnlyField>
+                </MudItem> 
+            </MudGrid>
+        </MudCardContent>
+        <MudCardActions></MudCardActions>
+    </MudCard>
+ }
+</MudContainer>
+
+@code {
+    public string? Title { get; private set; }
+    [Parameter] public string Id { get; set; } = string.Empty;
+    private List<BreadcrumbItem>? _breadcrumbItems; 
+    private BillDto? _model;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        Title = L["View Bill"];
+        _breadcrumbItems = new List<BreadcrumbItem>
+        {
+            new(L["Home"], href: "/"),
+            new(L["Bills"], href: "/pages/bills"),
+            new(L["View"], href: null, disabled: true)
+        };
+
+        var query = new GetBillByIdQuery() { Id = Id };
+        var result = await Mediator.Send(query);
+        await result.MatchAsync(
+            data =>
+            {
+                _model = data;
+                return Task.CompletedTask;
+            },
+            errors =>
+            {
+                Snackbar.Add(errors, Severity.Error);
+                return Task.CompletedTask;
+            });
+    }
+
+    void GoEdit()
+    {
+        Navigation.NavigateTo($"/pages/bills/edit/{Id}");
+    }
+
+    async Task Delete()
+    {
+        var contentText = string.Format(ConstantString.DeleteConfirmation, _model?.Id);
+        var confirmed = await DialogService.ShowMessageBox(
+            ConstantString.DeleteConfirmationTitle,
+            contentText,
+            yesText: ConstantString.Delete,
+            cancelText: ConstantString.Cancel);
+
+        if (confirmed == true && _model != null)
+        {
+            var command = new DeleteBillCommand(new[] { _model.Id });
+            var result = await Mediator.Send(command);
+            await result.MatchAsync(
+                data =>
+                {
+                    Snackbar.Add(ConstantString.DeleteSuccess, Severity.Info);
+                    Navigation.NavigateTo("/pages/bills");
+                    return Task.CompletedTask;
+                },
+                errors =>
+                {
+                    Snackbar.Add(errors, Severity.Error);
+                    return Task.CompletedTask;
+                });
+        }
+    }
+}

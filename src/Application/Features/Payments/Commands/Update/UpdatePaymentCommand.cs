@@ -18,7 +18,7 @@ public class UpdatePaymentCommand : ICacheInvalidatorRequest<Result<string>>
     [Description("Id")]
     public string Id { get; set; } = string.Empty;
     
-    [Description("Customer ID")]
+    [Description("Customer Id")]
     public string? CustomerID { get; set; }
     
     [Description("Payment Date")]
