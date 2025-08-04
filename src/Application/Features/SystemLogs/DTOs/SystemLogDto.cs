@@ -19,7 +19,7 @@ public class SystemLogDto
 
     [Description("User name")] public string? UserName { get; set; }
 
-    [Description("Client IP")] public string? ClientIP { get; set; }
+    [Description("Client IP")] public string? ClientIp { get; set; }
 
     [Description("Client Agent")] public string? ClientAgent { get; set; }
 

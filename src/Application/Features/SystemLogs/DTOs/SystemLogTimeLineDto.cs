@@ -5,6 +5,6 @@ namespace CleanArchitecture.Blazor.Application.Features.SystemLogs.DTOs;
 
 public class SystemLogTimeLineDto
 {
-    public DateTime dt { get; set; }
-    public int total { get; set; }
+    public DateTime Dt { get; set; }
+    public int Total { get; set; }
 }

@@ -10,14 +10,14 @@ public enum LoginAuditListView
     [Description("My Login History")]
     My,
     [Description("Created Today")]
-    TODAY,
+    Today,
     [Description("View of the last 30 days")]
-    LAST_30_DAYS,
+    Last30Days,
 }
 
 public class LoginAuditAdvancedFilter : PaginationFilter
 {
-    public LoginAuditListView ListView { get; set; } = LoginAuditListView.LAST_30_DAYS;
+    public LoginAuditListView ListView { get; set; } = LoginAuditListView.Last30Days;
     public UserProfile? CurrentUser { get; set; }
     public bool? Success { get; set; }
     public string? Provider { get; set; }

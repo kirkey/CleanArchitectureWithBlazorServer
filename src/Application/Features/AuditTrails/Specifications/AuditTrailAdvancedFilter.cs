@@ -4,8 +4,8 @@ public enum AuditTrailListView
 {
     [Description("All")] All,
     [Description("My Change Histories")] My,
-    [Description("Created Today")] TODAY,
-    [Description("View of the last 30 days")] LAST_30_DAYS
+    [Description("Created Today")] Today,
+    [Description("View of the last 30 days")] Last30Days
 }
 
 public class AuditTrailAdvancedFilter : PaginationFilter

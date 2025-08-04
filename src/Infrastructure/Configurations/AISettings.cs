@@ -8,7 +8,7 @@ namespace CleanArchitecture.Blazor.Infrastructure.Configurations;
 /// <summary>
 /// AI configuration settings implementation
 /// </summary>
-public class AISettings : IAISettings
+public class AISettings : IAiSettings
 {
     /// <summary>
     /// AI configuration key constraint

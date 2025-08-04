@@ -39,12 +39,12 @@ public class SystemLogsChatDataQueryHandler(
         {
             var item = data.FirstOrDefault(x => x.Date == start.Date);
             result.Add(item != null
-                ? new SystemLogTimeLineDto { dt = item.Date, total = item.Total }
-                : new SystemLogTimeLineDto { dt = start, total = 0 });
+                ? new SystemLogTimeLineDto { Dt = item.Date, Total = item.Total }
+                : new SystemLogTimeLineDto { Dt = start, Total = 0 });
 
             start = start.AddDays(1);
         }
 
-        return result.OrderBy(x => x.dt).ToList();
+        return result.OrderBy(x => x.Dt).ToList();
     }
 }

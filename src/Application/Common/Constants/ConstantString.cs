@@ -5,14 +5,14 @@ namespace CleanArchitecture.Blazor.Application.Common.Constants;
 
 public static class ConstantString
 {
-    public const string CONSTANTSTRINGRESOURCEID =
+    public const string Constantstringresourceid =
         "CleanArchitecture.Blazor.Application.Resources.Constants.ConstantString";
 
-    private static readonly ResourceManager rm;
+    private static readonly ResourceManager Rm;
 
     static ConstantString()
     {
-        rm = new ResourceManager(CONSTANTSTRINGRESOURCEID, typeof(ConstantString).Assembly);
+        Rm = new ResourceManager(Constantstringresourceid, typeof(ConstantString).Assembly);
     }
 
     //==========================================================//
@@ -28,7 +28,7 @@ public static class ConstantString
     public static string Clone => Localize("Clone");
     public static string New => Localize("New");
     public static string Export => Localize("Export to Excel");
-    public static string ExportPDF => Localize("Export to PDF");
+    public static string ExportPdf => Localize("Export to PDF");
     public static string Import => Localize("Import from Excel");
     public static string Actions => Localize("Actions");
     public static string Save => Localize("Save");
@@ -55,7 +55,7 @@ public static class ConstantString
     public static string NoRecords => Localize("No records found");
     public static string ExportSuccess => Localize("Export successfully");
     public static string ImportSuccess => Localize("Import successfully");
-    public static string ExportPDFSuccess => Localize("Export to PDF successfully");
+    public static string ExportPdfSuccess => Localize("Export to PDF successfully");
     public static string DeleteConfirmation => Localize("Are you sure you want to delete \"{0}\"?");
     public static string DeleteConfirmationTitle => Localize("Delete Confirmation");
     public static string DeleteConfirmWithSelected => Localize("Are you sure you want to delete {0} selected items?");
@@ -153,7 +153,7 @@ public static class ConstantString
         try
         {
             // Try to get localized string using current UI culture
-            var localizedString = rm.GetString(key, CultureInfo.CurrentUICulture);
+            var localizedString = Rm.GetString(key, CultureInfo.CurrentUICulture);
             
             // If localized string is found and not empty, return it
             if (!string.IsNullOrEmpty(localizedString))
@@ -162,7 +162,7 @@ public static class ConstantString
             }
             
             // If not found in current culture, try using invariant culture as fallback
-            localizedString = rm.GetString(key, CultureInfo.InvariantCulture);
+            localizedString = Rm.GetString(key, CultureInfo.InvariantCulture);
             if (!string.IsNullOrEmpty(localizedString))
             {
                 return localizedString;

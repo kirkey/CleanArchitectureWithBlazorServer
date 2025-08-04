@@ -17,7 +17,7 @@ public class ExportProductsQueryHandler(
     IApplicationDbContextFactory dbContextFactory,
     IMapper mapper,
     IExcelService excelService,
-    IPDFService pdfService,
+    IPdfService pdfService,
     IStringLocalizer<ExportProductsQueryHandler> localizer)
     :
         IRequestHandler<ExportProductsQuery, Result<byte[]>>

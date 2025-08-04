@@ -14,8 +14,8 @@ public class AdvancedDocumentsSpecification : Specification<Document>
             .Where(p =>
                     p.CreatedBy == filter.CurrentUser.UserId && p.TenantId == filter.CurrentUser.TenantId,
                 filter.ListView == DocumentListView.My)
-            .Where(x => x.Created >= todayrange.Start && x.Created < todayrange.End.AddDays(1), filter.ListView == DocumentListView.TODAY)
-            .Where(x => x.Created >= last30daysrange.Start, filter.ListView == DocumentListView.LAST_30_DAYS)
+            .Where(x => x.Created >= todayrange.Start && x.Created < todayrange.End.AddDays(1), filter.ListView == DocumentListView.Today)
+            .Where(x => x.Created >= last30daysrange.Start, filter.ListView == DocumentListView.Last30Days)
             .Where(
                 x => x.Title.Contains(filter.Keyword) || x.Description.Contains(filter.Keyword) ||
                      x.Content.Contains(filter.Keyword), !string.IsNullOrEmpty(filter.Keyword));

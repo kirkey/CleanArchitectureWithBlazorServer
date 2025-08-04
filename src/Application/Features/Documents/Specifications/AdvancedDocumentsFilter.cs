@@ -4,10 +4,10 @@ public enum DocumentListView
 {
     [Description("All")] All,
     [Description("My Document")] My,
-    [Description("Created Today")] TODAY,
+    [Description("Created Today")] Today,
 
     [Description("Created within the last 30 days")]
-    LAST_30_DAYS
+    Last30Days
 }
 
 public class AdvancedDocumentsFilter : PaginationFilter

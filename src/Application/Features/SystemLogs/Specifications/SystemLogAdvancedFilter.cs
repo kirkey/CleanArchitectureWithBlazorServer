@@ -5,14 +5,14 @@ public enum SystemLogListView
     [Description("All")] 
     All,
     [Description("Created Today")] 
-    TODAY,
+    Today,
     [Description("View of the last 30 days")]
-    LAST_30_DAYS
+    Last30Days
 }
 
 public class SystemLogAdvancedFilter : PaginationFilter
 {
     public UserProfile? CurrentUser { get; set; }
     public LogLevel? Level { get; set; }
-    public SystemLogListView ListView { get; set; } = SystemLogListView.LAST_30_DAYS;
+    public SystemLogListView ListView { get; set; } = SystemLogListView.Last30Days;
 }

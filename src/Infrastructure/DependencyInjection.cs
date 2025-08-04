@@ -83,7 +83,7 @@ public static class DependencyInjection
 
         services.Configure<AISettings>(configuration.GetSection(AISettings.Key))
             .AddSingleton(s => s.GetRequiredService<IOptions<AISettings>>().Value)
-            .AddSingleton<IAISettings>(s => s.GetRequiredService<IOptions<AISettings>>().Value);
+            .AddSingleton<IAiSettings>(s => s.GetRequiredService<IOptions<AISettings>>().Value);
         return services;
     }
     #endregion
@@ -135,7 +135,7 @@ public static class DependencyInjection
                 return builder.UseSqlite(connectionString,
                     e => e.MigrationsAssembly(SQLITE_MIGRATIONS_ASSEMBLY));
 
-            case DbProviderKeys.MySQL:
+            case DbProviderKeys.MySql:
                 return builder.UseMySql(connectionString, 
                     new MySqlServerVersion(new Version(8, 0, 21)),
                     options => 
@@ -168,7 +168,7 @@ public static class DependencyInjection
                 EntityFramework.Exceptions.Sqlite.ExceptionProcessorExtensions.UseExceptionProcessor(builder);
                 return builder;
 
-            case DbProviderKeys.MySQL:
+            case DbProviderKeys.MySql:
                 // MySQL exception processing not available - using default EF Core exception handling
                 return builder;
 
@@ -204,7 +204,7 @@ public static class DependencyInjection
             .AddScoped<IDateTime, DateTimeService>()
             .AddScoped<IExcelService, ExcelService>()
             .AddScoped<IUploadService, MinioUploadService>()
-            .AddScoped<IPDFService, PDFService>()
+            .AddScoped<IPdfService, PDFService>()
             .AddTransient<IDocumentOcrJob, DocumentOcrJob>();
     }
     #endregion

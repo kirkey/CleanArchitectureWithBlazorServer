@@ -15,9 +15,9 @@
                 <ApexPointSeries TItem="SystemLogTimeLineDto"
                                  Items="Data"
                                  Name="Count"
-                                 XValue="@(e => e.dt.ToString("MMM-d"))"
-                                 YValue="@(e => e.total)"
-                                 YAggregate="@(e => e.Sum(e => e.total))"
+                                 XValue="@(e => e.Dt.ToString("MMM-d"))"
+                                 YValue="@(e => e.Total)"
+                                 YAggregate="@(e => e.Sum(e => e.Total))"
                                  SeriesType="SeriesType.Bar" />
             </ApexChart>
         }
