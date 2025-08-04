@@ -54,4 +54,4 @@ public static partial class Permissions
         [Description("Allows viewing Hangfire dashboard")]
         public const string View = "Permissions.Hangfire.View";
     }
-} 
+}

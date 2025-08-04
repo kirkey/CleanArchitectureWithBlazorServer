@@ -1,9 +1,9 @@
 ﻿using System.Security.Claims;
 using CleanArchitecture.Blazor.Application.Common.ExceptionHandlers;
-using CleanArchitecture.Blazor.Application.Common.Security;
-using CleanArchitecture.Blazor.Domain.Identity;
 using CleanArchitecture.Blazor.Application.Common.Interfaces;
 using CleanArchitecture.Blazor.Application.Common.Interfaces.Identity;
+using CleanArchitecture.Blazor.Application.Common.Security;
+using CleanArchitecture.Blazor.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using ZiggyCreatures.Caching.Fusion;
 

@@ -1,5 +1,8 @@
 ﻿@page "/pages/documents"
 @attribute [Authorize(Policy = Permissions.Documents.View)]
+@using CleanArchitecture.Blazor.Application.Features.Documents.Caching
+@using CleanArchitecture.Blazor.Application.Features.Documents.Commands.AddEdit
+@using CleanArchitecture.Blazor.Application.Features.Documents.Commands.Delete
 @using CleanArchitecture.Blazor.Application.Features.Documents.DTOs
 @using CleanArchitecture.Blazor.Application.Features.Documents.Queries.GetFileStream
 @using CleanArchitecture.Blazor.Application.Features.Documents.Queries.PaginationQuery
@@ -7,9 +10,6 @@
 @using CleanArchitecture.Blazor.Domain.Common.Enums
 @using CleanArchitecture.Blazor.Server.UI.Hubs
 @using CleanArchitecture.Blazor.Server.UI.Pages.Documents.Components
-@using CleanArchitecture.Blazor.Application.Features.Documents.Caching
-@using CleanArchitecture.Blazor.Application.Features.Documents.Commands.AddEdit
-@using CleanArchitecture.Blazor.Application.Features.Documents.Commands.Delete
 
 @implements IDisposable
 @inject BlazorDownloadFileService _downloadFileService

@@ -33,6 +33,7 @@
         </PackageReference>
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="..\..\Migrators.MySql\Migrators.MySql.csproj" />
         <ProjectReference Include="..\Migrators\Migrators.MSSQL\Migrators.MSSQL.csproj" />
         <ProjectReference Include="..\Migrators\Migrators.PostgreSQL\Migrators.PostgreSQL.csproj" />
         <ProjectReference Include="..\Migrators\Migrators.SqLite\Migrators.SqLite.csproj" />

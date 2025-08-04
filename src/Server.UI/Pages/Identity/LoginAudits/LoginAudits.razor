@@ -1,10 +1,10 @@
 ﻿@page "/pages/identity/loginaudits"
+@using CleanArchitecture.Blazor.Application.Features.LoginAudits.Caching
 @using CleanArchitecture.Blazor.Application.Features.LoginAudits.DTOs
 @using CleanArchitecture.Blazor.Application.Features.LoginAudits.Queries.PaginationQuery
 @using CleanArchitecture.Blazor.Application.Features.LoginAudits.Specifications
-@using CleanArchitecture.Blazor.Application.Features.LoginAudits.Caching
-@using CleanArchitecture.Blazor.Server.UI.Components.UtcToLocalTime
 @using CleanArchitecture.Blazor.Server.UI.Components.Security
+@using CleanArchitecture.Blazor.Server.UI.Components.UtcToLocalTime
 @using MudBlazor
 
 @attribute [Authorize(Policy = Permissions.LoginAudits.View)]

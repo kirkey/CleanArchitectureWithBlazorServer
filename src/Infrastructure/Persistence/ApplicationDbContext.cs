@@ -31,6 +31,18 @@ public class ApplicationDbContext : IdentityDbContext<
     public DbSet<UserLoginRiskSummary> UserLoginRiskSummaries { get; set; }
     public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
 
+    // Accounting Domains
+    public DbSet<ChartOfAccount> ChartOfAccounts { get; set; }
+    public DbSet<JournalEntry> JournalEntries { get; set; }
+    public DbSet<GeneralLedger> GeneralLedgers { get; set; }
+    public DbSet<Customer> Customers { get; set; }
+    public DbSet<Vendor> Vendors { get; set; }
+    public DbSet<Invoice> Invoices { get; set; }
+    public DbSet<InvoiceItem> InvoiceItems { get; set; }
+    public DbSet<Payment> Payments { get; set; }
+    public DbSet<Bill> Bills { get; set; }
+    public DbSet<BillItem> BillItems { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         

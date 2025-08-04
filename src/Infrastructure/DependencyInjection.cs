@@ -7,7 +7,6 @@ using ActualLab.Fusion.Blazor;
 using ActualLab.Fusion.Blazor.Authentication;
 using ActualLab.Fusion.Extensions;
 using CleanArchitecture.Blazor.Application.Common.Interfaces.MultiTenant;
-using CleanArchitecture.Blazor.Application.Common.Interfaces.Identity;
 using CleanArchitecture.Blazor.Application.Features.Fusion;
 using CleanArchitecture.Blazor.Domain.Identity;
 using CleanArchitecture.Blazor.Infrastructure.Configurations;
@@ -27,6 +26,7 @@ using Microsoft.Extensions.Configuration;
 using ZiggyCreatures.Caching.Fusion;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Http;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace CleanArchitecture.Blazor.Infrastructure;
 public static class DependencyInjection
@@ -41,6 +41,7 @@ public static class DependencyInjection
     private const string POSTGRESQL_MIGRATIONS_ASSEMBLY = "CleanArchitecture.Blazor.Migrators.PostgreSQL";
     private const string MSSQL_MIGRATIONS_ASSEMBLY = "CleanArchitecture.Blazor.Migrators.MSSQL";
     private const string SQLITE_MIGRATIONS_ASSEMBLY = "CleanArchitecture.Blazor.Migrators.SqLite";
+    private const string MYSQL_MIGRATIONS_ASSEMBLY = "CleanArchitecture.Blazor.Migrators.MySQL";
     private const string SMTP_CLIENT_OPTIONS_DEFAULT_FROM_EMAIL = "SmtpClientOptions:DefaultFromEmail";
     private const string EMAIL_TEMPLATES_PATH = "Resources/EmailTemplates";
     private const string DEFAULT_FROM_EMAIL = "noreply@blazorserver.com";
@@ -134,6 +135,16 @@ public static class DependencyInjection
                 return builder.UseSqlite(connectionString,
                     e => e.MigrationsAssembly(SQLITE_MIGRATIONS_ASSEMBLY));
 
+            case DbProviderKeys.MySQL:
+                return builder.UseMySql(connectionString, 
+                    new MySqlServerVersion(new Version(8, 0, 21)),
+                    options => 
+                    {
+                        options.MigrationsAssembly(MYSQL_MIGRATIONS_ASSEMBLY);
+                        options.SchemaBehavior(MySqlSchemaBehavior.Ignore);
+                    })
+                    .UseCamelCaseNamingConvention();
+
             default:
                 throw new InvalidOperationException($"DB Provider {dbProvider} is not supported.");
         }
@@ -151,10 +162,13 @@ public static class DependencyInjection
             case DbProviderKeys.SqlServer:
                 EntityFramework.Exceptions.SqlServer.ExceptionProcessorExtensions.UseExceptionProcessor(builder);
                 return builder;
-
-
+            
             case DbProviderKeys.SqLite:
                 EntityFramework.Exceptions.Sqlite.ExceptionProcessorExtensions.UseExceptionProcessor(builder);
+                return builder;
+
+            case DbProviderKeys.MySQL:
+                // MySQL exception processing not available - using default EF Core exception handling
                 return builder;
 
             default:

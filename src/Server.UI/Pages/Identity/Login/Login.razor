@@ -1,12 +1,12 @@
 ﻿@page "/account/login"
 
-@using Microsoft.AspNetCore.Authentication
-@using CleanArchitecture.Blazor.Domain.Identity
+@using System.ComponentModel.DataAnnotations
 @using CleanArchitecture.Blazor.Application.Common.Interfaces.Identity
 @using CleanArchitecture.Blazor.Application.Features.Identity.Notifications.SendFactorCode
-@using System.ComponentModel.DataAnnotations
-@using CleanArchitecture.Blazor.Server.UI.Pages.Identity.Register
+@using CleanArchitecture.Blazor.Domain.Identity
 @using CleanArchitecture.Blazor.Server.UI.Pages.Identity.Forgot
+@using CleanArchitecture.Blazor.Server.UI.Pages.Identity.Register
+@using Microsoft.AspNetCore.Authentication
 @inherits OwningComponentBase
 @inject ILogger<Login> Logger
 @inject IStringLocalizer<Login> L

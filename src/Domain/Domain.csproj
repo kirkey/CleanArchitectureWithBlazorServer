@@ -28,6 +28,7 @@
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.Extensions.Identity.Core" Version="9.0.7" />
+        <PackageReference Include="Ulid" Version="1.4.1" />
     </ItemGroup>
 
 </Project>

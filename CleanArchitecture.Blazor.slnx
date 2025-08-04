@@ -14,6 +14,7 @@
     <Project Path="src/Server.UI/Server.UI.csproj" />
   </Folder>
   <Folder Name="/src/Migrators/">
+    <Project Path="Migrators.MySql\Migrators.MySql.csproj" Type="Classic C#" />
     <Project Path="src/Migrators/Migrators.MSSQL/Migrators.MSSQL.csproj" />
     <Project Path="src/Migrators/Migrators.PostgreSQL/Migrators.PostgreSQL.csproj" />
     <Project Path="src/Migrators/Migrators.SqLite/Migrators.SqLite.csproj" />
@@ -23,7 +24,5 @@
     <Project Path="tests/Application.UnitTests/Application.UnitTests.csproj" />
     <Project Path="tests/Domain.UnitTests/Domain.UnitTests.csproj" />
   </Folder>
-  <Project Path="docker-compose.dcproj">
-    <Build />
-  </Project>
+  <Project Path="docker-compose.dcproj" />
 </Solution>

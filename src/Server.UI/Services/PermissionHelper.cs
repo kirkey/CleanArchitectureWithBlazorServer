@@ -1,13 +1,13 @@
-﻿using CleanArchitecture.Blazor.Application.Common.Security;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Reflection;
-using CleanArchitecture.Blazor.Domain.Identity;
-using CleanArchitecture.Blazor.Application.Common.Constants.ClaimTypes;
-using CleanArchitecture.Blazor.Application.Common.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
-using ZiggyCreatures.Caching.Fusion;
+using CleanArchitecture.Blazor.Application.Common.Constants.ClaimTypes;
 using CleanArchitecture.Blazor.Application.Common.ExceptionHandlers;
+using CleanArchitecture.Blazor.Application.Common.Interfaces;
+using CleanArchitecture.Blazor.Application.Common.Security;
+using CleanArchitecture.Blazor.Domain.Identity;
+using Microsoft.AspNetCore.Identity;
+using ZiggyCreatures.Caching.Fusion;
 
 namespace CleanArchitecture.Blazor.Server.UI.Services;
 

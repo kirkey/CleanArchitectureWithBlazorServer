@@ -1,14 +1,14 @@
-﻿@using CleanArchitecture.Blazor.Server.UI.Components.Fusion
-@using ResizeMode = SixLabors.ImageSharp.Processing.ResizeMode
-@using Size = SixLabors.ImageSharp.Size
-@using Image = SixLabors.ImageSharp.Image
-@using SixLabors.ImageSharp.Processing
-@using SixLabors.ImageSharp
-@using SixLabors.ImageSharp.Formats.Png
+﻿@using System.Collections.Immutable
 @using CleanArchitecture.Blazor.Application.Features.Products.Commands.AddEdit
 @using CleanArchitecture.Blazor.Domain.Common.Enums
+@using CleanArchitecture.Blazor.Server.UI.Components.Fusion
 @using CleanArchitecture.Blazor.Server.UI.Services.JsInterop
-@using System.Collections.Immutable
+@using SixLabors.ImageSharp
+@using SixLabors.ImageSharp.Formats.Png
+@using SixLabors.ImageSharp.Processing
+@using Image = SixLabors.ImageSharp.Image
+@using ResizeMode = SixLabors.ImageSharp.Processing.ResizeMode
+@using Size = SixLabors.ImageSharp.Size
 
 @inject IStringLocalizer<Products> L
 @inject IUploadService UploadService
